@@ -5,10 +5,12 @@ tags: [reasoning-and-planning, llm-agents, prompting]
 related:
   - "[[agent-loop]]"
   - "[[tool-use-and-function-calling]]"
+  - "[[multi-agent-systems]]"
   - "[[self-reflection]]"
   - "[[test-time-compute]]"
 summaries:
   - "[[summaries/2022-react]]"
+  - "[[summaries/2026-sakana-fugu]]"
 updated: 2026-07-24
 ---
 
@@ -49,6 +51,7 @@ LLM（Large Language Model, 大規模言語モデル）に**答えへ一足飛�
 
 - thought の役割は少なくとも 4 つある: **目標の分解／部分目標の完了追跡／次の部分目標の決定／常識による補完**（ReAct の ALFWorld プロンプト設計より）。環境状態の復唱だけに限定した thought（Inner Monologue 風）では性能が大きく落ちる——「何を考えさせるか」の設計がエージェントの質を決める。
 - thought の**密度**も設計変数である。毎ステップ考える dense thought（知識タスク向き）と、要所でだけ考える sparse thought（行動の多い意思決定タスク向き）の使い分け → 詳細は [[agent-loop]]。
+- 「計画」の出力先は、プロンプト内の思考連鎖から**エージェント群のワークフローそのもの**へと持ち上がりつつある。[[summaries/2026-sakana-fugu]] の Fugu-Ultra は、サブタスク分解・担当割り当て・通信トポロジーを自然言語の計画として出力するオーケストレータで、CoT-SC の多数決や ToT の木探索を**異種モデルの分業に拡張**した形（集約役すら問題ごとに選ぶ debate ツリー）と読める → [[multi-agent-systems]]。
 
 ## 関連ページ
 

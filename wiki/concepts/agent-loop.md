@@ -5,10 +5,12 @@ tags: [agent-loop, llm-agents]
 related:
   - "[[reasoning-and-planning]]"
   - "[[tool-use-and-function-calling]]"
+  - "[[multi-agent-systems]]"
   - "[[agent-memory]]"
   - "[[context-engineering]]"
 summaries:
   - "[[summaries/2022-react]]"
+  - "[[summaries/2026-sakana-fugu]]"
 updated: 2026-07-24
 ---
 
@@ -45,7 +47,7 @@ ReAct はこの両モードを示し、sparse thought だけでも「目標の�
 
 ## 位置づけと発展
 
-ReAct のループは「LLM 呼び出し 1 回 = 1 ステップ」の最小構成であり、後のエージェントはこの骨格の上に、ツールの構造化（[[tool-use-and-function-calling]]）、長期記憶（[[agent-memory]]）、コンテキストへの情報の積み方の最適化（[[context-engineering]]）、失敗の振り返り（[[self-reflection]]）、複数エージェントへの分業（[[multi-agent-systems]]）を積み増していった。人間がループの途中に介入する点（HITL, Human-in-the-Loop）としては、ReAct が示した「thought を編集して軌道修正する」方式が先駆けである。
+ReAct のループは「LLM 呼び出し 1 回 = 1 ステップ」の最小構成であり、後のエージェントはこの骨格の上に、ツールの構造化（[[tool-use-and-function-calling]]）、長期記憶（[[agent-memory]]）、コンテキストへの情報の積み方の最適化（[[context-engineering]]）、失敗の振り返り（[[self-reflection]]）、複数エージェントへの分業（[[multi-agent-systems]]）を積み増していった。さらに、ループの各ターンで「**どのモデルがそのステップを担当するか**」自体を学習対象にする段階にも到達している——[[summaries/2026-sakana-fugu]] の Fugu は、ハーネスの相互作用状態からターンごとに担当ワーカーを選び直すオーケストレータで、「GPT が構築し、決定的なデバッグ地点で Opus に交代する」といった役割交代を学習で獲得した。人間がループの途中に介入する点（HITL, Human-in-the-Loop）としては、ReAct が示した「thought を編集して軌道修正する」方式が先駆けである。
 
 ## 関連ページ
 

@@ -5,10 +5,12 @@ tags: [tool-use-and-function-calling, llm-agents]
 related:
   - "[[agent-loop]]"
   - "[[reasoning-and-planning]]"
+  - "[[multi-agent-systems]]"
   - "[[model-context-protocol]]"
   - "[[retrieval-augmented-generation]]"
 summaries:
   - "[[summaries/2022-react]]"
+  - "[[summaries/2026-sakana-fugu]]"
 updated: 2026-07-24
 ---
 
@@ -39,6 +41,7 @@ LLM（Large Language Model, 大規模言語モデル）が**外部のツール�
 - **ツールの粒度と数**: ReAct は 3 ツールで足りたが、ツールが増えるほどモデルの選択誤りも増える。ツール説明文の書き方は一種のプロンプト設計である。
 - **検索ツールとの関係**: 「検索して結果を根拠に答える」というツール利用の最頻出パターンは、[[retrieval-augmented-generation]]（RAG）をエージェントのループに埋め込んだものと見なせる。ReAct の「内部知識で足りるか、検索すべきか」の切り替えはその原型。
 - **安全性**: ツールは外部世界への作用を意味するので、危険な行動を行動空間に含めない設計（ReAct は閲覧のみで Wikipedia を編集できない）、権限の最小化、実行前の人間の承認が基本になる → [[agent-safety-and-guardrails]]。
+- **マルチエージェント下の function call loop**: 単一エージェントでは「呼び出し → 結果 → 続きを生成」のループはトランスクリプトが 1 本なので自明だが、複数エージェントが同じ環境に対してツールを呼ぶ構成では、**どのエージェントが発行した呼び出しかを追跡し、結果を正しい発行元に返す**ルーティングと、エージェント間でツール呼び出し履歴をどこまで共有するかの設計が必要になる。[[summaries/2026-sakana-fugu]] の Fugu-Ultra は「現在のワークフロー内は隔離（orchestration collapse 防止）・過去のワークフローの履歴は共有（重複探索の防止）」という切り分けでこれを解いた → [[multi-agent-systems]]。
 
 ## 関連ページ
 

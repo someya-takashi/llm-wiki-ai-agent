@@ -34,7 +34,8 @@ updated: 2026-07-24
 
 ### 3. 構成とスケール
 
-- multi-agent systems（複数エージェントの分業・協調、orchestrator-worker 構成）→ `[[multi-agent-systems]]`
+- multi-agent systems（複数エージェントの分業・協調、orchestrator-worker 構成）→ [[multi-agent-systems]]
+  - Sakana Fugu（[[summaries/2026-sakana-fugu]], 2026）は「どのモデルにどう働かせるか」を学習したオーケストレータで個々のフロンティアモデル単体を超え、**オーケストレーションをモデルスケーリングと直交する新しいスケーリング軸**として実証した。固定集約役の debate/MoA からクエリ適応的なワークフロー生成への世代交代を示す原典。
 - agent frameworks（LangGraph, AutoGen, CrewAI, Claude Agent SDK 等）→ `[[agent-frameworks]]`
 
 ### 4. 応用
@@ -63,10 +64,10 @@ updated: 2026-07-24
 | --- | --- |
 | 基本構造 | [[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用） |
 | 知識の接続 | （なし） |
-| 構成とスケール | （なし） |
-| 応用 | （なし） |
-| 評価・運用・安全性 | （なし。ただし [[summaries/2022-react]] が HotpotQA / FEVER / ALFWorld / WebShop と HITL 介入に言及） |
-| LLM 基盤 | （なし） |
+| 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ・orchestrator-worker・隔離／共有メモリ） |
+| 応用 | （なし。ただし [[summaries/2026-sakana-fugu]] がコーディング・自律研究・CAD 等の応用例に言及） |
+| 評価・運用・安全性 | （なし。ただし [[summaries/2022-react]] が HotpotQA / FEVER / ALFWorld / WebShop と HITL 介入に、[[summaries/2026-sakana-fugu]] が SWE-Bench Pro / Terminal Bench / GPQA-Diamond / HLE / τ³-bench 等に言及） |
+| LLM 基盤 | （なし。ただし [[summaries/2026-sakana-fugu]] が SFT・進化戦略・GRPO の訓練レシピに言及） |
 
 原典が増えたらこの表を更新し、空白の軸は `lint` の「データギャップ」として次に読むべき原典の候補を挙げる。
 

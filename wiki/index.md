@@ -19,6 +19,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 ### Papers
 
 - [[summaries/2022-react]] — ReAct（ICLR 2023）。思考と行動を交互に生成させ、外部接地で幻覚を抑えつつ行動を推論で導くパラダイム。agent loop の原型。
+- [[summaries/2026-sakana-fugu]] — Sakana Fugu（2026, テクニカルレポート）。フロンティア LLM 群を束ねる学習されたオーケストレータ。オーケストレーション＝新スケーリング軸の実証。
 
 ### Articles / Blogs
 
@@ -31,15 +32,17 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 ## Translations
 
 - [[translations/2022-react]] — ReAct 論文の全文翻訳（付録・プロンプト含む。プロンプトと軌跡は原文のまま収録）。
+- [[translations/2026-sakana-fugu]] — Sakana Fugu テクニカルレポートの全文翻訳（付録・棋譜含む。プロンプトと棋譜は原文のまま収録）。
 
 ## Concepts
 
 - [[reasoning-and-planning]] — LLM に思考過程・計画を明示的に生成させる手法群。CoT・CoT-SC・ReAct・ToT を扱う。
 - [[agent-loop]] — 観測→思考→行動の実行ループ。定式化、thought の密度、停止条件、典型的失敗モード。
 - [[tool-use-and-function-calling]] — モデルが外部ツールを呼ぶ仕組み。ReAct の Wikipedia API から function calling までの系譜。
+- [[multi-agent-systems]] — 複数 LLM エージェントの協調。debate / MoA / ルーティング / 学習されたオーケストレータ（Fugu）の類型。
 
 未作成の想定スラグ（CLAUDE.md §1 の命名規約より。作成したら上のリストへ移す）：
-`llm-agents` / `self-reflection` / `agent-memory` / `retrieval-augmented-generation` / `multi-agent-systems` / `context-engineering` / `model-context-protocol` / `agent-frameworks` / `coding-agents` / `computer-use-agents` / `web-agents` / `agent-evaluation` / `agent-safety-and-guardrails` / `agent-observability` / `reinforcement-learning-from-human-feedback` / `test-time-compute` / `llm-inference-optimization` / `parameter-efficient-fine-tuning` / `transformer-architecture`
+`llm-agents` / `self-reflection` / `agent-memory` / `retrieval-augmented-generation` / `context-engineering` / `model-context-protocol` / `agent-frameworks` / `coding-agents` / `computer-use-agents` / `web-agents` / `agent-evaluation` / `agent-safety-and-guardrails` / `agent-observability` / `reinforcement-learning-from-human-feedback` / `test-time-compute` / `llm-inference-optimization` / `parameter-efficient-fine-tuning` / `transformer-architecture`
 
 ### 略称リダイレクト
 
@@ -49,6 +52,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - MCP → [[model-context-protocol]]
 - CoT / CoT-SC / ToT / ReAct → [[reasoning-and-planning]]
 - function calling / tool call → [[tool-use-and-function-calling]]
+- MoA / Mixture-of-Agents / orchestrator-worker → [[multi-agent-systems]]
 - RLHF / RLVR → [[reinforcement-learning-from-human-feedback]]
 - PEFT / LoRA / SFT → [[parameter-efficient-fine-tuning]]
 - HITL → [[agent-safety-and-guardrails]]
