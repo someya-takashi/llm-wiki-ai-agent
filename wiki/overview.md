@@ -24,6 +24,7 @@ updated: 2026-07-24
 - tool use / function calling（モデルが JSON スキーマに沿った引数で外部ツールを呼ぶ仕組み）→ [[tool-use-and-function-calling]]
   - 初期形は ReAct の 3 アクション Wikipedia API のようなプロンプト規約によるツール定義で、その後 API レベルの構造化された function calling へ発展した。
 - planning（計画立案）と self-reflection（自己反省による軌道修正）→ [[reasoning-and-planning]], `[[self-reflection]]`
+  - 推論の系譜の起点は CoT（[[summaries/2022-chain-of-thought]], 2022）。few-shot 例示に思考連鎖を入れるだけで推論が創発する（約 100B 規模で急伸）ことを示し、「答える前に考えさせる」設計と test-time compute の発想の源流となった。
 - memory（短期＝コンテキスト内、長期＝外部ストア）→ `[[agent-memory]]`
 - context engineering（限られたコンテキストウィンドウに何をどう積むかの設計）→ `[[context-engineering]]`
 
@@ -36,7 +37,8 @@ updated: 2026-07-24
 
 - multi-agent systems（複数エージェントの分業・協調、orchestrator-worker 構成）→ [[multi-agent-systems]]
   - Sakana Fugu（[[summaries/2026-sakana-fugu]], 2026）は「どのモデルにどう働かせるか」を学習したオーケストレータで個々のフロンティアモデル単体を超え、**オーケストレーションをモデルスケーリングと直交する新しいスケーリング軸**として実証した。固定集約役の debate/MoA からクエリ適応的なワークフロー生成への世代交代を示す原典。
-- agent frameworks（LangGraph, AutoGen, CrewAI, Claude Agent SDK 等）→ `[[agent-frameworks]]`
+- agent frameworks（LangGraph, AutoGen, CrewAI, Claude Agent SDK 等）→ [[agent-frameworks]]
+  - 実務の標準語彙は Anthropic「Building Effective Agents」（[[summaries/2024-building-effective-agents]], 2024）が確立: workflow（事前定義コードパス）と agent（動的制御）の区別、5 つの設計パターン、「まず単純に、複雑さは実証されたときだけ」の原則。
 
 ### 4. 応用
 
@@ -63,9 +65,9 @@ updated: 2026-07-24
 
 | 軸 | 取り込み済みの原典 |
 | --- | --- |
-| 基本構造 | [[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用） |
+| 基本構造 | [[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用） |
 | 知識の接続 | （なし） |
-| 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類） |
+| 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観） |
 | 応用 | （なし。ただし [[summaries/2026-sakana-fugu]] がコーディング・自律研究・CAD 等の応用例に言及) |
 | 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
 | LLM 基盤 | （なし。ただし [[summaries/2026-sakana-fugu]] が SFT・進化戦略・GRPO の訓練レシピに言及） |

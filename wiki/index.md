@@ -18,13 +18,14 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ### Papers
 
+- [[summaries/2022-chain-of-thought]] — CoT（NeurIPS 2022）。例示に思考連鎖を入れるだけで推論が創発。「考えてから答える」設計すべての祖形。
 - [[summaries/2022-react]] — ReAct（ICLR 2023）。思考と行動を交互に生成させ、外部接地で幻覚を抑えつつ行動を推論で導くパラダイム。agent loop の原型。
 - [[summaries/2026-sakana-fugu]] — Sakana Fugu（2026, テクニカルレポート）。フロンティア LLM 群を束ねる学習されたオーケストレータ。オーケストレーション＝新スケーリング軸の実証。
 - [[summaries/2025-masft]] — MASFT（2025, UC Berkeley）。150+ トレース分析による MAS 失敗の初の分類法（14 モード×3 カテゴリ）。「失敗は組織設計の欠陥」。
 
 ### Articles / Blogs
 
-（まだありません。`raw/articles/` に記事 markdown を置いて ingest してください）
+- [[summaries/2024-building-effective-agents]] — Anthropic（2024, 改訂版）。workflow/agent の区別・5 パターン・3 原則（simplicity/transparency/ACI）。実務指針の事実上の標準。
 
 ### Docs
 
@@ -32,9 +33,11 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ## Translations
 
+- [[translations/2022-chain-of-thought]] — CoT 論文の全文翻訳（付録の全プロンプト・結果表含む。プロンプトと例は原文のまま収録）。
 - [[translations/2022-react]] — ReAct 論文の全文翻訳（付録・プロンプト含む。プロンプトと軌跡は原文のまま収録）。
 - [[translations/2026-sakana-fugu]] — Sakana Fugu テクニカルレポートの全文翻訳（付録・棋譜含む。プロンプトと棋譜は原文のまま収録）。
 - [[translations/2025-masft]] — MASFT 論文の全文翻訳（付録の失敗事例トレース・介入プロンプト含む。トレースとプロンプトは原文のまま収録）。
+- [[translations/2024-building-effective-agents]] — Anthropic「Building Effective Agents」の全文翻訳（付録のツール設計論含む）。
 
 ## Concepts
 
@@ -43,9 +46,10 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[tool-use-and-function-calling]] — モデルが外部ツールを呼ぶ仕組み。ReAct の Wikipedia API から function calling までの系譜。
 - [[multi-agent-systems]] — 複数 LLM エージェントの協調。debate / MoA / ルーティング / 学習されたオーケストレータ（Fugu）の類型と、MASFT による失敗分類。
 - [[agent-evaluation]] — エージェント評価の方法論。ベンチマーク型／トレース分析型／LLM-as-a-judge の 3 類型と指標の整理。
+- [[agent-frameworks]] — 設計パターン（workflow 5 種＋agent）とフレームワーク観。「まず単純に、複雑さは実証されたときだけ」。
 
 未作成の想定スラグ（CLAUDE.md §1 の命名規約より。作成したら上のリストへ移す）：
-`llm-agents` / `self-reflection` / `agent-memory` / `retrieval-augmented-generation` / `context-engineering` / `model-context-protocol` / `agent-frameworks` / `coding-agents` / `computer-use-agents` / `web-agents` / `agent-safety-and-guardrails` / `agent-observability` / `reinforcement-learning-from-human-feedback` / `test-time-compute` / `llm-inference-optimization` / `parameter-efficient-fine-tuning` / `transformer-architecture`
+`llm-agents` / `self-reflection` / `agent-memory` / `retrieval-augmented-generation` / `context-engineering` / `model-context-protocol` / `coding-agents` / `computer-use-agents` / `web-agents` / `agent-safety-and-guardrails` / `agent-observability` / `reinforcement-learning-from-human-feedback` / `test-time-compute` / `llm-inference-optimization` / `parameter-efficient-fine-tuning` / `transformer-architecture`
 
 ### 略称リダイレクト
 
@@ -57,6 +61,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - function calling / tool call → [[tool-use-and-function-calling]]
 - MoA / Mixture-of-Agents / orchestrator-worker / MASFT → [[multi-agent-systems]]
 - LLM-as-a-judge / pass@k / Cohen's κ → [[agent-evaluation]]
+- ACI / workflow パターン / prompt chaining / evaluator-optimizer → [[agent-frameworks]]
 - RLHF / RLVR → [[reinforcement-learning-from-human-feedback]]
 - PEFT / LoRA / SFT → [[parameter-efficient-fine-tuning]]
 - HITL → [[agent-safety-and-guardrails]]
