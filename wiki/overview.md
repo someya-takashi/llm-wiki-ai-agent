@@ -46,7 +46,8 @@ updated: 2026-07-24
 
 ### 5. 評価・運用・安全性
 
-- agent evaluation（SWE-bench, GAIA, WebArena, τ-bench 等のベンチマークと、解決率・コスト・ステップ数といった指標）→ `[[agent-evaluation]]`
+- agent evaluation（SWE-bench, GAIA, WebArena, τ-bench 等のベンチマークと、解決率・コスト・ステップ数といった指標）→ [[agent-evaluation]]
+  - MASFT（[[summaries/2025-masft]], 2025）はスコアでなく**トレースを一次データとする失敗分析**の方法論（Grounded Theory・Cohen's κ・LLM-as-a-judge）を確立し、「MAS の失敗は個々の LLM でなく組織設計の欠陥」という診断を与えた。
 - agent safety and guardrails（prompt injection（外部入力に埋め込まれた指示でエージェントを乗っ取る攻撃）、権限設計、sandboxing、HITL）→ `[[agent-safety-and-guardrails]]`
 - agent observability（trajectory のトレーシングとデバッグ）→ `[[agent-observability]]`
 
@@ -64,9 +65,9 @@ updated: 2026-07-24
 | --- | --- |
 | 基本構造 | [[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用） |
 | 知識の接続 | （なし） |
-| 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ・orchestrator-worker・隔離／共有メモリ） |
-| 応用 | （なし。ただし [[summaries/2026-sakana-fugu]] がコーディング・自律研究・CAD 等の応用例に言及） |
-| 評価・運用・安全性 | （なし。ただし [[summaries/2022-react]] が HotpotQA / FEVER / ALFWorld / WebShop と HITL 介入に、[[summaries/2026-sakana-fugu]] が SWE-Bench Pro / Terminal Bench / GPQA-Diamond / HLE / τ³-bench 等に言及） |
+| 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類） |
+| 応用 | （なし。ただし [[summaries/2026-sakana-fugu]] がコーディング・自律研究・CAD 等の応用例に言及) |
+| 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
 | LLM 基盤 | （なし。ただし [[summaries/2026-sakana-fugu]] が SFT・進化戦略・GRPO の訓練レシピに言及） |
 
 原典が増えたらこの表を更新し、空白の軸は `lint` の「データギャップ」として次に読むべき原典の候補を挙げる。
