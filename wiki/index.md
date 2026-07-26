@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-07-24
+updated: 2026-07-26
 ---
 
 # Index — AI Agent LLM Wiki
@@ -18,15 +18,18 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ### Papers
 
+- [[summaries/2020-rag]] — RAG（NeurIPS 2020）。パラメトリック/非パラメトリック記憶の end-to-end 結合。幻覚減・索引差し替えによる知識更新・retrieval collapse の初記録。
 - [[summaries/2022-chain-of-thought]] — CoT（NeurIPS 2022）。例示に思考連鎖を入れるだけで推論が創発。「考えてから答える」設計すべての祖形。
 - [[summaries/2022-react]] — ReAct（ICLR 2023）。思考と行動を交互に生成させ、外部接地で幻覚を抑えつつ行動を推論で導くパラダイム。agent loop の原型。
 - [[summaries/2023-reflexion]] — Reflexion（NeurIPS 2023）。報酬を反省文に増幅して記憶し、重み更新なしで試行間学習。HumanEval 91%。
 - [[summaries/2026-sakana-fugu]] — Sakana Fugu（2026, テクニカルレポート）。フロンティア LLM 群を束ねる学習されたオーケストレータ。オーケストレーション＝新スケーリング軸の実証。
 - [[summaries/2025-masft]] — MASFT（2025, UC Berkeley）。150+ トレース分析による MAS 失敗の初の分類法（14 モード×3 カテゴリ）。「失敗は組織設計の欠陥」。
+- [[summaries/2025-deepseek-r1]] — DeepSeek-R1（2025）。検証可能報酬だけの大規模 RL で推論・reflection が創発（RLVR）。o1 級推論の初のオープン実証。
 
 ### Articles / Blogs
 
 - [[summaries/2024-building-effective-agents]] — Anthropic（2024, 改訂版）。workflow/agent の区別・5 パターン・3 原則（simplicity/transparency/ACI）。実務指針の事実上の標準。
+- [[summaries/2025-multi-agent-research-system]] — Anthropic（2025）。Research 機能の本番 orchestrator-worker。+90.2%・トークン 15 倍の経済性・プロンプト 8 原則・20 クエリ評価。
 
 ### Docs
 
@@ -34,12 +37,15 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ## Translations
 
+- [[translations/2020-rag]] — RAG 論文の全文翻訳（付録 A〜I 含む。周辺化・DPR の式は LaTeX 維持、生成例は原文のまま収録）。
 - [[translations/2022-chain-of-thought]] — CoT 論文の全文翻訳（付録の全プロンプト・結果表含む。プロンプトと例は原文のまま収録）。
 - [[translations/2022-react]] — ReAct 論文の全文翻訳（付録・プロンプト含む。プロンプトと軌跡は原文のまま収録）。
 - [[translations/2023-reflexion]] — Reflexion 論文の全文翻訳（Algorithm 1・欠落パネルを ar5iv から復元。軌跡と反省文は原文のまま収録）。
 - [[translations/2026-sakana-fugu]] — Sakana Fugu テクニカルレポートの全文翻訳（付録・棋譜含む。プロンプトと棋譜は原文のまま収録）。
 - [[translations/2025-masft]] — MASFT 論文の全文翻訳（付録の失敗事例トレース・介入プロンプト含む。トレースとプロンプトは原文のまま収録）。
+- [[translations/2025-deepseek-r1]] — DeepSeek-R1 論文の全文翻訳（GRPO の式・aha moment の記録含む。テンプレートと応答例は原文のまま収録）。
 - [[translations/2024-building-effective-agents]] — Anthropic「Building Effective Agents」の全文翻訳（付録のツール設計論含む）。
+- [[translations/2025-multi-agent-research-system]] — Anthropic「How we built our multi-agent research system」の全文翻訳（付録の運用 Tips 含む。図 3 枚収録）。
 
 ## Concepts
 
@@ -50,15 +56,17 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[agent-evaluation]] — エージェント評価の方法論。ベンチマーク型／トレース分析型／LLM-as-a-judge の 3 類型と指標の整理。
 - [[agent-frameworks]] — 設計パターン（workflow 5 種＋agent）とフレームワーク観。「まず単純に、複雑さは実証されたときだけ」。
 - [[self-reflection]] — 失敗を言語で振り返り試行間で学ぶ仕組み。Reflexion / Self-Refine と、盲目的リトライ無効・FP 即死などの設計論点。
+- [[reinforcement-learning-from-human-feedback]] — 事後訓練の RL。RLHF（選好報酬）と RLVR（検証可能報酬）の 2 系統、GRPO、蒸留 vs 直接 RL。
+- [[retrieval-augmented-generation]] — 検索で外部知識を注入して生成。訓練時組み込み型と推論時注入型の 2 層、hot-swap、collapse。
 
 未作成の想定スラグ（CLAUDE.md §1 の命名規約より。作成したら上のリストへ移す）：
-`llm-agents` / `agent-memory` / `retrieval-augmented-generation` / `context-engineering` / `model-context-protocol` / `coding-agents` / `computer-use-agents` / `web-agents` / `agent-safety-and-guardrails` / `agent-observability` / `reinforcement-learning-from-human-feedback` / `test-time-compute` / `llm-inference-optimization` / `parameter-efficient-fine-tuning` / `transformer-architecture`
+`llm-agents` / `agent-memory` / `context-engineering` / `model-context-protocol` / `coding-agents` / `computer-use-agents` / `web-agents` / `agent-safety-and-guardrails` / `agent-observability` / `test-time-compute` / `llm-inference-optimization` / `parameter-efficient-fine-tuning` / `transformer-architecture`
 
 ### 略称リダイレクト
 
 略称に専用ページは作らない。対応する正式名称の概念ページを参照する（CLAUDE.md §1）。
 
-- RAG → [[retrieval-augmented-generation]]
+- RAG / DPR / dense retrieval / BM25 → [[retrieval-augmented-generation]]
 - MCP → [[model-context-protocol]]
 - CoT / CoT-SC / ToT / ReAct → [[reasoning-and-planning]]
 - function calling / tool call → [[tool-use-and-function-calling]]
@@ -66,7 +74,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - LLM-as-a-judge / pass@k / Cohen's κ → [[agent-evaluation]]
 - ACI / workflow パターン / prompt chaining / evaluator-optimizer → [[agent-frameworks]]
 - Reflexion / Self-Refine / verbal reinforcement → [[self-reflection]]
-- RLHF / RLVR → [[reinforcement-learning-from-human-feedback]]
+- RLHF / RLVR / GRPO / PRM → [[reinforcement-learning-from-human-feedback]]
 - PEFT / LoRA / SFT → [[parameter-efficient-fine-tuning]]
 - HITL → [[agent-safety-and-guardrails]]
 - KV cache → [[llm-inference-optimization]]

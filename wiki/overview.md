@@ -1,7 +1,7 @@
 ---
 type: overview
 tags: [llm-agents, ai-agent, overview]
-updated: 2026-07-24
+updated: 2026-07-26
 ---
 
 # Overview — AI Agent
@@ -31,13 +31,15 @@ updated: 2026-07-24
 
 ### 2. 知識の接続
 
-- RAG（Retrieval-Augmented Generation, 外部知識を検索してプロンプトに与え、それを根拠に生成させる手法）→ `[[retrieval-augmented-generation]]`
+- RAG（Retrieval-Augmented Generation, 外部知識を検索してプロンプトに与え、それを根拠に生成させる手法）→ [[retrieval-augmented-generation]]
+  - 原典（[[summaries/2020-rag]], 2020）はパラメトリック記憶（重み）と非パラメトリック記憶（文書索引）の end-to-end 結合として RAG を定式化し、幻覚の減少・索引差し替えによる知識更新・retrieval collapse を実証した。「知識はパラメータでなく索引に置く」という設計原則の出発点。
 - MCP（Model Context Protocol, ツールやデータソースをモデルに接続する標準プロトコル）→ `[[model-context-protocol]]`
 
 ### 3. 構成とスケール
 
 - multi-agent systems（複数エージェントの分業・協調、orchestrator-worker 構成）→ [[multi-agent-systems]]
   - Sakana Fugu（[[summaries/2026-sakana-fugu]], 2026）は「どのモデルにどう働かせるか」を学習したオーケストレータで個々のフロンティアモデル単体を超え、**オーケストレーションをモデルスケーリングと直交する新しいスケーリング軸**として実証した。固定集約役の debate/MoA からクエリ適応的なワークフロー生成への世代交代を示す原典。
+  - 本番運用の実例は Anthropic Research（[[summaries/2025-multi-agent-research-system]], 2025）: リード＋並列サブエージェント＋CitationAgent の orchestrator-worker で単一エージェント比 +90.2%。効果の正体は「別コンテキストで並列にトークンを費やす容量」（BrowseComp 分散の 80% をトークン量が説明）であり、代償はチャット比 **15 倍**のトークン——適用条件（幅優先・高価値・並列化可能）まで含めた経済学を開示した。
 - agent frameworks（LangGraph, AutoGen, CrewAI, Claude Agent SDK 等）→ [[agent-frameworks]]
   - 実務の標準語彙は Anthropic「Building Effective Agents」（[[summaries/2024-building-effective-agents]], 2024）が確立: workflow（事前定義コードパス）と agent（動的制御）の区別、5 つの設計パターン、「まず単純に、複雑さは実証されたときだけ」の原則。
 
@@ -51,13 +53,15 @@ updated: 2026-07-24
 
 - agent evaluation（SWE-bench, GAIA, WebArena, τ-bench 等のベンチマークと、解決率・コスト・ステップ数といった指標）→ [[agent-evaluation]]
   - MASFT（[[summaries/2025-masft]], 2025）はスコアでなく**トレースを一次データとする失敗分析**の方法論（Grounded Theory・Cohen's κ・LLM-as-a-judge）を確立し、「MAS の失敗は個々の LLM でなく組織設計の欠陥」という診断を与えた。
+  - 実務側の評価・運用の教訓は [[summaries/2025-multi-agent-research-system]]（2025）: 約 20 クエリの小規模評価から直ちに始める、LLM-as-a-judge は単一プロンプト・単一呼び出しが最も人間と整合、人間のテスターだけが情報源選択バイアス（SEO ファーム優先）を発見、状態変更エージェントは終了状態評価。運用面ではエラー地点からの再開・rainbow deployment・会話内容を見ないトレーシングを記録。
 - agent safety and guardrails（prompt injection（外部入力に埋め込まれた指示でエージェントを乗っ取る攻撃）、権限設計、sandboxing、HITL）→ `[[agent-safety-and-guardrails]]`
 - agent observability（trajectory のトレーシングとデバッグ）→ `[[agent-observability]]`
 
 ### 6. 土台となる LLM 側
 
 - transformer architecture と個別モデルの世代 → `[[transformer-architecture]]`
-- post-training（RLHF, RLVR 等）→ `[[reinforcement-learning-from-human-feedback]]`
+- post-training（RLHF, RLVR 等）→ [[reinforcement-learning-from-human-feedback]]
+  - DeepSeek-R1（[[summaries/2025-deepseek-r1]], 2025）は、検証可能な報酬だけの大規模 RL（RLVR）で長い思考・自己検証・reflection が**創発**することを公開実証し、o1 型推論モデルの製法を開いた。GRPO は [[summaries/2026-sakana-fugu]] のオーケストレータ訓練にも使われ、モデルとエージェントの両方を貫く訓練レシピになっている。
 - test-time compute（推論時に計算量を増やして精度を上げる考え方）→ `[[test-time-compute]]`
 - 推論の高速化・サービング（KV cache, バッチング, コストとレイテンシ）→ `[[llm-inference-optimization]]`
 - ファインチューニング（LoRA 等の PEFT）→ `[[parameter-efficient-fine-tuning]]`
@@ -67,13 +71,13 @@ updated: 2026-07-24
 | 軸 | 取り込み済みの原典 |
 | --- | --- |
 | 基本構造 | [[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習） |
-| 知識の接続 | （なし） |
-| 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観） |
+| 知識の接続 | [[summaries/2020-rag]]（検索拡張生成・非パラメトリック記憶・hot-swap） |
+| 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学） |
 | 応用 | （なし。ただし [[summaries/2026-sakana-fugu]] がコーディング・自律研究・CAD 等の応用例に言及) |
-| 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
-| LLM 基盤 | （なし。ただし [[summaries/2026-sakana-fugu]] が SFT・進化戦略・GRPO の訓練レシピに言及） |
+| 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）、[[summaries/2025-multi-agent-research-system]]（小規模評価・単一ジャッジ・終了状態評価・本番運用の信頼性）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
+| LLM 基盤 | [[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
 
-原典が増えたらこの表を更新し、空白の軸は `lint` の「データギャップ」として次に読むべき原典の候補を挙げる。
+6 軸すべてに少なくとも 1 件の原典が入った（2026-07-26 時点）。以後は各軸の深化（例: 知識の接続における MCP、応用における coding agents の専用原典）を `lint` のデータギャップとして追う。
 
 ## 関連ページ
 

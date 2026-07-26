@@ -12,7 +12,9 @@ summaries:
   - "[[summaries/2022-chain-of-thought]]"
   - "[[summaries/2022-react]]"
   - "[[summaries/2023-reflexion]]"
+  - "[[summaries/2025-deepseek-r1]]"
   - "[[summaries/2026-sakana-fugu]]"
+  - "[[summaries/2020-rag]]"
 updated: 2026-07-26
 ---
 
@@ -49,7 +51,11 @@ few-shot の例示を「⟨入力, 思考連鎖, 出力⟩」の 3 つ組にし�
 
 ### 内部推論と外部接地の組み合わせ
 
-[[summaries/2022-react]] は、ReAct と CoT-SC を**フォールバックで組み合わせる**のが単体より強いことも示した（ReAct が規定ステップで解けなければ CoT-SC へ、CoT-SC の多数決が割れたら ReAct へ）。「まず調べ、自信があれば内部知識で答える」というこの発想は、後の [[retrieval-augmented-generation]]（RAG, 検索で外部知識を注入する手法）のルーティング設計の原型と見なせる。
+[[summaries/2022-react]] は、ReAct と CoT-SC を**フォールバックで組み合わせる**のが単体より強いことも示した（ReAct が規定ステップで解けなければ CoT-SC へ、CoT-SC の多数決が割れたら ReAct へ）。「まず調べ、自信があれば内部知識で答える」というこの発想は、[[retrieval-augmented-generation]]（RAG, 検索で外部知識を注入する手法）のルーティング設計に通じる。なお RAG の原典（[[summaries/2020-rag]], 2020）はこの構図を「パラメトリック記憶と非パラメトリック記憶の協働」として先に定式化しており——検索が引き金を引き、モデル内部の知識が続きを補完する——内部知識と外部知識の分業は、プロンプト時代の前から生成モデルの中心問題だった。
+
+### 推論モデル — プロンプトから報酬へ
+
+CoT・ReAct・Reflexion はいずれも**プロンプト（と in-context の記憶）で推論を引き出す**世代だが、[[summaries/2025-deepseek-r1]]（2025）は段を変えた: 検証可能な報酬（正誤＋書式）だけの大規模強化学習で、**長い思考連鎖・自己検証・reflection を報酬から創発させる**（→ [[reinforcement-learning-from-human-feedback]]）。AIME 15.6→71.0%。重要な副作用として、こうした推論モデルでは **few-shot 例示がむしろ性能を下げる**（R1 の公式推奨はゼロショット直書き）——CoT が確立した「8 例示を見せる」作法は推論モデル世代では反転する。また R1 チームは PRM（プロセス報酬）と MCTS（木探索）での再現をどちらも断念しており、ToT 的な明示的探索がスケール時に直面する実務的困難の記録にもなっている。
 
 ### Tree of Thoughts（ToT）ほか
 

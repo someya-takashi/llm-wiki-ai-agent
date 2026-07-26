@@ -10,6 +10,7 @@ related:
   - "[[test-time-compute]]"
 summaries:
   - "[[summaries/2023-reflexion]]"
+  - "[[summaries/2025-deepseek-r1]]"
 updated: 2026-07-26
 ---
 
@@ -32,6 +33,10 @@ LLM（Large Language Model, 大規模言語モデル）エージェントが**�
 ### Self-Refine — 単発生成の自己改善
 
 生成→自己フィードバック→改稿を繰り返す反復枠組み（Madaan et al., 2023。原典未 ingest のため概説）。Reflexion との違いは原典の比較表が端的で、**反復はするが試行をまたぐ記憶を持たず**、意思決定タスクや二値報酬を扱わない。「その場で磨く」Self-Refine と「失敗を覚えて出直す」Reflexion、という対比で覚えるとよい。
+
+### 内生する反省 — RL からの創発
+
+Reflexion が反省を**プロンプト工学で外付け**したのに対し、[[summaries/2025-deepseek-r1]]（2025）は、検証可能な報酬だけの大規模 RL の中で **reflection・自己検証・手順の再評価が誰にも教えられずに創発する**ことを示した（「aha moment」——中間チェックポイントが "Wait, wait. Wait." と書いて自分の数式変形を再評価し始めた記録）。テンプレートは「考えてから答えよ」という構造しか指定しておらず、内省の義務づけは一切ない。つまり自己反省には、(a) プロンプトとループで外付けする経路（Reflexion）と、(b) 報酬から内生させる経路（R1-Zero）の 2 つがあり、後者の登場で「反省できるモデル」自体が製造可能になった → [[reinforcement-learning-from-human-feedback]]。
 
 ### 検証つき反省 — 何を評価信号にするか
 
