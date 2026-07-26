@@ -79,7 +79,7 @@ orchestrator-worker を**実プロダクトとして本番運用**した最初�
 - [[agent-loop]] — 単一エージェントのループ。マルチエージェントはその上位構造
 - [[tool-use-and-function-calling]] — マルチエージェント下でのツール呼び出しの帰属問題
 - [[reasoning-and-planning]] — 「計画」の出力先がワークフロー生成へ持ち上がる
-- [[agent-memory]] — 隔離／共有メモリの設計（未作成）
+- [[agent-memory]] — 隔離／共有メモリの設計
 - [[agent-frameworks]] — 実装フレームワークでの multi-agent サポート（未作成）
 - [[agent-evaluation]] — MAS の失敗を測る方法論（トレース分析・LLM-as-a-judge）
 - [[summaries/2026-sakana-fugu]] — 成功する協調（学習されたオーケストレータ）の根拠原典

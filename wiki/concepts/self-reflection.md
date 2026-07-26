@@ -55,6 +55,6 @@ Reflexion が反省を**プロンプト工学で外付け**したのに対し、
 
 - [[reasoning-and-planning]] — 推論の系譜（CoT → ReAct → Reflexion）の第 3 幕
 - [[agent-loop]] — episode 内ループの外側の「試行間ループ」
-- [[agent-memory]] — 反省文の保存・取捨選択が次の課題（未作成）
+- [[agent-memory]] — 反省文の保存・取捨選択が次の課題
 - [[agent-evaluation]] — 評価信号の設計・FP/FN 非対称
 - [[summaries/2023-reflexion]] — 本ページの主要な根拠原典

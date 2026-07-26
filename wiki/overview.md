@@ -26,8 +26,10 @@ updated: 2026-07-26
 - planning（計画立案）と self-reflection（自己反省による軌道修正）→ [[reasoning-and-planning]], [[self-reflection]]
   - 推論の系譜の起点は CoT（[[summaries/2022-chain-of-thought]], 2022）。few-shot 例示に思考連鎖を入れるだけで推論が創発する（約 100B 規模で急伸）ことを示し、「答える前に考えさせる」設計と test-time compute の発想の源流となった。
   - Reflexion（[[summaries/2023-reflexion]], 2023）は、失敗の反省文をエピソード記憶に蓄えて次試行に注入する「言語的強化学習」で、重み更新なしの試行間学習を実現した——CoT（考えてから答える）→ ReAct（考えて動く）→ Reflexion（失敗から学ぶ）で単一エージェントの基本系譜が完結する。
-- memory（短期＝コンテキスト内、長期＝外部ストア）→ `[[agent-memory]]`
-- context engineering（限られたコンテキストウィンドウに何をどう積むかの設計）→ `[[context-engineering]]`
+- memory（短期＝コンテキスト内、長期＝外部ストア）→ [[agent-memory]]
+  - 原型は MemGPT（[[summaries/2023-memgpt]], 2023）: コンテキストを OS の物理メモリに見立て、**LLM 自身が function call で記憶をページング**する virtual context management を定式化した（working context・archival memory・recursive summary の語彙の出発点）。Deep Memory Retrieval で GPT-4 単体 32.1% → 92.5%。
+- context engineering（限られたコンテキストウィンドウに何をどう積むかの設計）→ [[context-engineering]]
+  - MemGPT の main context 3 分割（不変の規則／更新される要点／流れる履歴）と閾値駆動の退避が区画化の原型。本番運用のパターン（フェーズ要約・handoff・参照渡し）は [[summaries/2025-multi-agent-research-system]] が記録。
 
 ### 2. 知識の接続
 
@@ -54,7 +56,8 @@ updated: 2026-07-26
 - agent evaluation（SWE-bench, GAIA, WebArena, τ-bench 等のベンチマークと、解決率・コスト・ステップ数といった指標）→ [[agent-evaluation]]
   - MASFT（[[summaries/2025-masft]], 2025）はスコアでなく**トレースを一次データとする失敗分析**の方法論（Grounded Theory・Cohen's κ・LLM-as-a-judge）を確立し、「MAS の失敗は個々の LLM でなく組織設計の欠陥」という診断を与えた。
   - 実務側の評価・運用の教訓は [[summaries/2025-multi-agent-research-system]]（2025）: 約 20 クエリの小規模評価から直ちに始める、LLM-as-a-judge は単一プロンプト・単一呼び出しが最も人間と整合、人間のテスターだけが情報源選択バイアス（SEO ファーム優先）を発見、状態変更エージェントは終了状態評価。運用面ではエラー地点からの再開・rainbow deployment・会話内容を見ないトレーシングを記録。
-- agent safety and guardrails（prompt injection（外部入力に埋め込まれた指示でエージェントを乗っ取る攻撃）、権限設計、sandboxing、HITL）→ `[[agent-safety-and-guardrails]]`
+- agent safety and guardrails（prompt injection（外部入力に埋め込まれた指示でエージェントを乗っ取る攻撃）、権限設計、sandboxing、HITL）→ [[agent-safety-and-guardrails]]
+  - 監視面の実測が [[summaries/2025-cot-faithfulness]]（Anthropic, 2025）: 推論モデルの CoT が実際の判断理由（ヒント）を明かす率は平均 25〜39%、RL で仕込んだ reward hack は >99% 悪用されながら言語化 <2%。**CoT モニタリングは「気づく層」としては有望だが「排除の保証」には使えない**という運用原則を確立した。
 - agent observability（trajectory のトレーシングとデバッグ）→ `[[agent-observability]]`
 
 ### 6. 土台となる LLM 側
@@ -70,11 +73,11 @@ updated: 2026-07-26
 
 | 軸 | 取り込み済みの原典 |
 | --- | --- |
-| 基本構造 | [[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習） |
+| 基本構造 | [[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習）、[[summaries/2023-memgpt]]（階層記憶・仮想コンテキスト管理・イベント駆動制御） |
 | 知識の接続 | [[summaries/2020-rag]]（検索拡張生成・非パラメトリック記憶・hot-swap） |
 | 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学） |
 | 応用 | （なし。ただし [[summaries/2026-sakana-fugu]] がコーディング・自律研究・CAD 等の応用例に言及) |
-| 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）、[[summaries/2025-multi-agent-research-system]]（小規模評価・単一ジャッジ・終了状態評価・本番運用の信頼性）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
+| 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）、[[summaries/2025-multi-agent-research-system]]（小規模評価・単一ジャッジ・終了状態評価・本番運用の信頼性）、[[summaries/2025-cot-faithfulness]]（CoT 忠実性・CoT モニタリングの限界・安全性）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
 | LLM 基盤 | [[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
 
 6 軸すべてに少なくとも 1 件の原典が入った（2026-07-26 時点）。以後は各軸の深化（例: 知識の接続における MCP、応用における coding agents の専用原典）を `lint` のデータギャップとして追う。

@@ -1,0 +1,74 @@
+---
+type: concept
+aliases: [エージェントメモリ, MemGPT, working context, archival memory, episodic memory, 長期記憶]
+tags: [agent-memory, llm-agents, context-engineering]
+related:
+  - "[[context-engineering]]"
+  - "[[retrieval-augmented-generation]]"
+  - "[[self-reflection]]"
+  - "[[multi-agent-systems]]"
+  - "[[agent-loop]]"
+  - "[[tool-use-and-function-calling]]"
+summaries:
+  - "[[summaries/2023-memgpt]]"
+  - "[[summaries/2023-reflexion]]"
+  - "[[summaries/2025-multi-agent-research-system]]"
+  - "[[summaries/2026-sakana-fugu]]"
+  - "[[summaries/2020-rag]]"
+updated: 2026-07-26
+---
+
+# Agent Memory（エージェントの記憶）
+
+LLM（Large Language Model, 大規模言語モデル）エージェントが**過去のやり取り・獲得した知識・作業の途中状態を、コンテキストウィンドウ（モデルが一度に読める最大トークン数）の限界を超えて保持し、必要なときに取り出す**ための仕組みの総称。LLM 自体はステートレス（推論のたびにコンテキストに入っているものしか「覚えて」いない）なので、エージェントの記憶はすべて**設計で外付けする**ことになる。慣例的に、コンテキスト内に載っているものを**短期記憶**、外部ストアに永続化されたものを**長期記憶**と呼ぶ。
+
+記憶の実装層は大きく 3 つに分けられる:
+
+1. **コンテキストそのもの** — 会話履歴・スクラッチパッドをそのまま持ち回る最も単純な形。限界に達したら要約か切り捨てになる。何をどう積むかの設計は [[context-engineering]] の領域。
+2. **検索で引く非パラメトリック記憶** — 知識を外部索引（ベクトル DB 等）に置き、必要なときに検索して注入する。[[retrieval-augmented-generation]]（RAG）が確立した「知識はパラメータでなく索引に置く」原則の延長で、索引の差し替え（hot-swap）による更新可能性を持つ（[[summaries/2020-rag]]）。
+3. **エージェントが自己管理する階層記憶** — 何を覚え、何を退避し、何を呼び戻すかの判断まで**エージェント自身のツール呼び出し**に委ねる形。代表が MemGPT。
+
+## 代表手法
+
+### MemGPT — OS 的な階層記憶と自己管理
+
+[[summaries/2023-memgpt]]（2023, ICML 2024）は、コンテキストを OS の物理メモリに、外部ストレージをディスクに見立て、**仮想メモリのページングに倣った virtual context management** を定式化した。この分野の基本語彙の多くはここで定義されている:
+
+- **main context の 3 分割**: 読み取り専用の system instructions ／ 読み書き可能な **working context**（ユーザーの事実・好みなど「常に見えているべき要点」）／ 流動履歴の **FIFO queue**（先頭に追い出し済み履歴の**再帰的要約**が常駐）
+- **external context の 2 種**: **recall storage**（全メッセージ履歴の DB）と **archival storage**（任意テキストの読み書き DB）
+- **自己管理**: queue manager がコンテキストの 70% で **memory pressure 警告**を挿入し、LLM は function call で重要情報を退避する。100% でフラッシュし再帰的要約を更新。検索は**ページネーション**付きで、コンテキストをあふれさせずに何度でも引ける。
+- 効果の実証: 過去セッションの詳細を問う Deep Memory Retrieval で GPT-4 単体 32.1% → MemGPT 92.5%。文書 QA では「retriever の top-K が上限」という固定コンテキストの構造をページング検索で破り、コンテキスト長に性能が影響されなくなった。
+
+重要な含意は 2 つ。第一に、**記憶管理はツール呼び出しの一種**として実装できる（作用先が外部世界でなく自分のコンテキストである「内向きのツール」→ [[tool-use-and-function-calling]]）。第二に、記憶の取捨選択をモデルに委ねる以上、**退避し損ねた情報は静かに失われる**——自己管理の信頼性が新しい失敗モードになる。
+
+### Reflexion — エピソード記憶に「反省」を蓄える
+
+[[summaries/2023-reflexion]]（2023）は、何を記憶するかという観点で対照的な設計を示した: 保存するのは事実や履歴ではなく、**失敗試行から言語化した反省文**である。エピソード記憶（episodic memory, 個別の経験の記録）に反省を蓄えて次試行のコンテキストに注入することで、重み更新なしの試行間学習を実現した。MemGPT が「何でも保存して検索で取り出す」汎用記憶なら、Reflexion は「教訓だけを蒸留して保存する」目的特化記憶であり、**記憶の内容（事実 vs 反省 vs 計画）は独立した設計軸**であることを示す → [[self-reflection]]。
+
+### 本番運用の記憶 — Anthropic Research
+
+[[summaries/2025-multi-agent-research-system]]（2025）は、MemGPT 型の設計が本番プロダクトでどう使われるかの実例を与えた:
+
+- リードエージェントは**最初に立てた計画を外部メモリへ保存**する（200k トークンでの切り詰めで計画を失うのが最悪の失敗だから）
+- 長い作業は**フェーズごとに要約して外部メモリへ書き、クリーンなコンテキストの新サブエージェントに引き継ぐ**（MemGPT の recursive summary + フラッシュに相当する運用）
+- サブエージェントの成果物は**ファイルシステム等に直接永続化し、参照だけを渡す**——多段の「伝言ゲーム」による情報劣化とトークン浪費を防ぐ
+
+### マルチエージェントでの記憶共有 — Fugu-Ultra
+
+複数エージェント構成では「誰の記憶を誰に見せるか」が加わる。[[summaries/2026-sakana-fugu]] の Fugu-Ultra は「**現在のワークフロー内は隔離**（先行者の道筋に引きずられる orchestration collapse を防ぐ）・**過去のワークフローのツール呼び出し履歴は共有**（同じ環境調査の重複を防ぐ）」という切り分けを採った → [[multi-agent-systems]]。
+
+## 設計論点
+
+- **何を残すか**: 事実・好み（MemGPT の working context）／教訓・反省（Reflexion）／計画・進捗（Anthropic Research）は性質が違う。「何でも残す」は検索ノイズと化すため、記憶の**種類ごとに置き場と形式を分ける**のが共通解。
+- **いつ書くか**: 容量警告に駆動される退避（MemGPT）と、作業のフェーズ境界での要約（Anthropic Research）の 2 パターンが実証済み。どちらも「あふれてから」では遅い、という点で一致する。
+- **どう取り出すか**: 書いた記憶は検索できなければ存在しないのと同じ。ベクトル検索なら [[retrieval-augmented-generation]] の設計論点（検索の質が上限・collapse の監視）がそのまま適用される。MemGPT の「検索を途中で打ち切る」観察は、**読み出し側の根気もモデル能力に依存する**ことを示した。
+- **忘却と監査**: 自己管理記憶は退避漏れ・誤要約で静かに壊れる。何が失われたかを検出する仕組み（履歴の完全保存＝MemGPT の recall storage はその保険）と、記憶の監査可能性が実務では重要。
+- **共有境界**: マルチエージェントでは隔離／共有の張力（上記 Fugu-Ultra）。会話履歴の喪失や情報の抱え込みは MASFT（[[summaries/2025-masft]]）が実測した頻出失敗モードでもある。
+
+## 関連ページ
+
+- [[context-engineering]] — 「いまコンテキストに何を積むか」という毎推論側の設計（記憶は永続化側）
+- [[retrieval-augmented-generation]] — 非パラメトリック記憶と検索の体系
+- [[self-reflection]] — 反省をエピソード記憶として蓄える系譜
+- [[multi-agent-systems]] — 記憶の隔離／共有の設計
+- [[summaries/2023-memgpt]] — 本ページの主要な根拠原典
