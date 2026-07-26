@@ -28,6 +28,7 @@ updated: 2026-07-26
   - Reflexion（[[summaries/2023-reflexion]], 2023）は、失敗の反省文をエピソード記憶に蓄えて次試行に注入する「言語的強化学習」で、重み更新なしの試行間学習を実現した——CoT（考えてから答える）→ ReAct（考えて動く）→ Reflexion（失敗から学ぶ）で単一エージェントの基本系譜が完結する。
 - memory（短期＝コンテキスト内、長期＝外部ストア）→ [[agent-memory]]
   - 原型は MemGPT（[[summaries/2023-memgpt]], 2023）: コンテキストを OS の物理メモリに見立て、**LLM 自身が function call で記憶をページング**する virtual context management を定式化した（working context・archival memory・recursive summary の語彙の出発点）。Deep Memory Retrieval で GPT-4 単体 32.1% → 92.5%。
+  - A-Mem（[[summaries/2025-a-mem]], 2025）は自己管理の対象を配置から**組織化・進化**へ拡張: Zettelkasten 型のノート・リンク・記憶進化（新しい記憶が既存記憶を書き換える）で、長期会話の multi-hop QA を約 1/10 のトークンで 2 倍超の性能。「検索の agency（agentic RAG）」と「索引の agency（agentic memory）」を分ける境界も整理した。
 - context engineering（限られたコンテキストウィンドウに何をどう積むかの設計）→ [[context-engineering]]
   - MemGPT の main context 3 分割（不変の規則／更新される要点／流れる履歴）と閾値駆動の退避が区画化の原型。本番運用のパターン（フェーズ要約・handoff・参照渡し）は [[summaries/2025-multi-agent-research-system]] が記録。
 
@@ -73,7 +74,7 @@ updated: 2026-07-26
 
 | 軸 | 取り込み済みの原典 |
 | --- | --- |
-| 基本構造 | [[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習）、[[summaries/2023-memgpt]]（階層記憶・仮想コンテキスト管理・イベント駆動制御） |
+| 基本構造 | [[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習）、[[summaries/2023-memgpt]]（階層記憶・仮想コンテキスト管理・イベント駆動制御）、[[summaries/2025-a-mem]]（動的記憶組織化・記憶進化） |
 | 知識の接続 | [[summaries/2020-rag]]（検索拡張生成・非パラメトリック記憶・hot-swap） |
 | 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学） |
 | 応用 | （なし。ただし [[summaries/2026-sakana-fugu]] がコーディング・自律研究・CAD 等の応用例に言及) |
