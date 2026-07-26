@@ -23,8 +23,9 @@ updated: 2026-07-24
   - この骨格の原型は ReAct（[[summaries/2022-react]], 2022）が確立した。思考を「環境に作用しない行動」として行動空間に加えるという定式化により、外部接地で幻覚を抑えつつ（CoT の失敗要因 56% → 0%）、few-shot プロンプトのみで模倣・強化学習を上回れることを示した。
 - tool use / function calling（モデルが JSON スキーマに沿った引数で外部ツールを呼ぶ仕組み）→ [[tool-use-and-function-calling]]
   - 初期形は ReAct の 3 アクション Wikipedia API のようなプロンプト規約によるツール定義で、その後 API レベルの構造化された function calling へ発展した。
-- planning（計画立案）と self-reflection（自己反省による軌道修正）→ [[reasoning-and-planning]], `[[self-reflection]]`
+- planning（計画立案）と self-reflection（自己反省による軌道修正）→ [[reasoning-and-planning]], [[self-reflection]]
   - 推論の系譜の起点は CoT（[[summaries/2022-chain-of-thought]], 2022）。few-shot 例示に思考連鎖を入れるだけで推論が創発する（約 100B 規模で急伸）ことを示し、「答える前に考えさせる」設計と test-time compute の発想の源流となった。
+  - Reflexion（[[summaries/2023-reflexion]], 2023）は、失敗の反省文をエピソード記憶に蓄えて次試行に注入する「言語的強化学習」で、重み更新なしの試行間学習を実現した——CoT（考えてから答える）→ ReAct（考えて動く）→ Reflexion（失敗から学ぶ）で単一エージェントの基本系譜が完結する。
 - memory（短期＝コンテキスト内、長期＝外部ストア）→ `[[agent-memory]]`
 - context engineering（限られたコンテキストウィンドウに何をどう積むかの設計）→ `[[context-engineering]]`
 
@@ -65,7 +66,7 @@ updated: 2026-07-24
 
 | 軸 | 取り込み済みの原典 |
 | --- | --- |
-| 基本構造 | [[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用） |
+| 基本構造 | [[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習） |
 | 知識の接続 | （なし） |
 | 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観） |
 | 応用 | （なし。ただし [[summaries/2026-sakana-fugu]] がコーディング・自律研究・CAD 等の応用例に言及) |

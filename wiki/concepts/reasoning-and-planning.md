@@ -11,8 +11,9 @@ related:
 summaries:
   - "[[summaries/2022-chain-of-thought]]"
   - "[[summaries/2022-react]]"
+  - "[[summaries/2023-reflexion]]"
   - "[[summaries/2026-sakana-fugu]]"
-updated: 2026-07-24
+updated: 2026-07-26
 ---
 
 # Reasoning and Planning（推論と計画）
@@ -52,7 +53,7 @@ few-shot の例示を「⟨入力, 思考連鎖, 出力⟩」の 3 つ組にし�
 
 ### Tree of Thoughts（ToT）ほか
 
-思考を一本の連鎖でなく**木構造で探索**し、行き詰まったら別の枝に戻る手法（Yao et al., 2023。原典未 ingest のため概説のみ）。探索・バックトラックを持ち込む点で CoT の直線性を補う。このほか、推論に使う計算量を推論時に増やして精度を上げる方向は [[test-time-compute]] として発展し、失敗を言語で振り返って次の試行に活かす方向は [[self-reflection]]（代表: Reflexion）として発展した。
+思考を一本の連鎖でなく**木構造で探索**し、行き詰まったら別の枝に戻る手法（Yao et al., 2023。原典未 ingest のため概説のみ）。探索・バックトラックを持ち込む点で CoT の直線性を補う。このほか、推論に使う計算量を推論時に増やして精度を上げる方向は [[test-time-compute]] として発展し、失敗を言語で振り返って次の試行に活かす方向は [[self-reflection]] として発展した——代表の Reflexion（[[summaries/2023-reflexion]]）は、CoT や ReAct を Actor に使い、失敗の反省文をエピソード記憶に蓄えて試行間で学習する「言語的強化学習」で、単なるリトライでは 1 問も改善しないところを AlfWorld +22・HotPotQA +20 ポイント引き上げた。
 
 ## エージェント設計への含意
 

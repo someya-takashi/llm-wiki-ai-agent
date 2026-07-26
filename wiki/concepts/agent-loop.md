@@ -13,7 +13,8 @@ summaries:
   - "[[summaries/2026-sakana-fugu]]"
   - "[[summaries/2025-masft]]"
   - "[[summaries/2024-building-effective-agents]]"
-updated: 2026-07-24
+  - "[[summaries/2023-reflexion]]"
+updated: 2026-07-26
 ---
 
 # Agent Loop（エージェントループ）
@@ -49,7 +50,7 @@ ReAct はこの両モードを示し、sparse thought だけでも「目標の�
 
 ## 位置づけと発展
 
-ReAct のループは「LLM 呼び出し 1 回 = 1 ステップ」の最小構成であり、後のエージェントはこの骨格の上に、ツールの構造化（[[tool-use-and-function-calling]]）、長期記憶（[[agent-memory]]）、コンテキストへの情報の積み方の最適化（[[context-engineering]]）、失敗の振り返り（[[self-reflection]]）、複数エージェントへの分業（[[multi-agent-systems]]）を積み増していった。さらに、ループの各ターンで「**どのモデルがそのステップを担当するか**」自体を学習対象にする段階にも到達している——[[summaries/2026-sakana-fugu]] の Fugu は、ハーネスの相互作用状態からターンごとに担当ワーカーを選び直すオーケストレータで、「GPT が構築し、決定的なデバッグ地点で Opus に交代する」といった役割交代を学習で獲得した。人間がループの途中に介入する点（HITL, Human-in-the-Loop）としては、ReAct が示した「thought を編集して軌道修正する」方式が先駆けである。
+ReAct のループは「LLM 呼び出し 1 回 = 1 ステップ」の最小構成であり、後のエージェントはこの骨格の上に、ツールの構造化（[[tool-use-and-function-calling]]）、長期記憶（[[agent-memory]]）、コンテキストへの情報の積み方の最適化（[[context-engineering]]）、失敗の振り返り（[[self-reflection]]）、複数エージェントへの分業（[[multi-agent-systems]]）を積み増していった。ループの入れ子構造も生まれた——[[summaries/2023-reflexion]] は、episode 内の観測→思考→行動ループの**外側に「試行（episode）をまたぐ改善ループ」**を重ね、失敗した軌跡の反省文を次の試行のコンテキストに注入することで、重み更新なしの試行間学習を実現した。さらに、ループの各ターンで「**どのモデルがそのステップを担当するか**」自体を学習対象にする段階にも到達している——[[summaries/2026-sakana-fugu]] の Fugu は、ハーネスの相互作用状態からターンごとに担当ワーカーを選び直すオーケストレータで、「GPT が構築し、決定的なデバッグ地点で Opus に交代する」といった役割交代を学習で獲得した。人間がループの途中に介入する点（HITL, Human-in-the-Loop）としては、ReAct が示した「thought を編集して軌道修正する」方式が先駆けである。
 
 ## 関連ページ
 
