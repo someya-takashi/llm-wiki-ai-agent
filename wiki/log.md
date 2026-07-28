@@ -240,3 +240,14 @@ type: log
   - Table 4（59 行の HTML 表）はパーサで markdown 化。クリップで失われていた**太字（グローバル SOTA 表示）も ar5iv から復元**。x1.png はタイトル横 21×21 ロゴのため対象外（K2 と同パターン）。
   - 付録 A の著者一覧は K2 では訳出対象外としたが、今回は「Kimi K2 / Kimi K2.5 自身が貢献者として記載」という特記事項があるためカンマ区切りに整形して収録。付録 E のシステムプロンプト（agentic search・computer use・Agent Swarm オーケストレータ）とツールスキーマ（create_subagent / assign_task）は原文のまま収録。
   - 概念ページ新設 1 件: computer-use-agents（CLAUDE.md §1 の想定スラグ。K2.5 の computer use 節＋E.7 を初出典に、Operator・Claude computer use・OSWorld/WebArena を整理）。
+
+## [2026-07-28] ingest | Gemma 4 Technical Report
+
+- 取り込み: `raw/papers/Gemma 4 Technical Report.pdf`（arXiv:2607.02770v2, Gemma Team / Google DeepMind, 2026-06-19。17 ページ・ケース B＝PDF）
+- 作成: [[summaries/2026-gemma-4]], [[translations/2026-gemma-4]], `raw/assets/2026-gemma-4/`（fig1.png＝Figure 1 MTP drafter・fig2.png＝Figure 2 画像リサイズ。**ユーザー提供画像を raw/images/ から移動**）
+- 更新: [[concepts/transformer-architecture]]（attention 系譜に「間引きと共有」＝5:1・values=keys・p-RoPE・per-layer embeddings、マルチモーダル拡張節に encoder-free の対置）, [[concepts/llm-inference-optimization]]（「投機的デコードとドラフタ」「オンデバイス推論 — QAT とエンコーダの軽量化」の 2 節を新設）, [[concepts/tool-use-and-function-calling]]（Gemma 4 の制御トークン書式を K2 enforcer の対例として追記）, [[concepts/test-time-compute]]（thinking のトグル化＝第三の形）, [[concepts/agent-evaluation]]（Arena / Elo 人間評価の項）, [[overview]]（軸 6 にエッジ／オンデバイス設計の弾）, [[index]]
+- メモ:
+  - PDF 原典のためクリップ不良なし。表 12 点（Table 1〜12）と Algorithm 1 を PDF から転記（Table 7 の CoVoST/FLEURS 二段表は 2 表に分割）。Table 11 の制御トークン・会話例・関数呼び出し例はコードブロック原文のまま収録。
+  - References と Core contributors / Contributors（p.13-15 の著者一覧＝謝辞相当）は訳出対象外（K2・DeepSeek-R1 の前例に準拠）。
+  - 画像はケース B の例外規定（ユーザー指示画像）を適用: raw/images/fig1.png・fig2.png → raw/assets/2026-gemma-4/ へ git mv で集約。
+  - 概念ページの新規作成なし（Gemma 4 は landmark 規約により既存 5 概念内で記述）。K2.5（共有エンコーダ路線・フロンティア MoE）との対比を transformer-architecture と要約の両方に明記。

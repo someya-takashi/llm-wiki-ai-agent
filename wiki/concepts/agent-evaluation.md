@@ -16,6 +16,7 @@ summaries:
   - "[[summaries/2025-multi-agent-research-system]]"
   - "[[summaries/2025-cot-faithfulness]]"
   - "[[summaries/2026-kimi-k2.5]]"
+  - "[[summaries/2026-gemma-4]]"
 updated: 2026-07-28
 ---
 
@@ -38,6 +39,8 @@ LLM（Large Language Model, 大規模言語モデル）エージェントの能�
 - **OSWorld-Verified / WebArena** — computer use（GUI 操作）系。実 OS・実 Web アプリ上のタスク成功率 → [[computer-use-agents]]
 
 [[summaries/2026-sakana-fugu]] の評価はこの型の実践例で、同時に落とし穴も示している: 比較対象の多くが **provider-reported**（プロバイダ公表値の引き写しで、評価条件が揃っている保証がない）であること、ベンチマーク汚染（訓練データへの問題の混入）の懸念、ハーネス差が結果を左右すること（同じモデルでも Mini-SWE-agent と重厚な scaffold ではスコアが変わる）である。スコアの数字は**測定条件とセット**でしか意味を持たない。
+
+静的ベンチマークの補完として **Arena（Chatbot Arena）**——人間の評価者が 2 モデルの応答をブラインドで並列比較し、勝敗を Elo レーティング（チェスと同じ相対レーティング系）に集約する人間評価——がある。汚染や過適合に強い一方、チャット的な短対話への選好を測る面が強く、静的ベンチの絶対性能とは乖離しうる。[[summaries/2026-gemma-4]] は Arena を主評価に使った実例で、31B dense が Elo 上で 744B〜1.6T の MoE 群と統計的に重なった（95% CI ±8 の団子状態の読み方も含め、「Elo の近さ ≠ 全能力の近さ」の教材になる——同じモデルが Terminal Bench Hard では大差で負けている）。
 
 ベンチマーク型の変種として、Anthropic の実務経験（[[summaries/2025-multi-agent-research-system]]）は 2 つの原則を加えた:
 

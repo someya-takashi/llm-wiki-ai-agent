@@ -14,6 +14,7 @@ summaries:
   - "[[summaries/2025-kimi-k2]]"
   - "[[summaries/2023-moe-explained]]"
   - "[[summaries/2026-kimi-k2.5]]"
+  - "[[summaries/2026-gemma-4]]"
 updated: 2026-07-28
 ---
 
@@ -37,6 +38,7 @@ GPT-2 以来の標準形は **decoder-only**（デコーダのみ）構成であ
 - **Gated DeltaNet**（Mamba-2 のゲートとの統合）: データ依存のスカラー α で状態全体を減衰させる**忘却ゲート**を追加（α=1 で純 delta rule、α=0 で全消去）。ただし減衰は一様。
 - **KDA（Kimi Delta Attention）**: 減衰を**チャネルごと**に学習する細粒度ゲーティング。
 - **ハイブリッド**（Kimi Linear / K3）: 固定状態の再帰系（KDA）と完全 softmax 検索（**MLA** = Multi-head Latent Attention, 潜在圧縮つきの完全 attention）を**層単位でインターリーブ**する（K3 は KDA 3 : MLA 1）。固定状態は必然的に情報を捨てるため、周期的な完全検索で取りこぼしを回収する分業である。
+- **間引きと共有**（Gemma 系）: 状態を固定サイズに畳む代わりに、**softmax attention のまま KV cache を削る**別路線もある。Gemma 4（[[summaries/2026-gemma-4]]）は (1) local:global 比 5:1（大半の層を sliding window ローカル attention にし、全系列を見るグローバル層を間引く）、(2) グローバル層で **values = keys**（key を value として再利用し保存テンソルを半減）、(3) **p-RoPE**（位置回転を次元の一部 p=0.25 のみに適用）の 3 点でグローバル KV cache を実質 37.5% 削減した。完全検索の表現力を保ったままメモリを削る、エッジ・オンデバイス志向の解である。E2B/E4B の **per-layer embeddings**（層ごとの埋め込みを外部化し、総 5B/8B のうち実効 2.3B/4.5B だけを実効計算に使う）も同系の「容量と実効コストの分離」にあたる。
 
 この系譜は [[agent-memory]] と美しく同型である——追記だけの記憶が干渉し（A-Mem 以前の生ログ蓄積）、選択的上書き（A-Mem の memory evolution）や退避・要約（MemGPT）が要る、という問題を、アーキテクチャは**重み・状態の内部で**解いている。
 
@@ -57,6 +59,8 @@ MoE の本質は**パラメータ数と計算量の分離**にある——Mixtra
 - **DEP（Decoupled Encoder Process）**: Pipeline Parallelism では視覚エンコーダが Stage-0 に同居し、画像枚数・解像度の変動が負荷不均衡を生む。DEP は視覚エンコーダが「forward の始点・backward の終点」であるという計算グラフ上の位置を利用し、**全 GPU に複製して独立に前計算 → テキストと同じ並列化でバックボーン訓練 → 再計算して backward** の 3 段に分離。テキスト用に最適化済みの並列化戦略をそのまま再利用でき、マルチモーダル訓練効率はテキスト比 90%（→ [[llm-inference-optimization]] の「実装が実効性能を決める」と同じ構図）。
 
 事後学習側の対応物（zero-vision SFT・視覚 RL がテキストも改善する双方向転移）は [[reinforcement-learning-from-human-feedback]] を参照。
+
+対極の設計が **encoder-free** である。Gemma 4 12B（[[summaries/2026-gemma-4]]）は視覚・音声エンコーダを持たずにスクラッチから訓練される: 視覚は生の 48×48 RGB パッチを**単一の行列積（35M）**で埋め込みへ射影（550M ViT を置換。2D 座標埋め込みのみで空間認識を維持）、音声は 305M Conformer を完全廃棄して 40ms チャンクの生ベクトルを直接射影する。専用音声エンコーダなしでエンコーダ持ちの下位モデルと同等以上の ASR 性能を出しており、「エンコーダを鍛えて共有する」（K2.5 の MoonViT-3D）か「捨てて LLM 本体に吸収させる」（Gemma 4 12B）か——**モダリティ処理のパラメータをどこに置くか**が、2026 年時点のマルチモーダル設計の明確な分岐点になっている。
 
 ## 残差ストリームと深さ方向の検索
 

@@ -31,6 +31,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2025-a-mem]] — A-Mem（2025, Rutgers）。Zettelkasten 型の動的記憶: 保存時の意味づけ・LLM によるリンク判断・記憶進化。multi-hop 2 倍超を 1/10 のトークンで。
 - [[summaries/2025-long-cot-survey]] — Long CoT サーベイ（2025, 813 文献）。推論モデルを 3 特性（深い推論・探索・反省）で定義し、6 現象（推論境界・overthinking・test-time scaling 等）を体系化。
 - [[summaries/2026-kimi-k2.5]] — Kimi K2.5（Moonshot, 2026）。K2 後継のマルチモーダル agentic モデル。テキスト×視覚の同時最適化（early fusion・zero-vision SFT・双方向転移）と Agent Swarm（PARL で並列化を学習。BrowseComp 78.4%・レイテンシ 1/4.5）。
+- [[summaries/2026-gemma-4]] — Gemma 4（Google DeepMind, 2026）。エッジ〜31B のオープンマルチモーダル系列。encoder-free 12B・KV cache −37.5%・MTP drafter・QAT・thinking トグル。Arena で dense オープン首位。
 
 ### Articles / Blogs
 
@@ -64,6 +65,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2024-building-effective-agents]] — Anthropic「Building Effective Agents」の全文翻訳（付録のツール設計論含む）。
 - [[translations/2025-multi-agent-research-system]] — Anthropic「How we built our multi-agent research system」の全文翻訳（付録の運用 Tips 含む。図 3 枚収録）。
 - [[translations/2026-kimi-k2.5]] — Kimi K2.5 テクニカルレポートの全文翻訳（欠落していた図7 と脚注 2 件を ar5iv から復元。Table 4 は太字含め正規化。システムプロンプト・ツールスキーマは原文のまま収録）。
+- [[translations/2026-gemma-4]] — Gemma 4 テクニカルレポートの全文翻訳（PDF 原典。表 12 点＋Algorithm 1 を転記、図 2 枚はユーザー提供。制御トークン書式・会話例は原文のまま収録）。
 
 ## Concepts
 
@@ -106,8 +108,9 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - PEFT / LoRA / SFT → [[parameter-efficient-fine-tuning]]
 - HITL / CoT モニタリング / CoT faithfulness / prompt injection / sandboxing / safety case → [[agent-safety-and-guardrails]]
 - Long CoT / test-time scaling / overthinking / reasoning boundary / Best-of-N / budget forcing → [[test-time-compute]]
-- KV cache / TTFT / TPS / prefill / decode / FlashAttention / PagedAttention / quantization / continuous batching → [[llm-inference-optimization]]
-- MoE / MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / Mixtral / Switch Transformers / expert capacity / router / MoonViT / NaViT / early fusion / DEP → [[transformer-architecture]]
+- KV cache / TTFT / TPS / prefill / decode / FlashAttention / PagedAttention / quantization / continuous batching / speculative decoding / MTP / QAT → [[llm-inference-optimization]]
+- MoE / MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / Mixtral / Switch Transformers / expert capacity / router / MoonViT / NaViT / early fusion / DEP / encoder-free / p-RoPE / per-layer embeddings → [[transformer-architecture]]
+- Arena / Chatbot Arena / Elo → [[agent-evaluation]]
 - context sharding / Discard-all / Hide-Tool-Result → [[context-engineering]]
 - Toggle / length-overfitting → [[test-time-compute]]
 - expert parallelism / capacity factor / Megablocks / QMoE → [[llm-inference-optimization]]
