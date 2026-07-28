@@ -1,0 +1,62 @@
+---
+type: concept
+aliases: [テスト時計算, test-time scaling, inference-time scaling, 推論時スケーリング, Long CoT, overthinking, reasoning boundary]
+tags: [test-time-compute, llm-agents, reasoning]
+related:
+  - "[[reasoning-and-planning]]"
+  - "[[self-reflection]]"
+  - "[[reinforcement-learning-from-human-feedback]]"
+  - "[[multi-agent-systems]]"
+  - "[[agent-evaluation]]"
+  - "[[llm-inference-optimization]]"
+summaries:
+  - "[[summaries/2025-long-cot-survey]]"
+  - "[[summaries/2025-deepseek-r1]]"
+  - "[[summaries/2022-chain-of-thought]]"
+  - "[[summaries/2025-multi-agent-research-system]]"
+  - "[[summaries/2023-reflexion]]"
+updated: 2026-07-26
+---
+
+# Test-Time Compute（テスト時計算）
+
+**訓練を変えずに、推論時（テスト時）に計算量を積むことで精度を買う**考え方の総称。訓練時のスケーリング（パラメータ・データ・計算量を増やす）が逓減し始めた 2024〜25 年に、それと直交する第二のスケーリング軸として確立した。源流は CoT（[[summaries/2022-chain-of-thought]]）の「難問には中間トークンで計算を配分する」という洞察であり、現在の推論モデル（o1, DeepSeek-R1）はこの軸を訓練で内在化した存在といえる。体系的な整理は Long CoT サーベイ（[[summaries/2025-long-cot-survey]]）が与えた。
+
+## 2 つのスケーリング様式
+
+[[summaries/2025-long-cot-survey]] の整理に従えば、テスト時計算の使い方は 2 型に分かれる:
+
+1. **垂直スケーリング（vertical scaling）** — 1 本の推論を長くする。CoT の思考連鎖から、推論モデルの数万トークンの長考（reflection・自己検証・探索を 1 生成に統合した **Long CoT**）まで。s1 の budget forcing（思考長の強制制御）のような明示的な制御手法もここに入る。
+  - 上限は **reasoning boundary（推論境界）**: モデルには推論容量の固有の上限があり、それを超えて長くすると性能はむしろ**低下**する（**overthinking**）。「長さと精度は単調増加」ではない。
+2. **並列スケーリング（parallel scaling）** — 複数の推論を生成して検証・集約する。self-consistency（多数決）が原型で、Best-of-N・検証器つき選抜・MCTS 誘導のサンプリングへ発展した。
+  - 上限は**検証器の質**: 検証最適化は Pass@k（k 本中 1 本でも正解が出る率）を超えられず、誤差の下界は計算量 $N$ に対して $\log N$ でしか下がらない。MCTS ベースの最適配分で 1B モデルが 405B モデルを上回る報告がある一方、「サンプルを増やす投資」と「検証器を磨く投資」は別物である。
+
+## プロンプトから報酬へ — 計算配分の内在化
+
+テスト時計算の「使い方」は世代交代してきた:
+
+- **プロンプト世代**: CoT・ToT・self-consistency は、**人間がプロンプトや外部ループで**計算の積み方を指定した。Reflexion（[[summaries/2023-reflexion]]）の試行間ループも、外付けの計算追加と読める → [[self-reflection]]。
+- **報酬世代**: [[summaries/2025-deepseek-r1]] は、検証可能な報酬だけの RL で「難問には長く考える」という**計算配分の判断自体をモデルに内在化**させた（思考長が指示なしに 500→1 万トークンへ単調増加）。サーベイの創発分析はこれを補強する——Long CoT は事前学習中に埋め込まれ、RL は**作るのでなく引き出す**（検証・バックトラック等の認知挙動を持つ基盤モデルはルール報酬だけで活性化する）。ただし「aha moment」＝反省の創発という物語には反証もあり（自己反省パターンはベースモデルから存在し、長さの増加は報酬最適化の帰結とする分析）、創発の解釈は割り引いて読む必要がある。
+
+## エージェントとの関係
+
+- **エージェントループ自体がテスト時計算**: 観測→思考→行動の反復（→ [[reasoning-and-planning]]）、Reflexion の再試行、いずれも推論時に計算を積んで成功率を買う構造である。
+- **マルチエージェントは並列スケーリングの一形態**: 複数エージェントの並列試行・debate・集約は並列スケーリングの構図そのものであり、[[summaries/2025-multi-agent-research-system]] の「性能分散の 80% はトークン使用量が説明する」という実測は、**マルチエージェントの効果の正体がテスト時計算の追加**であることを示した → [[multi-agent-systems]]。同記事の「Sonnet 3.7 のトークン予算を倍にするより Sonnet 4 へ上げる方が効く」は、テスト時計算とモデル能力が**乗算的**であることの実務データ。
+- **コストは線形に、精度は対数的にしか伸びない**: $\log N$ スケーリングと 15 倍のトークン経済（同記事）を併せると、テスト時計算は「高価値タスクに選択的に投じる」資源であり、常時最大化する類のものではない。
+
+## 設計論点
+
+- **適応的な配分**: タスク難易度に応じて考える深さを変える（考える/考えないの切り替え・トークン予算・budget forcing）。overthinking の存在ゆえ、「常に最長で考える」は精度でもコストでも損をする。
+- **検証器がボトルネック**: 並列スケーリングの効果は選抜の質で決まる。ルールベース検証（テスト実行・答え合わせ）が使える領域から並列化するのが定跡で、ニューラル検証器は reward hacking のリスクを持ち込む → [[reinforcement-learning-from-human-feedback]]。
+- **明示的探索の実務的困難**: ToT/MCTS 型の木探索はサーベイでは有望株として整理されるが、[[summaries/2025-deepseek-r1]] はトークン生成の指数的探索空間で MCTS の再現を断念しており、スケール時の実装コストは高い。現在の主流は「木を外に作る」より「長い直列の思考の中に探索を畳み込む」方向にある。
+- **評価との接続**: 長出力の推論モデルは貪欲デコードで測ると不安定になり、temperature サンプリング＋pass@1 平均のようなプロトコル更新が要る → [[agent-evaluation]]。
+- **効率化との張力**: 思考の圧縮・スキップ・潜在空間推論（思考をトークンに書かず隠れ状態で行う）はテスト時計算のコストを下げる研究線だが、潜在化した思考は読めなくなる——CoT モニタリング（→ [[agent-safety-and-guardrails]]）とのトレードオフが将来の論点になる。
+
+## 関連ページ
+
+- [[reasoning-and-planning]] — 計算を積む対象である思考・計画の設計
+- [[self-reflection]] — 試行間ループという外付けのテスト時計算
+- [[reinforcement-learning-from-human-feedback]] — 計算配分を内在化させる訓練側
+- [[multi-agent-systems]] — 並列スケーリングとしてのマルチエージェント
+- [[llm-inference-optimization]] — 同じ推論時の「速くする」側（未作成。本ページは「賢くする」側）
+- [[summaries/2025-long-cot-survey]] — 本ページの主要な根拠原典

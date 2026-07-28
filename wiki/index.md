@@ -28,11 +28,13 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2025-deepseek-r1]] — DeepSeek-R1（2025）。検証可能報酬だけの大規模 RL で推論・reflection が創発（RLVR）。o1 級推論の初のオープン実証。
 - [[summaries/2025-cot-faithfulness]] — CoT 忠実性（Anthropic, 2025）。効いたヒントを CoT が明かす率 25〜39%。reward hack は >99% 悪用・言語化 <2%。CoT モニタリングの限界の実測。
 - [[summaries/2025-a-mem]] — A-Mem（2025, Rutgers）。Zettelkasten 型の動的記憶: 保存時の意味づけ・LLM によるリンク判断・記憶進化。multi-hop 2 倍超を 1/10 のトークンで。
+- [[summaries/2025-long-cot-survey]] — Long CoT サーベイ（2025, 813 文献）。推論モデルを 3 特性（深い推論・探索・反省）で定義し、6 現象（推論境界・overthinking・test-time scaling 等）を体系化。
 
 ### Articles / Blogs
 
 - [[summaries/2024-building-effective-agents]] — Anthropic（2024, 改訂版）。workflow/agent の区別・5 パターン・3 原則（simplicity/transparency/ACI）。実務指針の事実上の標準。
 - [[summaries/2025-multi-agent-research-system]] — Anthropic（2025）。Research 機能の本番 orchestrator-worker。+90.2%・トークン 15 倍の経済性・プロンプト 8 原則・20 クエリ評価。
+- [[summaries/2026-gpt2-to-kimi3]] — X 記事（@waterloo_intern, 2026）。GPT-2→Kimi K3 の 22,580 倍を「固定容量メモリ＋追い出しポリシー」の系譜として実装コード付きで解説。
 
 ### Docs
 
@@ -47,6 +49,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2023-memgpt]] — MemGPT 論文の全文翻訳（付録の全プロンプト含む。Figure 8 キャプションを ar5iv から復元。プロンプトは原文のまま収録）。
 - [[translations/2025-cot-faithfulness]] — CoT 忠実性論文の全文翻訳（脚注 2 件を ar5iv から復元。忠実性スコアの定義式は LaTeX 維持、ヒント例は原文のまま収録）。
 - [[translations/2025-a-mem]] — A-Mem 論文の全文翻訳（多パネル図 13 枚と主キャプション 4 件を ar5iv から復元。付録のプロンプト 3 種は SVG から原文のまま起こして収録）。
+- [[translations/2025-long-cot-survey]] — Long CoT サーベイの全文翻訳（図 11 枚・表 7 点収録。分類法ツリーと囲みボックス 10 個をテキスト復元。定義式は LaTeX 維持）。
+- [[translations/2026-gpt2-to-kimi3]] — 「From GPT2 to Kimi3, Explained」の全文翻訳（図 22 枚収録。X の数式連結を復元。コード 12 個は原文のまま収録）。
 - [[translations/2026-sakana-fugu]] — Sakana Fugu テクニカルレポートの全文翻訳（付録・棋譜含む。プロンプトと棋譜は原文のまま収録）。
 - [[translations/2025-masft]] — MASFT 論文の全文翻訳（付録の失敗事例トレース・介入プロンプト含む。トレースとプロンプトは原文のまま収録）。
 - [[translations/2025-deepseek-r1]] — DeepSeek-R1 論文の全文翻訳（GRPO の式・aha moment の記録含む。テンプレートと応答例は原文のまま収録）。
@@ -67,9 +71,12 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[agent-memory]] — コンテキストを超えて保持・想起する記憶の設計。MemGPT の階層記憶・Reflexion のエピソード記憶・共有境界。
 - [[context-engineering]] — 限られたウィンドウに何をどう積むか。区画化・圧縮と引き継ぎ・参照渡し・lost in the middle。
 - [[agent-safety-and-guardrails]] — 安全対策の 4 層（行動空間・ガードレール・監視・HITL）。CoT モニタリングの可能性と限界。
+- [[test-time-compute]] — 推論時に計算を積んで精度を買う第二のスケーリング軸。垂直/並列の 2 型・推論境界・overthinking。
+- [[transformer-architecture]] — decoder-only の基本構造と attention の系譜（softmax→linear→delta→gated→ハイブリッド）・MoE・AttnRes。
+- [[llm-inference-optimization]] — 推論を速く安く捌く側。prefill/decode・TTFT/TPS・KV cache の帯域律速・カーネル融合。
 
 未作成の想定スラグ（CLAUDE.md §1 の命名規約より。作成したら上のリストへ移す）：
-`llm-agents` / `model-context-protocol` / `coding-agents` / `computer-use-agents` / `web-agents` / `agent-observability` / `test-time-compute` / `llm-inference-optimization` / `parameter-efficient-fine-tuning` / `transformer-architecture`
+`llm-agents` / `model-context-protocol` / `coding-agents` / `computer-use-agents` / `web-agents` / `agent-observability` / `parameter-efficient-fine-tuning`
 
 ### 略称リダイレクト
 
@@ -88,7 +95,9 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - lost in the middle / scratchpad → [[context-engineering]]
 - PEFT / LoRA / SFT → [[parameter-efficient-fine-tuning]]
 - HITL / CoT モニタリング / CoT faithfulness / prompt injection / sandboxing / safety case → [[agent-safety-and-guardrails]]
-- KV cache → [[llm-inference-optimization]]
+- Long CoT / test-time scaling / overthinking / reasoning boundary / Best-of-N / budget forcing → [[test-time-compute]]
+- KV cache / TTFT / TPS / prefill / decode / FlashAttention → [[llm-inference-optimization]]
+- MoE / MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only → [[transformer-architecture]]
 
 ## Questions
 

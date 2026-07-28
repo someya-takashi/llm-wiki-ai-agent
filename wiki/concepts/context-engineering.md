@@ -13,7 +13,8 @@ summaries:
   - "[[summaries/2025-multi-agent-research-system]]"
   - "[[summaries/2025-deepseek-r1]]"
   - "[[summaries/2022-chain-of-thought]]"
-updated: 2026-07-26
+  - "[[summaries/2026-gpt2-to-kimi3]]"
+updated: 2026-07-28
 ---
 
 # Context Engineering（コンテキストエンジニアリング）
@@ -24,7 +25,7 @@ LLM（Large Language Model, 大規模言語モデル）の**限られたコン�
 
 ## 基本制約 — なぜ「全部入れる」では駄目か
 
-1. **有限性**: どれだけ延びてもウィンドウは有限で、あふれれば切り詰められる。切り詰めで**計画や初期の指示を失うのが典型的な最悪ケース**（[[summaries/2025-multi-agent-research-system]] は 200k での切り詰めに備えて計画を最初に外部メモリへ保存する）。
+1. **有限性**: どれだけ延びてもウィンドウは有限で、あふれれば切り詰められる。切り詰めで**計画や初期の指示を失うのが典型的な最悪ケース**（[[summaries/2025-multi-agent-research-system]] は 200k での切り詰めに備えて計画を最初に外部メモリへ保存する）。この有限性には物理的な実体がある——ウィンドウ内の全トークンは KV cache として GPU メモリを占有し、系列長 O(N) で成長してメモリ帯域を律速する（[[summaries/2026-gpt2-to-kimi3]] → [[llm-inference-optimization]]）。固定状態アーキテクチャ（linear attention 系ハイブリッド）の台頭はこのコスト構造を変えつつあるが、「入れたものが等しく保持される保証はない」という制約はむしろ強まる方向にある。
 2. **想起の劣化（lost in the middle）**: 長いコンテキストでは、モデルは先頭と末尾の情報の想起は得意だが**中間が苦手**になる（Liu et al. 2023。[[summaries/2023-memgpt]] が設計動機として引く知見。専用原典は未 ingest のため概説）。「入れた＝読める」ではない。
 3. **コスト**: コンテキストはトークン課金と遅延に直結する。長い履歴の持ち回りはそれ自体が浪費で、[[summaries/2025-multi-agent-research-system]] は大きな成果物を履歴にコピーして回すことを「伝言ゲーム」のトークンオーバーヘッドとして名指しした。
 

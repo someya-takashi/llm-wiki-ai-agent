@@ -11,6 +11,7 @@ related:
 summaries:
   - "[[summaries/2023-reflexion]]"
   - "[[summaries/2025-deepseek-r1]]"
+  - "[[summaries/2025-long-cot-survey]]"
 updated: 2026-07-26
 ---
 
@@ -37,6 +38,12 @@ LLM（Large Language Model, 大規模言語モデル）エージェントが**�
 ### 内生する反省 — RL からの創発
 
 Reflexion が反省を**プロンプト工学で外付け**したのに対し、[[summaries/2025-deepseek-r1]]（2025）は、検証可能な報酬だけの大規模 RL の中で **reflection・自己検証・手順の再評価が誰にも教えられずに創発する**ことを示した（「aha moment」——中間チェックポイントが "Wait, wait. Wait." と書いて自分の数式変形を再評価し始めた記録）。テンプレートは「考えてから答えよ」という構造しか指定しておらず、内省の義務づけは一切ない。つまり自己反省には、(a) プロンプトとループで外付けする経路（Reflexion）と、(b) 報酬から内生させる経路（R1-Zero）の 2 つがあり、後者の登場で「反省できるモデル」自体が製造可能になった → [[reinforcement-learning-from-human-feedback]]。
+
+### Long CoT への統合 — 「feasible reflection」
+
+Long CoT サーベイ（[[summaries/2025-long-cot-survey]], 2025）は、自己反省を推論モデルの定義の一部に組み込んだ: Long CoT とは deep reasoning・extensive exploration・**feasible reflection**（誤り箇所へ戻るフィードバックと、修正する refinement）の 3 特性を**単一の生成に統合**したものであり、反省を欠く ToT は Long CoT ではない、という線引きである。Reflexion が試行の**外側**のループで行った反省は、推論モデルでは 1 本の思考の**内側**に畳み込まれた——外付け（Reflexion）→ 内生（R1-Zero）→ 定義への統合（Long CoT）という 3 段の系譜になる。同サーベイは refinement の手法群も 3 分類で整理する（プロンプト型＝Self-Refine 系・SFT 模倣型・RL 学習型。SFT だけでは自己洗練は促進されず、分布ミスマッチのため RL が要るという SCoRe の知見を含む）。
+
+重要な留保も同サーベイが集約している: **aha moment（反省の創発）には反証がある**。自己反省のパターン自体はベースモデル（epoch 0）の段階から存在し（superficial self-reflection）、それは必ずしも正答につながらず、R1-Zero 訓練での応答長の増加は反省の深化でなく報酬最適化の帰結だとする分析である。「RL が反省を生んだ」ではなく「RL が既存の反省パターンを有効な形で引き出した」という読みが安全になりつつある。
 
 ### 検証つき反省 — 何を評価信号にするか
 

@@ -16,6 +16,7 @@ summaries:
   - "[[summaries/2026-sakana-fugu]]"
   - "[[summaries/2020-rag]]"
   - "[[summaries/2025-cot-faithfulness]]"
+  - "[[summaries/2025-long-cot-survey]]"
 updated: 2026-07-26
 ---
 
@@ -66,6 +67,10 @@ CoT の系譜全体にかかる重要な但し書きが、**書かれた思考�
 
 思考を一本の連鎖でなく**木構造で探索**し、行き詰まったら別の枝に戻る手法（Yao et al., 2023。原典未 ingest のため概説のみ）。探索・バックトラックを持ち込む点で CoT の直線性を補う。このほか、推論に使う計算量を推論時に増やして精度を上げる方向は [[test-time-compute]] として発展し、失敗を言語で振り返って次の試行に活かす方向は [[self-reflection]] として発展した——代表の Reflexion（[[summaries/2023-reflexion]]）は、CoT や ReAct を Actor に使い、失敗の反省文をエピソード記憶に蓄えて試行間で学習する「言語的強化学習」で、単なるリトライでは 1 問も改善しないところを AlfWorld +22・HotPotQA +20 ポイント引き上げた。
 
+### Long CoT — 3 能力の統合としての推論モデル
+
+この系譜全体を後から俯瞰する枠組みが Long CoT サーベイ（[[summaries/2025-long-cot-survey]], 2025）である。Short CoT を「ノード数上限・一直線・再訪なし」の 3 制約つき生成として形式化し、推論モデルの **Long CoT** をそれぞれの緩和——**deep reasoning**（深さ）・**extensive exploration**(分岐）・**feasible reflection**（再訪と修正）——の**単一生成への統合**として定義した。この見方では、CoT は深さのみ、ToT は探索のみ、Reflexion は反省のみを個別に発達させた段階であり（ToT は「反省を欠くため Long CoT ではない」と明示的に線引きされる）、o1 / R1 は 3 能力を 1 本の思考に畳み込んだ統合形にあたる。あわせて同サーベイは、**推論境界**（モデル固有の推論容量の上限）と **overthinking**（境界を超えた長考による性能低下）という経験則を整理しており、「長く考えさせるほど良い」が条件付きであることの標準的な参照点になっている → [[test-time-compute]]。
+
 ## エージェント設計への含意
 
 - thought の役割は少なくとも 4 つある: **目標の分解／部分目標の完了追跡／次の部分目標の決定／常識による補完**（ReAct の ALFWorld プロンプト設計より）。環境状態の復唱だけに限定した thought（Inner Monologue 風）では性能が大きく落ちる——「何を考えさせるか」の設計がエージェントの質を決める。
@@ -76,7 +81,7 @@ CoT の系譜全体にかかる重要な但し書きが、**書かれた思考�
 
 - [[agent-loop]] — 推論を組み込む実行ループの側
 - [[tool-use-and-function-calling]] — 推論を接地させる行動の側
-- [[self-reflection]] — 失敗からの学習（未作成）
-- [[test-time-compute]] — 推論時計算のスケーリング（未作成。CoT の「難問に中間トークンで計算を配分する」発想が源流）
+- [[self-reflection]] — 失敗からの学習
+- [[test-time-compute]] — 推論時計算のスケーリング（CoT の「難問に中間トークンで計算を配分する」発想が源流）
 - [[summaries/2022-chain-of-thought]] — CoT の原典
 - [[summaries/2022-react]] — ReAct の原典

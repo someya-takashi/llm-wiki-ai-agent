@@ -63,11 +63,14 @@ updated: 2026-07-26
 
 ### 6. 土台となる LLM 側
 
-- transformer architecture と個別モデルの世代 → `[[transformer-architecture]]`
+- transformer architecture と個別モデルの世代 → [[transformer-architecture]]
+  - 系譜の俯瞰は [[summaries/2026-gpt2-to-kimi3]]（2026）: GPT-2 → Kimi K3 の **22,580 倍**を「固定容量の連想メモリには追い出しポリシーが要る」という一本の線で読む——KV cache の O(N) 成長 → linear attention の固定状態（干渉）→ delta rule の選択的上書き → ゲート減衰 → KDA/MLA ハイブリッド＋MoE。スケーリングは「容量をどこに足すか」の設計である。
 - post-training（RLHF, RLVR 等）→ [[reinforcement-learning-from-human-feedback]]
   - DeepSeek-R1（[[summaries/2025-deepseek-r1]], 2025）は、検証可能な報酬だけの大規模 RL（RLVR）で長い思考・自己検証・reflection が**創発**することを公開実証し、o1 型推論モデルの製法を開いた。GRPO は [[summaries/2026-sakana-fugu]] のオーケストレータ訓練にも使われ、モデルとエージェントの両方を貫く訓練レシピになっている。
-- test-time compute（推論時に計算量を増やして精度を上げる考え方）→ `[[test-time-compute]]`
-- 推論の高速化・サービング（KV cache, バッチング, コストとレイテンシ）→ `[[llm-inference-optimization]]`
+- test-time compute（推論時に計算量を増やして精度を上げる考え方）→ [[test-time-compute]]
+  - 体系化は Long CoT サーベイ（[[summaries/2025-long-cot-survey]], 2025, 813 文献）: 推論モデルの思考を deep reasoning・extensive exploration・feasible reflection の**3 特性の統合（Long CoT）**として定義し、垂直/並列スケーリングの 2 型、**推論境界**と **overthinking**（長考は閾値を超えると性能が落ちる）、PRM vs ORM、aha moment への反証までを整理した推論モデル時代の地図。
+- 推論の高速化・サービング（KV cache, バッチング, コストとレイテンシ）→ [[llm-inference-optimization]]
+  - prefill/decode の 2 相・メモリ帯域律速・カーネル融合の基礎は [[summaries/2026-gpt2-to-kimi3]] が実装レベルで解説（固定状態化でデコード 6 倍、FLOPs 最小 ≠ wall-clock 最小、融合カーネルなしの新活性化は 3 倍遅）。エージェントのトークン経済（[[summaries/2025-multi-agent-research-system]] の 15 倍）の物理的な下部構造。
 - ファインチューニング（LoRA 等の PEFT）→ `[[parameter-efficient-fine-tuning]]`
 
 ## 現状のカバレッジ
@@ -79,7 +82,7 @@ updated: 2026-07-26
 | 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学） |
 | 応用 | （なし。ただし [[summaries/2026-sakana-fugu]] がコーディング・自律研究・CAD 等の応用例に言及) |
 | 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）、[[summaries/2025-multi-agent-research-system]]（小規模評価・単一ジャッジ・終了状態評価・本番運用の信頼性）、[[summaries/2025-cot-faithfulness]]（CoT 忠実性・CoT モニタリングの限界・安全性）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
-| LLM 基盤 | [[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
+| LLM 基盤 | [[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）、[[summaries/2025-long-cot-survey]]（Long CoT の体系化・test-time scaling・推論境界）、[[summaries/2026-gpt2-to-kimi3]]（アーキテクチャの系譜・KV cache・推論効率）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
 
 6 軸すべてに少なくとも 1 件の原典が入った（2026-07-26 時点）。以後は各軸の深化（例: 知識の接続における MCP、応用における coding agents の専用原典）を `lint` のデータギャップとして追う。
 
