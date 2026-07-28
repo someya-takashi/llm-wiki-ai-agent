@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-07-26
+updated: 2026-07-28
 ---
 
 # Index — AI Agent LLM Wiki
@@ -30,6 +30,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2025-kimi-k2]] — Kimi K2（Moonshot, 2025）。1T MoE のエージェント特化オープンモデル。MuonClip・ツール利用データ合成・自己批評ルーブリック RL。非思考で SWE-bench 65.8。
 - [[summaries/2025-a-mem]] — A-Mem（2025, Rutgers）。Zettelkasten 型の動的記憶: 保存時の意味づけ・LLM によるリンク判断・記憶進化。multi-hop 2 倍超を 1/10 のトークンで。
 - [[summaries/2025-long-cot-survey]] — Long CoT サーベイ（2025, 813 文献）。推論モデルを 3 特性（深い推論・探索・反省）で定義し、6 現象（推論境界・overthinking・test-time scaling 等）を体系化。
+- [[summaries/2026-kimi-k2.5]] — Kimi K2.5（Moonshot, 2026）。K2 後継のマルチモーダル agentic モデル。テキスト×視覚の同時最適化（early fusion・zero-vision SFT・双方向転移）と Agent Swarm（PARL で並列化を学習。BrowseComp 78.4%・レイテンシ 1/4.5）。
 
 ### Articles / Blogs
 
@@ -62,6 +63,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2025-deepseek-r1]] — DeepSeek-R1 論文の全文翻訳（GRPO の式・aha moment の記録含む。テンプレートと応答例は原文のまま収録）。
 - [[translations/2024-building-effective-agents]] — Anthropic「Building Effective Agents」の全文翻訳（付録のツール設計論含む）。
 - [[translations/2025-multi-agent-research-system]] — Anthropic「How we built our multi-agent research system」の全文翻訳（付録の運用 Tips 含む。図 3 枚収録）。
+- [[translations/2026-kimi-k2.5]] — Kimi K2.5 テクニカルレポートの全文翻訳（欠落していた図7 と脚注 2 件を ar5iv から復元。Table 4 は太字含め正規化。システムプロンプト・ツールスキーマは原文のまま収録）。
 
 ## Concepts
 
@@ -80,9 +82,10 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[test-time-compute]] — 推論時に計算を積んで精度を買う第二のスケーリング軸。垂直/並列の 2 型・推論境界・overthinking。
 - [[transformer-architecture]] — decoder-only の基本構造と attention の系譜（softmax→linear→delta→gated→ハイブリッド）・MoE・AttnRes。
 - [[llm-inference-optimization]] — 推論を速く安く捌く側。prefill/decode・TTFT/TPS・KV cache の帯域律速・カーネル融合。
+- [[computer-use-agents]] — スクリーンショットを観測し GUI を直接操作するエージェント（CUA）。行動空間・OSWorld/WebArena・グラウンディング律速・安全性。
 
 未作成の想定スラグ（CLAUDE.md §1 の命名規約より。作成したら上のリストへ移す）：
-`llm-agents` / `model-context-protocol` / `coding-agents` / `computer-use-agents` / `web-agents` / `agent-observability` / `parameter-efficient-fine-tuning`
+`llm-agents` / `model-context-protocol` / `coding-agents` / `web-agents` / `agent-observability` / `parameter-efficient-fine-tuning`
 
 ### 略称リダイレクト
 
@@ -92,7 +95,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - MCP → [[model-context-protocol]]
 - CoT / CoT-SC / ToT / ReAct → [[reasoning-and-planning]]
 - function calling / tool call → [[tool-use-and-function-calling]]
-- MoA / Mixture-of-Agents / orchestrator-worker / MASFT → [[multi-agent-systems]]
+- MoA / Mixture-of-Agents / orchestrator-worker / MASFT / Agent Swarm / PARL → [[multi-agent-systems]]
+- CUA / computer use / GUI エージェント / OSWorld / WebArena / Operator → [[computer-use-agents]]
 - LLM-as-a-judge / pass@k / Cohen's κ → [[agent-evaluation]]
 - ACI / workflow パターン / prompt chaining / evaluator-optimizer → [[agent-frameworks]]
 - Reflexion / Self-Refine / verbal reinforcement → [[self-reflection]]
@@ -103,7 +107,9 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - HITL / CoT モニタリング / CoT faithfulness / prompt injection / sandboxing / safety case → [[agent-safety-and-guardrails]]
 - Long CoT / test-time scaling / overthinking / reasoning boundary / Best-of-N / budget forcing → [[test-time-compute]]
 - KV cache / TTFT / TPS / prefill / decode / FlashAttention / PagedAttention / quantization / continuous batching → [[llm-inference-optimization]]
-- MoE / MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / Mixtral / Switch Transformers / expert capacity / router → [[transformer-architecture]]
+- MoE / MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / Mixtral / Switch Transformers / expert capacity / router / MoonViT / NaViT / early fusion / DEP → [[transformer-architecture]]
+- context sharding / Discard-all / Hide-Tool-Result → [[context-engineering]]
+- Toggle / length-overfitting → [[test-time-compute]]
 - expert parallelism / capacity factor / Megablocks / QMoE → [[llm-inference-optimization]]
 
 ## Questions

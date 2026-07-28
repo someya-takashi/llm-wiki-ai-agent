@@ -10,12 +10,14 @@ related:
   - "[[agent-memory]]"
   - "[[agent-frameworks]]"
   - "[[test-time-compute]]"
+  - "[[context-engineering]]"
 summaries:
   - "[[summaries/2026-sakana-fugu]]"
   - "[[summaries/2025-masft]]"
   - "[[summaries/2024-building-effective-agents]]"
   - "[[summaries/2025-multi-agent-research-system]]"
-updated: 2026-07-26
+  - "[[summaries/2026-kimi-k2.5]]"
+updated: 2026-07-28
 ---
 
 # Multi-Agent Systems（マルチエージェントシステム）
@@ -54,6 +56,18 @@ orchestrator-worker を**実プロダクトとして本番運用**した最初�
 
 統制の手段は (c) と対照的に**学習でなくプロンプト**である（委任指示の 4 要素——目的・出力形式・ツール・境界——や労力のスケーリング規則を明文化して埋め込む）。この「プロンプトによる統制」の限界（重複調査の発生、同期実行のボトルネック）も記事自身が自認しており、(c) の学習されたオーケストレーションが解こうとしている問題の実務側の証言として読める。
 
+### (e) Agent Swarm — 並列化の意思決定を RL で学習する（PARL）
+
+Kimi K2.5（[[summaries/2026-kimi-k2.5]], 2026）は、(c) の「学習されたオーケストレーション」を**モデル本体の RL（強化学習）に統合**し、フロンティア級の性能で実証した現時点の代表例である。**Parallel-Agent Reinforcement Learning（PARL）** の設計は次のとおり:
+
+- **凍結サブエージェント**: 訓練されるのはオーケストレータのみ。サブエージェントは固定チェックポイントから起動され、その trajectory（行動列）は最適化対象から除外し「環境からの観測」として扱う。マルチエージェント RL 最大の難所である credit assignment（最終成果の功罪をどの行動に帰属させるかの割り当て）の曖昧さと訓練不安定を、共同最適化を諦めることで構造的に回避する。
+- **最小のツール API**: オーケストレータが持つ委任手段は `create_subagent`（システムプロンプトと名前を与えて特化エージェントを定義）と `assign_task`（並行起動可の委任）の 2 つだけ。サブエージェントの種類は事前定義せず、リサーチャー・ファクトチェッカー・Web 開発者といった異種の編成がタスクごとに**創発**する。
+- **報酬の 3 項構成**: タスク成果 r_perf に、*serial collapse*（並列化せず単独実行に退化する局所最適）を防ぐ r_parallel と、*spurious parallelism*（中身のないサブエージェント大量生成で並列指標だけ稼ぐ reward hacking）を防ぐ r_finish（サブタスク完遂率）を加える。補助 2 項の係数は訓練終盤にゼロへアニーリングし、最終ポリシーは純粋に成果を最適化する。
+- **critical steps**: 資源制約を総ステップ数でなく「各並列グループの**最長**ブランチ」の和（計算グラフのクリティカルパスに相当）で課し、並列度でなく **end-to-end レイテンシの短縮**に直接インセンティブを与える。
+- **並列化は教えない**: プロンプトで並列化を指示せず、逐次実行では予算内に完了できない wide search / deep search 型のタスク分布を作ることで、並列分解が自然に有利になるよう仕向ける。
+
+結果は BrowseComp 60.6→78.4%（GPT-5.2 Pro 超え）・WideSearch item-F1 72.7→79.0%・実行時間 3〜4.5 倍短縮で、**タスクが難しいほど並列化の利得が拡大**する（単一エージェントの実行時間が線形に伸びる領域で Swarm はほぼ一定）。(d) の Anthropic Research が「プロンプトによる統制」で残した課題——いつ・いくつ・どう分けるかのヒューリスティクス依存——を、環境フィードバックからの学習に置き換えた形であり、[[summaries/2025-masft]] の失敗分類のうち FC1（役割仕様・分解の失敗）に対する構造的応答とも読める。一方、凍結ゆえに**協調の共進化**（サブエージェント側が委任のされ方に適応する）は起きない——これは [[summaries/2026-sakana-fugu]] の全体最適化と対照的な設計選択である。Agent Swarm は同時に、コンテキストの側から見ると「reactive な切り詰めに対する proactive な分割（context sharding）」でもある → [[context-engineering]]。
+
 ## なぜ失敗するか — MASFT
 
 期待に反して、MAS の実測性能は単一エージェントや best-of-N を明確に上回れていない（SOTA 級 OSS の ChatDev で正答 25%）。[[summaries/2025-masft]]（2025）は 5 つの人気 MAS の 150+ トレースを人手分析し、**14 失敗モード × 3 カテゴリ**の分類法 MASFT を確立した:
@@ -85,3 +99,4 @@ orchestrator-worker を**実プロダクトとして本番運用**した最初�
 - [[summaries/2026-sakana-fugu]] — 成功する協調（学習されたオーケストレータ）の根拠原典
 - [[summaries/2025-masft]] — 失敗する協調（MASFT 失敗分類）の根拠原典
 - [[summaries/2025-multi-agent-research-system]] — 本番運用された orchestrator-worker（Anthropic Research）の根拠原典
+- [[summaries/2026-kimi-k2.5]] — 学習された並列オーケストレーション（Agent Swarm / PARL）の根拠原典

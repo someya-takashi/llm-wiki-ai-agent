@@ -228,3 +228,15 @@ type: log
   - クリップ不良: **GShard の MoE Transformer Encoder 図（02_moe_block.png）が画像欠落**（キャプションのみ残存。HF の連番 00,01,03… から欠番を特定）→ 原ページから復元。数式 5 本の LaTeX が崩れていた（`\left(\right.` 混入）→ クリーンな LaTeX へ正規化（訳注明記）。05・11 の画像は初回 DL が失敗しリトライで取得。
   - 除外 chrome: 末尾の Citation（BibTeX）・関連記事誘導 2 件・Community。冒頭の第 2 版（2026-02）案内は原ページの編集注記として訳出。
   - 概念ページの新規作成なし（MoE はスキーマ規定どおり transformer-architecture 内で扱う）。2023 年時点の記事のため、shared experts・細粒度分割・スパース性スケーリング則（K2/K3 世代）とのギャップを要約の限界節に明記。
+
+## [2026-07-28] ingest | Kimi K2.5: Visual Agentic Intelligence
+
+- 取り込み: `raw/papers/Kimi K2.5_ Visual Agentic Intelligence.md`（ar5iv → Obsidian Web Clipper、arXiv:2602.02276, Kimi Team / Moonshot AI, 2026）
+- 作成: [[summaries/2026-kimi-k2.5]], [[translations/2026-kimi-k2.5]], **[[concepts/computer-use-agents]]（新設・ユーザー確認済み）**, `raw/assets/2026-kimi-k2.5/`（figures/ 3 枚＋x2〜x10 の 9 枚 = 12 枚、元名保持）
+- 更新: [[concepts/multi-agent-systems]]（類型 (e)「Agent Swarm — 並列化の意思決定を RL で学習する（PARL）」を新設）, [[concepts/context-engineering]]（「分割（sharding）— 溢れる前に分ける」節を新設）, [[concepts/reinforcement-learning-from-human-feedback]]（「Kimi K2.5 — 同時マルチモーダル RL・PARL・トークン効率」節を新設）, [[concepts/transformer-architecture]]（「マルチモーダル拡張 — 視覚をいつ・どう繋ぐか」節を新設: MoonViT-3D・early fusion・DEP）, [[concepts/agent-evaluation]]（agentic search / computer use ベンチ・スコアとトークン併記の報告様式）, [[concepts/test-time-compute]]（Toggle と length-overfitting）, [[overview]]（応用軸に初の専用記述＝computer use、構成とスケール軸に PARL）, [[index]]
+- メモ:
+  - クリップ不良: **Figure 7（Agent Swarm vs Discard-all の BrowseComp 比較, x5.png）が画像・キャプションごと欠落**（x4→x6 の欠番と Fig 6→Fig 8 の飛びで特定）→ ar5iv から復元し Figure 6 直後に配置。
+  - 脚注 2 件（HF チェックポイント URL・WorldVQA GitHub URL）の本文欠落 → ar5iv から復元し [^fn1] [^fn2] として収録。付録 A の著者リスト脚注（アルファベット順・Tao Yu† = 香港大学）も訳注で反映。
+  - Table 4（59 行の HTML 表）はパーサで markdown 化。クリップで失われていた**太字（グローバル SOTA 表示）も ar5iv から復元**。x1.png はタイトル横 21×21 ロゴのため対象外（K2 と同パターン）。
+  - 付録 A の著者一覧は K2 では訳出対象外としたが、今回は「Kimi K2 / Kimi K2.5 自身が貢献者として記載」という特記事項があるためカンマ区切りに整形して収録。付録 E のシステムプロンプト（agentic search・computer use・Agent Swarm オーケストレータ）とツールスキーマ（create_subagent / assign_task）は原文のまま収録。
+  - 概念ページ新設 1 件: computer-use-agents（CLAUDE.md §1 の想定スラグ。K2.5 の computer use 節＋E.7 を初出典に、Operator・Claude computer use・OSWorld/WebArena を整理）。

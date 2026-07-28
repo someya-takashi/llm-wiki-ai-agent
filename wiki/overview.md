@@ -1,7 +1,7 @@
 ---
 type: overview
 tags: [llm-agents, ai-agent, overview]
-updated: 2026-07-26
+updated: 2026-07-28
 ---
 
 # Overview — AI Agent
@@ -31,6 +31,7 @@ updated: 2026-07-26
   - A-Mem（[[summaries/2025-a-mem]], 2025）は自己管理の対象を配置から**組織化・進化**へ拡張: Zettelkasten 型のノート・リンク・記憶進化（新しい記憶が既存記憶を書き換える）で、長期会話の multi-hop QA を約 1/10 のトークンで 2 倍超の性能。「検索の agency（agentic RAG）」と「索引の agency（agentic memory）」を分ける境界も整理した。
 - context engineering（限られたコンテキストウィンドウに何をどう積むかの設計）→ [[context-engineering]]
   - MemGPT の main context 3 分割（不変の規則／更新される要点／流れる履歴）と閾値駆動の退避が区画化の原型。本番運用のパターン（フェーズ要約・handoff・参照渡し）は [[summaries/2025-multi-agent-research-system]] が記録。
+  - Kimi K2.5（[[summaries/2026-kimi-k2.5]], 2026）は「溢れてから削る」reactive な切り詰め（Summary / Discard-all 等）に対し、分解時点でコンテキストを分割する **context sharding**（Agent Swarm）を対置し、同一モデル比較で精度・効率の優位を示した。
 
 ### 2. 知識の接続
 
@@ -43,13 +44,15 @@ updated: 2026-07-26
 - multi-agent systems（複数エージェントの分業・協調、orchestrator-worker 構成）→ [[multi-agent-systems]]
   - Sakana Fugu（[[summaries/2026-sakana-fugu]], 2026）は「どのモデルにどう働かせるか」を学習したオーケストレータで個々のフロンティアモデル単体を超え、**オーケストレーションをモデルスケーリングと直交する新しいスケーリング軸**として実証した。固定集約役の debate/MoA からクエリ適応的なワークフロー生成への世代交代を示す原典。
   - 本番運用の実例は Anthropic Research（[[summaries/2025-multi-agent-research-system]], 2025）: リード＋並列サブエージェント＋CitationAgent の orchestrator-worker で単一エージェント比 +90.2%。効果の正体は「別コンテキストで並列にトークンを費やす容量」（BrowseComp 分散の 80% をトークン量が説明）であり、代償はチャット比 **15 倍**のトークン——適用条件（幅優先・高価値・並列化可能）まで含めた経済学を開示した。
+  - Kimi K2.5 の Agent Swarm（[[summaries/2026-kimi-k2.5]], 2026）は、その「いつ・いくつ・どう分けるか」を**プロンプト設計から RL（PARL）へ**移した: 凍結サブエージェント＋補助報酬のアニーリング＋critical steps（最長ブランチ）制約で並列化の意思決定自体を学習し、BrowseComp 78.4%（+17.8pt）・実行時間 3〜4.5 倍短縮。フロンティアモデル自体が並列オーケストレーションを内蔵する段階に入った。
 - agent frameworks（LangGraph, AutoGen, CrewAI, Claude Agent SDK 等）→ [[agent-frameworks]]
   - 実務の標準語彙は Anthropic「Building Effective Agents」（[[summaries/2024-building-effective-agents]], 2024）が確立: workflow（事前定義コードパス）と agent（動的制御）の区別、5 つの設計パターン、「まず単純に、複雑さは実証されたときだけ」の原則。
 
 ### 4. 応用
 
 - coding agents（SWE-agent, Devin, Claude Code, Cursor 等）→ `[[coding-agents]]`
-- computer use / GUI 操作エージェント → `[[computer-use-agents]]`
+- computer use / GUI 操作エージェント → [[computer-use-agents]]
+  - 初出典は Kimi K2.5（[[summaries/2026-kimi-k2.5]], 2026）: スクリーンショット観測 → pyautogui 操作のループで、汎用マルチモーダルモデルのまま OSWorld-Verified 63.3%（Operator 42.9% 超え・Opus 4.5 の 66.3% に肉薄）・WebArena 58.9%。GUI trajectory を事前学習データに混ぜ、視覚 RL でグラウンディングを鍛える製法まで開示。
 - web agents（ブラウザ操作・情報収集）→ `[[web-agents]]`
 
 ### 5. 評価・運用・安全性
@@ -75,6 +78,7 @@ updated: 2026-07-26
   - 実務側のレバーと運用の型は [[summaries/2026-llm-optimization-guide]]（Mirantis, 2026）: 量子化 −75%・continuous batching で稼働率 40→90%・PagedAttention −55% の定量カタログと、ワークロードのクラス分け・縮退設計・構成のコード化という運用規律。
 - エージェント特化の基盤モデル訓練（データ合成＋RL でエージェント能力を作る）
   - [[summaries/2025-kimi-k2]]（Moonshot, 2025）: 1.04T MoE を MuonClip で loss spike ゼロ事前学習し、**実 MCP ツール 3000+＋合成ツール 20,000+ による tool-use trajectory 合成**と、検証可能報酬＋自己批評ルーブリックの joint RL でエージェント能力を仕込む。**非思考のまま** SWE-bench Verified 65.8・τ²-Bench 66.1——「長考の創発」（R1）と対をなす「非思考のエージェント化」の代表原典。
+  - 後継の Kimi K2.5（[[summaries/2026-kimi-k2.5]], 2026）は**マルチモーダル化**の製法を追加: 15T トークンの joint 事前学習は early fusion・低 vision 比率が最良、視覚エージェント能力の発火はテキストのみの SFT で足りる（zero-vision SFT）、視覚 RL はテキスト性能まで上げる（双方向転移）。MoonViT-3D（画像・動画共有エンコーダ）・DEP（視覚エンコーダの並列化分離）・Toggle（トークン効率 RL, −25〜30%）まで含め、「エージェント基盤モデルは単一モダリティでは作らない」方向を示した。
 - ファインチューニング（LoRA 等の PEFT）→ `[[parameter-efficient-fine-tuning]]`
 
 ## 現状のカバレッジ
@@ -83,12 +87,12 @@ updated: 2026-07-26
 | --- | --- |
 | 基本構造 | [[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習）、[[summaries/2023-memgpt]]（階層記憶・仮想コンテキスト管理・イベント駆動制御）、[[summaries/2025-a-mem]]（動的記憶組織化・記憶進化） |
 | 知識の接続 | [[summaries/2020-rag]]（検索拡張生成・非パラメトリック記憶・hot-swap） |
-| 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学） |
-| 応用 | （なし。ただし [[summaries/2026-sakana-fugu]] がコーディング・自律研究・CAD 等の応用例に言及) |
+| 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学）、[[summaries/2026-kimi-k2.5]]（RL で学習された並列オーケストレーション・context sharding） |
+| 応用 | [[summaries/2026-kimi-k2.5]]（computer use: OSWorld / WebArena・GUI エージェント構成）。[[summaries/2026-sakana-fugu]] もコーディング・自律研究・CAD 等の応用例に言及 |
 | 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）、[[summaries/2025-multi-agent-research-system]]（小規模評価・単一ジャッジ・終了状態評価・本番運用の信頼性）、[[summaries/2025-cot-faithfulness]]（CoT 忠実性・CoT モニタリングの限界・安全性）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
-| LLM 基盤 | [[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）、[[summaries/2025-long-cot-survey]]（Long CoT の体系化・test-time scaling・推論境界）、[[summaries/2026-gpt2-to-kimi3]]（アーキテクチャの系譜・KV cache・推論効率）、[[summaries/2026-llm-optimization-guide]]（本番推論最適化の実務・サービング運用）、[[summaries/2025-kimi-k2]]（エージェント特化の事前学習＋データ合成＋joint RL）、[[summaries/2023-moe-explained]]（MoE の仕組み・歴史・負荷分散）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
+| LLM 基盤 | [[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）、[[summaries/2025-long-cot-survey]]（Long CoT の体系化・test-time scaling・推論境界）、[[summaries/2026-gpt2-to-kimi3]]（アーキテクチャの系譜・KV cache・推論効率）、[[summaries/2026-llm-optimization-guide]]（本番推論最適化の実務・サービング運用）、[[summaries/2025-kimi-k2]]（エージェント特化の事前学習＋データ合成＋joint RL）、[[summaries/2023-moe-explained]]（MoE の仕組み・歴史・負荷分散）、[[summaries/2026-kimi-k2.5]]（マルチモーダル joint 訓練・zero-vision SFT・トークン効率 RL）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
 
-6 軸すべてに少なくとも 1 件の原典が入った（2026-07-26 時点）。以後は各軸の深化（例: 知識の接続における MCP、応用における coding agents の専用原典）を `lint` のデータギャップとして追う。
+6 軸すべてに少なくとも 1 件の原典が入った（2026-07-26 時点）。「応用」軸には 2026-07-28 の Kimi K2.5 で初の専用記述（computer use）が入った。以後は各軸の深化（例: 知識の接続における MCP、応用における coding agents の専用原典）を `lint` のデータギャップとして追う。
 
 ## 関連ページ
 

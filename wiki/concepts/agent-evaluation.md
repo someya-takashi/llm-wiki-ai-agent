@@ -7,6 +7,7 @@ related:
   - "[[agent-loop]]"
   - "[[coding-agents]]"
   - "[[agent-observability]]"
+  - "[[computer-use-agents]]"
 summaries:
   - "[[summaries/2025-masft]]"
   - "[[summaries/2026-sakana-fugu]]"
@@ -14,7 +15,8 @@ summaries:
   - "[[summaries/2025-deepseek-r1]]"
   - "[[summaries/2025-multi-agent-research-system]]"
   - "[[summaries/2025-cot-faithfulness]]"
-updated: 2026-07-26
+  - "[[summaries/2026-kimi-k2.5]]"
+updated: 2026-07-28
 ---
 
 # Agent Evaluation（エージェント評価）
@@ -32,6 +34,8 @@ LLM（Large Language Model, 大規模言語モデル）エージェントの能�
 - **τ-bench（τ³）** — ツールを使う対話型業務（航空・銀行等）。ユーザーシミュレータとの多輪対話で成功率や pass@k（k 回試行してひとつでも成功する率）を測る
 - **AppWorld** — 日常サービス群のモック環境での API 横断タスク
 - **GSM-Plus / HumanEval** — 数学文章題（敵対的摂動つき）／コード生成（pass@k）
+- **BrowseComp / WideSearch / DeepSearchQA / Seal-0** — agentic search（Web 検索・ブラウジングを重ねるディープリサーチ）系。BrowseComp は多段推論の合成、WideSearch は広い列挙で **item-F1**（列挙型回答の項目単位 F1）を測る。[[summaries/2026-kimi-k2.5]] の主戦場で、コンテキスト管理戦略（なし／Discard-all／Agent Swarm）の**同一モデル内比較**を報告した点が方法論的に新しい
+- **OSWorld-Verified / WebArena** — computer use（GUI 操作）系。実 OS・実 Web アプリ上のタスク成功率 → [[computer-use-agents]]
 
 [[summaries/2026-sakana-fugu]] の評価はこの型の実践例で、同時に落とし穴も示している: 比較対象の多くが **provider-reported**（プロバイダ公表値の引き写しで、評価条件が揃っている保証がない）であること、ベンチマーク汚染（訓練データへの問題の混入）の懸念、ハーネス差が結果を左右すること（同じモデルでも Mini-SWE-agent と重厚な scaffold ではスコアが変わる）である。スコアの数字は**測定条件とセット**でしか意味を持たない。
 
@@ -72,6 +76,8 @@ LLM（Large Language Model, 大規模言語モデル）エージェントの能�
 | Cohen's κ | アノテータ間（人間↔人間、人間↔LLM judge）の一致度 |
 | ステップ数・トークン・コスト・レイテンシ | 実務では成否と同格に重要（[[summaries/2026-sakana-fugu]] の Fugu/Ultra の使い分けが好例) |
 
+**スコアとコストの併記**が実務の標準になりつつある。[[summaries/2026-kimi-k2.5]] の表5 は各ベンチマークのスコアに**平均出力トークン数**を併記し（例: AIME 96.1% を 25k トークンで達成 vs 前世代は 94.5% に 30k）、同じ「正答率 1 位」でも推論コストが 2 倍違えば別物であることを可視化した。同レポートは評価の再現条件——Avg@k（k 回独立実行の平均。AIME は Avg@64）、ステップ上限（サブエージェントあたり最大 100 ツール呼び出し等）、コンテキスト管理の有無、超過時は切り詰めでなく**失敗としてカウント**——を付録で全公開しており、agentic 評価の報告様式の参考例になる。一方で、ベースラインの多くが自社再評価（API 不安定によるベースライン側の無出力を誤答扱いにするなどの非対称を自己申告）であり、内製ベンチ（In-house Swarm Bench）は外部再現不可という、provider-reported 問題の変奏も同居している。
+
 評価プロトコルはモデル世代に追随して更新が要る。[[summaries/2025-deepseek-r1]] は、長出力の推論モデルを貪欲デコードで測ると反復が増えてチェックポイント間の変動が大きくなるため、**temperature 0.6 で k 個サンプリングして pass@1 を平均で推定**する方式を採った。また、評価信号を訓練にも使う場合（RLVR）は **reward hacking** が中心的リスクになる——ニューラル報酬モデルよりルールベース検証器が選ばれた理由であり、「judge を検証してから使う」という本ページの規律の訓練側の対応物である。
 
 ## 関連ページ
@@ -80,4 +86,5 @@ LLM（Large Language Model, 大規模言語モデル）エージェントの能�
 - [[agent-loop]] — trajectory が評価の一次データになる
 - [[agent-observability]] — トレースの収集・可視化基盤（未作成）
 - [[coding-agents]] — SWE-bench 系評価の主戦場（未作成）
+- [[computer-use-agents]] — OSWorld / WebArena 系評価の対象領域
 - [[summaries/2025-masft]] / [[summaries/2026-sakana-fugu]] / [[summaries/2025-multi-agent-research-system]] — 本ページの根拠原典
