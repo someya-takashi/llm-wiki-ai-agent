@@ -33,6 +33,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ### Articles / Blogs
 
+- [[summaries/2023-moe-explained]] — Hugging Face（2023）。MoE の定番入門。疎な MoE 層＋ルータ・負荷分散 3 点セット・「メモリ 47B/FLOPs 12B」の分離・FT の落とし穴。
 - [[summaries/2024-building-effective-agents]] — Anthropic（2024, 改訂版）。workflow/agent の区別・5 パターン・3 原則（simplicity/transparency/ACI）。実務指針の事実上の標準。
 - [[summaries/2025-multi-agent-research-system]] — Anthropic（2025）。Research 機能の本番 orchestrator-worker。+90.2%・トークン 15 倍の経済性・プロンプト 8 原則・20 クエリ評価。
 - [[summaries/2026-gpt2-to-kimi3]] — X 記事（@waterloo_intern, 2026）。GPT-2→Kimi K3 の 22,580 倍を「固定容量メモリ＋追い出しポリシー」の系譜として実装コード付きで解説。
@@ -55,6 +56,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2025-long-cot-survey]] — Long CoT サーベイの全文翻訳（図 11 枚・表 7 点収録。分類法ツリーと囲みボックス 10 個をテキスト復元。定義式は LaTeX 維持）。
 - [[translations/2026-gpt2-to-kimi3]] — 「From GPT2 to Kimi3, Explained」の全文翻訳（図 22 枚収録。X の数式連結を復元。コード 12 個は原文のまま収録）。
 - [[translations/2026-llm-optimization-guide]] — Mirantis「LLM Optimization: Techniques and Guide」の全文翻訳（本文に図なし。カバーバナーは chrome として除外）。
+- [[translations/2023-moe-explained]] — Hugging Face「Mixture of Experts Explained」の全文翻訳（欠落していた GShard 図を原ページから復元。数式 5 本を正規化。図 12 枚収録）。
 - [[translations/2026-sakana-fugu]] — Sakana Fugu テクニカルレポートの全文翻訳（付録・棋譜含む。プロンプトと棋譜は原文のまま収録）。
 - [[translations/2025-masft]] — MASFT 論文の全文翻訳（付録の失敗事例トレース・介入プロンプト含む。トレースとプロンプトは原文のまま収録）。
 - [[translations/2025-deepseek-r1]] — DeepSeek-R1 論文の全文翻訳（GRPO の式・aha moment の記録含む。テンプレートと応答例は原文のまま収録）。
@@ -101,7 +103,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - HITL / CoT モニタリング / CoT faithfulness / prompt injection / sandboxing / safety case → [[agent-safety-and-guardrails]]
 - Long CoT / test-time scaling / overthinking / reasoning boundary / Best-of-N / budget forcing → [[test-time-compute]]
 - KV cache / TTFT / TPS / prefill / decode / FlashAttention / PagedAttention / quantization / continuous batching → [[llm-inference-optimization]]
-- MoE / MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only → [[transformer-architecture]]
+- MoE / MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / Mixtral / Switch Transformers / expert capacity / router → [[transformer-architecture]]
+- expert parallelism / capacity factor / Megablocks / QMoE → [[llm-inference-optimization]]
 
 ## Questions
 

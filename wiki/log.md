@@ -218,3 +218,13 @@ type: log
   - Table 1・2 はクリップに Markdown で残存、Table 3〜6（ベンチマーク比較・安全性評価）は HTML から rowspan/colspan 展開パーサで全数値を転記。Algorithm 1（MuonClip）は構造を保ってコードブロック化。
   - Appendix A（Contributions＝著者一覧）は謝辞相当として訳出対象外（DeepSeek-R1 の前例に準拠）。Appendix B のツール呼び出しトークンテンプレートと TypeScript/JSON ツール定義は原文のまま収録。
   - 概念ページの新規作成なし（Kimi K2 はスキーマ §1 の landmark 規約により既存 4 概念内で記述）。
+
+## [2026-07-28] ingest | Mixture of Experts Explained（Hugging Face）
+
+- 取り込み: `raw/articles/Mixture of Experts Explained.md`（Hugging Face Blog, 2023-12-11 → Obsidian Web Clipper。Sanseviero, Tunstall, Schmid, Mangrulkar, Belkada, Cuenca）
+- 作成: [[summaries/2023-moe-explained]], [[translations/2023-moe-explained]], `raw/assets/2023-moe-explained/`（00〜11 の 12 枚、元名保持）
+- 更新: [[concepts/transformer-architecture]]（MoE 節に系譜・負荷分散 3 点セット・selective precision・専門化と FT の知見を追加）, [[concepts/llm-inference-optimization]]（「MoE のサービング — パラメータと FLOPs の分離」節を新設）, [[overview]], [[index]]
+- メモ:
+  - クリップ不良: **GShard の MoE Transformer Encoder 図（02_moe_block.png）が画像欠落**（キャプションのみ残存。HF の連番 00,01,03… から欠番を特定）→ 原ページから復元。数式 5 本の LaTeX が崩れていた（`\left(\right.` 混入）→ クリーンな LaTeX へ正規化（訳注明記）。05・11 の画像は初回 DL が失敗しリトライで取得。
+  - 除外 chrome: 末尾の Citation（BibTeX）・関連記事誘導 2 件・Community。冒頭の第 2 版（2026-02）案内は原ページの編集注記として訳出。
+  - 概念ページの新規作成なし（MoE はスキーマ規定どおり transformer-architecture 内で扱う）。2023 年時点の記事のため、shared experts・細粒度分割・スパース性スケーリング則（K2/K3 世代）とのギャップを要約の限界節に明記。

@@ -65,6 +65,7 @@ updated: 2026-07-26
 
 - transformer architecture と個別モデルの世代 → [[transformer-architecture]]
   - 系譜の俯瞰は [[summaries/2026-gpt2-to-kimi3]]（2026）: GPT-2 → Kimi K3 の **22,580 倍**を「固定容量の連想メモリには追い出しポリシーが要る」という一本の線で読む——KV cache の O(N) 成長 → linear attention の固定状態（干渉）→ delta rule の選択的上書き → ゲート減衰 → KDA/MLA ハイブリッド＋MoE。スケーリングは「容量をどこに足すか」の設計である。
+  - MoE の基礎は [[summaries/2023-moe-explained]]（Hugging Face, 2023）: 疎な MoE 層＋ルータの仕組み、1991 年からの系譜（Shazeer → GShard → Switch → Mixtral）、負荷分散の 3 点セット（aux loss・z-loss・expert capacity）、「メモリは総パラメータ・計算は活性化分」という MoE 経済の本質。K2/K3・DeepSeek 世代の MoE 採用を理解する土台。
 - post-training（RLHF, RLVR 等）→ [[reinforcement-learning-from-human-feedback]]
   - DeepSeek-R1（[[summaries/2025-deepseek-r1]], 2025）は、検証可能な報酬だけの大規模 RL（RLVR）で長い思考・自己検証・reflection が**創発**することを公開実証し、o1 型推論モデルの製法を開いた。GRPO は [[summaries/2026-sakana-fugu]] のオーケストレータ訓練にも使われ、モデルとエージェントの両方を貫く訓練レシピになっている。
 - test-time compute（推論時に計算量を増やして精度を上げる考え方）→ [[test-time-compute]]
@@ -85,7 +86,7 @@ updated: 2026-07-26
 | 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学） |
 | 応用 | （なし。ただし [[summaries/2026-sakana-fugu]] がコーディング・自律研究・CAD 等の応用例に言及) |
 | 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）、[[summaries/2025-multi-agent-research-system]]（小規模評価・単一ジャッジ・終了状態評価・本番運用の信頼性）、[[summaries/2025-cot-faithfulness]]（CoT 忠実性・CoT モニタリングの限界・安全性）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
-| LLM 基盤 | [[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）、[[summaries/2025-long-cot-survey]]（Long CoT の体系化・test-time scaling・推論境界）、[[summaries/2026-gpt2-to-kimi3]]（アーキテクチャの系譜・KV cache・推論効率）、[[summaries/2026-llm-optimization-guide]]（本番推論最適化の実務・サービング運用）、[[summaries/2025-kimi-k2]]（エージェント特化の事前学習＋データ合成＋joint RL）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
+| LLM 基盤 | [[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）、[[summaries/2025-long-cot-survey]]（Long CoT の体系化・test-time scaling・推論境界）、[[summaries/2026-gpt2-to-kimi3]]（アーキテクチャの系譜・KV cache・推論効率）、[[summaries/2026-llm-optimization-guide]]（本番推論最適化の実務・サービング運用）、[[summaries/2025-kimi-k2]]（エージェント特化の事前学習＋データ合成＋joint RL）、[[summaries/2023-moe-explained]]（MoE の仕組み・歴史・負荷分散）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
 
 6 軸すべてに少なくとも 1 件の原典が入った（2026-07-26 時点）。以後は各軸の深化（例: 知識の接続における MCP、応用における coding agents の専用原典）を `lint` のデータギャップとして追う。
 
