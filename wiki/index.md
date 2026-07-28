@@ -18,6 +18,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ### Papers
 
+- [[summaries/2021-switch-transformers]] — Switch Transformers（JMLR 2022）。MoE 実用化の転換点: top-1 ルーティング・selective precision・負荷分散損失・蒸留 30%・初の 1.6T モデル。並列化体系（data/model/expert）の原典。
 - [[summaries/2020-rag]] — RAG（NeurIPS 2020）。パラメトリック/非パラメトリック記憶の end-to-end 結合。幻覚減・索引差し替えによる知識更新・retrieval collapse の初記録。
 - [[summaries/2022-chain-of-thought]] — CoT（NeurIPS 2022）。例示に思考連鎖を入れるだけで推論が創発。「考えてから答える」設計すべての祖形。
 - [[summaries/2022-react]] — ReAct（ICLR 2023）。思考と行動を交互に生成させ、外部接地で幻覚を抑えつつ行動を推論で導くパラダイム。agent loop の原型。
@@ -68,6 +69,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2026-kimi-k2.5]] — Kimi K2.5 テクニカルレポートの全文翻訳（欠落していた図7 と脚注 2 件を ar5iv から復元。Table 4 は太字含め正規化。システムプロンプト・ツールスキーマは原文のまま収録）。
 - [[translations/2026-gemma-4]] — Gemma 4 テクニカルレポートの全文翻訳（PDF 原典。表 12 点＋Algorithm 1 を転記、図 2 枚はユーザー提供。制御トークン書式・会話例は原文のまま収録）。
 - [[translations/2026-deepseek-v4]] — DeepSeek-V4 テクニカルレポートの全文翻訳（欠落していた SVG 図 11 枚を ar5iv から復元。プロンプトボックス 2 点は SVG からテキスト化。脚注 4 件復元・HTML 表 8 個を正規化）。
+- [[translations/2021-switch-transformers]] — Switch Transformers 論文の全文翻訳（多パネル図の欠落 4 枚と Mesh TF 擬似コード 3 本・脚注 11 件を ar5iv から復元。付録 A〜F 含む）。
 
 ## Concepts
 

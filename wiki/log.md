@@ -281,3 +281,15 @@ type: log
 - 双方向リンク補修: 古い要約 9 ページの「関連ページ」節に概念ページへの逆リンク計 18 件を追加（reflexion→agent-memory/reasoning-and-planning/test-time-compute、multi-agent-research-system→agent-memory/safety/llm-inference-optimization/test-time-compute 等）。
 - [[concepts/agent-safety-and-guardrails]]: sandboxing 節に DSec（[[summaries/2026-deepseek-v4]]）を本番規模の実例として追記、CUA の攻撃面（[[computer-use-agents]]・K2.5 のパスワード平文プロンプト）の段落を新設。frontmatter に summaries/related を追加。
 - 見送り: summary→concept の frontmatter 追加 25 件は傍系言及と判定し現状維持（`summaries` は根拠原典に限る規約）。context-engineering への 2026-llm-optimization-guide 追加も本文未参照のためスキップ。
+
+## [2026-07-29] ingest | Switch Transformers
+
+- 取り込み: `raw/papers/Switch Transformers_ Scaling to Trillion Parameter Models with Simple and Efficient Sparsity.md`（ar5iv → Obsidian Web Clipper、arXiv:2101.03961 / JMLR 2022, Fedus, Zoph, Shazeer / Google）
+- 作成: [[summaries/2021-switch-transformers]], [[translations/2021-switch-transformers]], `raw/assets/2021-switch-transformers/`（x1〜x17 の 17 枚、元名保持）
+- 更新: [[concepts/transformer-architecture]]（MoE 節に Switch の一次資料段落——top-1 の反通念・安定化レシピ 3 点・「不安定性は FLOPs/トークンに相関」・否定的結果 2 件）, [[concepts/llm-inference-optimization]]（expert parallelism の体系化（§5/図9）と蒸留の一次数値を出典化）, [[summaries/2023-moe-explained]]（関連ページに一次資料リンク）, [[overview]], [[index]]
+- メモ:
+  - クリップ不良: **多パネル図の 2 枚目が 4 枚欠落**（x2=Figure 1 右・x6=Figure 4 右・x9=Figure 6 右・x17=Figure 13 右。K2 と同じ脱落パターン）→ 17 枚全取得で復元。
+  - **付録 F の Mesh TensorFlow 擬似コード 3 本（Figure 14/15/16）がコードブロックとして欠落**（行がバラけ ␣ 混入）→ ar5iv 埋め込みの base64 プレーンテキストからデコードして復元し、翻訳内の 3 ブロックと diff 照合で完全一致を確認（照合で発見した転記ミス 2 箇所を修正）。
+  - 脚注 11 件の本文欠落（クリップは sup マーカーのみ・番号が途中で重複）→ ar5iv から復元し出現順に [^fn1]〜[^fn11] へ振り直し（訳注明記）。
+  - Table 7（HTML 表）を markdown 化。Table 5 の 3 段組は 3 表に分割。
+  - 概念ページの新規作成なし（Switch Transformers は landmark 規約により transformer-architecture 内で記述。既存の入門解説 2023-moe-explained の一次資料という位置づけ）。

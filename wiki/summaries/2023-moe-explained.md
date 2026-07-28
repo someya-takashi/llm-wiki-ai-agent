@@ -103,6 +103,7 @@ transformer の **FFN 層をエキスパート群（各自が FFN）で置き換
 
 ## 関連ページ
 
+- [[summaries/2021-switch-transformers]] — 本記事が解説の中心に据える論文の一次資料（top-1・selective precision・蒸留の出典）
 - [[transformer-architecture]] — MoE 節の土台となる根拠原典（仕組み・歴史・訓練の急所）
 - [[llm-inference-optimization]] — VRAM/FLOPs 分離・expert parallelism・capacity factor・蒸留のサービング側
 - [[summaries/2025-kimi-k2]] — 本記事の 2 年後: shared experts・スパース性 48・スケーリング則の実践

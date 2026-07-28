@@ -16,6 +16,7 @@ summaries:
   - "[[summaries/2026-kimi-k2.5]]"
   - "[[summaries/2026-gemma-4]]"
   - "[[summaries/2026-deepseek-v4]]"
+  - "[[summaries/2021-switch-transformers]]"
 updated: 2026-07-29
 ---
 
@@ -47,6 +48,8 @@ GPT-2 以来の標準形は **decoder-only**（デコーダのみ）構成であ
 ## MoE — 条件付き容量
 
 **MoE**（Mixture-of-Experts）は、MLP を多数の「エキスパート」に分割し、学習された**ルータ**がトークンごとに一部だけを起動する疎な構造。総パラメータを増やしながら 1 トークンあたりの計算を抑える「条件付き容量」の手法である。系譜は古く、1991 年の Adaptive Mixture of Local Experts（エキスパート＋ゲートの原型）→ Shazeer 2017 のスパース化（Noisy Top-k Gating, 137B LSTM）→ GShard（transformer への適用・expert capacity）→ Switch Transformers（**top-1 で十分**という簡素化・1.6T/2048 エキスパート・事前学習 4 倍速）→ Mixtral 8x7B（オープン MoE の実用化）と発展した（[[summaries/2023-moe-explained]] が定番の入門整理）。
+
+実用化を決めた転換点が **Switch Transformers**（[[summaries/2021-switch-transformers]], 2021）で、その貢献は機構の追加でなく**削除**にある。「ルータの学習には k≥2 のエキスパート比較が要る」という通念（Shazeer 2017）に反して **top-1** で品質を保てることを実証し（ゲート値を出力に掛ければ微分可能性は残る）、補助損失も単一の負荷分散損失 $\alpha N\sum_i f_i P_i$（$\alpha=10^{-2}$）へ簡素化した。安定化の実装レシピ——**selective precision**（ルータ関数の内部のみ float32。dispatch/combine は bfloat16 へ戻すので通信は軽いまま）・**0.1x の小初期化**（実行間分散 0.68→0.01）・**expert dropout**（微調整時にエキスパート層のみ 0.4）——はこの論文が確立したもので、同一計算資源で T5-Base 比 7 倍の事前学習高速化と、初の 1.6T モデル（Switch-C。訓練不安定ゼロ。むしろ FLOPs が 10 倍の Switch-XXL の方が不安定＝**不安定性はパラメータ数でなく FLOPs/トークンに相関**という観察も）に到達した。否定的結果の公開も価値が高い: attention への Switch 適用は bfloat16 で発散、あふれトークンを第 2 候補へ回す No-Token-Left-Behind は**効かない**（学習されたトークン・エキスパートの関連を崩すと逆効果）——「単純化が勝つ」という本論文の主題の裏づけである。
 
 MoE の本質は**パラメータ数と計算量の分離**にある——Mixtral 8x7B は「メモリ 47B・推論 FLOPs 12B 相当」（attention 等は共有されるため 8×7B にはならない）。訓練の急所は**負荷分散**: 放置するとルータは少数の人気エキスパートへ自己強化的に収束するため、auxiliary loss（均等な重要度）・router z-loss（ゲートの大きなロジットへのペナルティ）・expert capacity（あふれの制御）の 3 点セットで抑える。**ルータは指数関数を含むため高精度必須**（エキスパートは bfloat16 でも、ルーティングは full precision——selective precision）。エキスパートの専門化は「言語」のような大きな単位ではなく**トークン群・浅い概念**の単位で起こり（句読点・固有名詞のエキスパート等）、疎モデルは過学習しやすい一方で **instruction tuning からは密モデル以上の恩恵**を受ける。Kimi K3 の実例（[[summaries/2026-gpt2-to-kimi3]]）: 898 エキスパートのうち**共有 2 つ**が全トークンを処理し、残り 896 から**各トークンに 16** をルータが選ぶ。さらにエキスパートを圧縮された**潜在空間**で動かして FLOPs をほぼ半減させる。DeepSeek-V3/R1（[[summaries/2025-deepseek-r1]] の基盤モデル）も大規模 MoE の代表例である。
 

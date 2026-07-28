@@ -68,7 +68,7 @@ updated: 2026-07-29
 
 - transformer architecture と個別モデルの世代 → [[transformer-architecture]]
   - 系譜の俯瞰は [[summaries/2026-gpt2-to-kimi3]]（2026）: GPT-2 → Kimi K3 の **22,580 倍**を「固定容量の連想メモリには追い出しポリシーが要る」という一本の線で読む——KV cache の O(N) 成長 → linear attention の固定状態（干渉）→ delta rule の選択的上書き → ゲート減衰 → KDA/MLA ハイブリッド＋MoE。スケーリングは「容量をどこに足すか」の設計である。
-  - MoE の基礎は [[summaries/2023-moe-explained]]（Hugging Face, 2023）: 疎な MoE 層＋ルータの仕組み、1991 年からの系譜（Shazeer → GShard → Switch → Mixtral）、負荷分散の 3 点セット（aux loss・z-loss・expert capacity）、「メモリは総パラメータ・計算は活性化分」という MoE 経済の本質。K2/K3・DeepSeek 世代の MoE 採用を理解する土台。
+  - MoE の基礎は [[summaries/2023-moe-explained]]（Hugging Face, 2023）: 疎な MoE 層＋ルータの仕組み、1991 年からの系譜（Shazeer → GShard → Switch → Mixtral）、負荷分散の 3 点セット（aux loss・z-loss・expert capacity）、「メモリは総パラメータ・計算は活性化分」という MoE 経済の本質。K2/K3・DeepSeek 世代の MoE 採用を理解する土台。その中心にある一次資料が [[summaries/2021-switch-transformers]]（2021）——top-1 ルーティング・selective precision・蒸留 30%・初の 1.6T モデルと、data/model/expert 並列の体系化の原典。
 - post-training（RLHF, RLVR 等）→ [[reinforcement-learning-from-human-feedback]]
   - DeepSeek-R1（[[summaries/2025-deepseek-r1]], 2025）は、検証可能な報酬だけの大規模 RL（RLVR）で長い思考・自己検証・reflection が**創発**することを公開実証し、o1 型推論モデルの製法を開いた。GRPO は [[summaries/2026-sakana-fugu]] のオーケストレータ訓練にも使われ、モデルとエージェントの両方を貫く訓練レシピになっている。
   - 後継の DeepSeek-V4（[[summaries/2026-deepseek-v4]], 2026）は事後学習の主役を **On-Policy Distillation（OPD）** に置換: ドメイン専門家を RL で個別に鍛え、学生の自己生成軌跡上の全語彙逆 KL 蒸留で単一モデルへ統合する——「発見は RL・統合は蒸留」の分業がパイプライン設計の原理に昇格した。
