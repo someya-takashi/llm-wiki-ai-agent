@@ -192,3 +192,17 @@ type: log
   - 復元 2 件: §AttnRes の数式 2 箇所（X の数式レンダリングテキストと LaTeX ソースが連結 → LaTeX 抽出で正規化）、「Gated DeltaNet withM Mamba」の語割れ（文脈判断で "with Mamba"）。いずれも訳注に明記。
   - 画像は 22 枚（プラン時見積 20 → 実際 22）。冒頭 2 枚（アーキテクチャ総覧・系譜タイムライン）は内容確認のうえコンテンツ図として採用（chrome ではない）。原典の図にキャプションがないため、図番号と説明は直前本文に基づく訳注として付した。コードブロック 12 個は原文のまま（不規則インデントも原文由来）。
   - 概念ページは transformer-architecture と llm-inference-optimization の両方を新規作成（ユーザー承認）。overview 軸 6 のアーキテクチャ・推論効率の行が初めて埋まり、未作成スラグは 7 個に減少。
+
+## [2026-07-28] ingest | LLM Optimization: Techniques and Guide（Mirantis）
+
+- 取り込み: `raw/articles/LLM Optimization_ Techniques and Guide.md`（Mirantis Blog, 2026-07-14 → Obsidian Web Clipper。ベンダーブログ）
+- 作成: [[summaries/2026-llm-optimization-guide]], [[translations/2026-llm-optimization-guide]]（本文に図なし・画像取得なし）
+- 更新: [[concepts/llm-inference-optimization]]（モデル圧縮・バッチング/KV cache 管理・運用の規律の 3 節を追加/拡充）, [[overview]], [[index]]
+- メモ:
+  - クリップは良好。原ページ照合の結果、本文に欠落なし。原ページの画像はすべてサイト UI（ロゴ・アイコン）と装飾カバーバナーで、コンテンツ図はゼロ——クリップに含まれていたカバーバナー 1 枚は chrome として除外。
+  - ベンダーブログのため、末尾の製品紹介（k0rdent AI）も本文として訳出しつつ、要約では宣伝的性格と引用値（Introl 等の転記）の未検証性を批判的視点として明記。
+  - 概念ページの新規作成なし（llm-inference-optimization の 2 本目の原典として吸収）。
+
+## [2026-07-28] schema-update | ingest 完了後のコミットを標準フロー化
+
+- ユーザー指示により、ingest skill（`.claude/skills/ingest/SKILL.md`）の標準フローに手順 10「コミット」を追加。今後は検証完了後、ユーザーに確認せず `git add -A` → 既存フォーマットでのコミットまでを ingest の一部として実施する。
