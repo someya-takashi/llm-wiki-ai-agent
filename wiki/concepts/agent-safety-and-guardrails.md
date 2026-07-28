@@ -9,12 +9,14 @@ related:
   - "[[agent-observability]]"
   - "[[agent-evaluation]]"
   - "[[agent-loop]]"
+  - "[[computer-use-agents]]"
 summaries:
   - "[[summaries/2025-cot-faithfulness]]"
   - "[[summaries/2022-react]]"
   - "[[summaries/2024-building-effective-agents]]"
   - "[[summaries/2025-multi-agent-research-system]]"
-updated: 2026-07-26
+  - "[[summaries/2026-deepseek-v4]]"
+updated: 2026-07-29
 ---
 
 # Agent Safety and Guardrails（エージェントの安全性とガードレール）
@@ -33,6 +35,10 @@ LLM（Large Language Model, 大規模言語モデル）エージェントが**�
 ### (1) 行動空間と権限の設計
 
 最も確実な安全策は、**危険な行動をそもそも行動空間に含めない**こと。[[summaries/2022-react]] の Wikipedia API は閲覧のみで編集できない設計であり、これが最初期の実例。実務では権限の最小化・読み書きの分離・破壊的操作の隔離（sandboxing, 危険な操作を隔離環境に閉じ込めること）として一般化されている → [[tool-use-and-function-calling]]。
+
+sandboxing の本番規模の実例が DeepSeek の **DSec**（[[summaries/2026-deepseek-v4]]）である: エージェントのコード実行を Function Call（事前ウォームのコンテナプール）／Docker 互換コンテナ／microVM（Firecracker, VM レベル隔離）／fullVM（QEMU, 任意ゲスト OS）の **4 実行基盤**に振り分け、セキュリティ要求に応じて隔離強度をパラメータ 1 つで切り替える。数十万並行のサンドボックスを管理し、**全コマンドと結果を trajectory ログに永続記録**する——隔離（層 1）と行動ログ監視（層 3）を同一基盤で提供する設計であり、「エージェント RL・評価のインフラは安全性インフラを兼ねる」ことを示す例でもある。
+
+行動空間の観点で露出面が最大級なのが **computer use（GUI 操作）エージェント**である（→ [[computer-use-agents]]）: 観測は「画面に映るものすべて」なので間接 prompt injection の攻撃面が広く、行動空間は実マシンの任意操作なので被害半径も大きい。しかも現状の権限設計は素朴で、K2.5 の評価プロンプト（[[summaries/2026-kimi-k2.5]] 付録 E.7）はマシンのパスワードを**システムプロンプトに平文で**渡している——資格情報の受け渡し・スコープ制限・不可逆操作の承認フローが、CUA では未整備のまま実運用が先行している状態の記録である。
 
 ### (2) 入出力のガードレール
 
@@ -69,4 +75,6 @@ CoT より硬い監視面は**行動そのもの**である。ツール呼び出
 - [[reinforcement-learning-from-human-feedback]] — reward hacking と訓練時の対策
 - [[agent-observability]] — 行動ログ・トレースの監視基盤（未作成）
 - [[agent-evaluation]] — 安全性指標の測定規律
+- [[computer-use-agents]] — 露出面が最大級の行動空間（画面全部が入力・実マシン全操作が出力）
 - [[summaries/2025-cot-faithfulness]] — 本ページの主要な根拠原典
+- [[summaries/2026-deepseek-v4]] — 本番規模 sandboxing（DSec）の実例

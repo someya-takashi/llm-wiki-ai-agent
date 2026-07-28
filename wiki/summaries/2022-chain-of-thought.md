@@ -82,4 +82,5 @@ CoT はこの 2 つを「見本の中に推論を書く」ことで合流させ�
 - [[summaries/2022-react]] — CoT の幻覚・非接地問題への直接の回答（thought + 行動）
 - [[test-time-compute]] — 「難しい問題に中間トークンで計算を配分する」発想の後継
 - [[tool-use-and-function-calling]] — CoT ＋外部計算機はツール併用推論の原型
+- [[context-engineering]] — few-shot 例示の積み方という文脈設計の古典（後の世代で反転）
 - [[translations/2022-chain-of-thought]] — 全文翻訳

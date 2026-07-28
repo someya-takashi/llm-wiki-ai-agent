@@ -141,6 +141,7 @@ GRM（Generative Reward Model, 生成型報酬モデル）は **actor 自身が�
 - [[test-time-compute]] — reasoning effort 3 段・1M による scaling の天井引き上げ
 - [[context-engineering]] — Interleaved Thinking（思考トレースの全保持への転換）
 - [[agent-evaluation]] — 内製 Codeforces Elo の手続き・開発者サーベイという評価形式
+- [[agent-safety-and-guardrails]] — DSec（4 実行基盤の隔離＋trajectory ログ）は本番規模 sandboxing の実例
 - [[summaries/2025-deepseek-r1]] — 系譜の前身（RLVR・GRPO・蒸留の知見）
 - [[summaries/2025-kimi-k2]] / [[summaries/2026-kimi-k2.5]] — 同時代のオープン競合（MuonClip との対比・GRM の収斂）
 - [[summaries/2026-gemma-4]] — KV 削減の別解（間引き・共有）と thinking トグル

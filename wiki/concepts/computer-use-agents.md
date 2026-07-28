@@ -32,7 +32,7 @@ CUA は [[agent-loop]] の一種で、典型的には次を反復する:
 現時点の wiki 内の主要な根拠原典は Kimi K2.5（[[summaries/2026-kimi-k2.5]], 2026）で、**汎用マルチモーダルモデルが専用フレームワークなしで CUA として機能する**水準を示した:
 
 - **構成**（OpenCUA 構成に準拠）: コンテキストは「直近 3 枚の履歴スクリーンショット＋完全な思考履歴＋タスク指示」。システムプロンプトは各ステップに `{thought}` → `## Action:` → `## Code:` の形式を要求し、Code 部は **pyautogui コードまたは `computer.wait` / `computer.terminate`** の 2 関数（付録 E.7 に全文）。エピソードあたり最大 100 ステップ。
-- **結果**: OSWorld-Verified **63.3%**（GUI 操作のみ）——オープンソースの Qwen3-VL-235B-A22B（38.1%）、OpenAI の CUA フレームワーク **Operator**（o3 ベース, 42.9%）を大きく上回り、主導的 CUA である **Claude Opus 4.5**（66.3%）に肉薄。WebArena **58.9%** は Operator（58.1%）超え。
+- **結果**: OSWorld-Verified **63.3%**（GUI 操作のみ）——オープンソースの Qwen3-VL-235B-A22B（38.1%）、OpenAI の CUA フレームワーク **Operator**（o3 ベース, 42.9%）を大きく上回り、K2.5 評価時点（2026 年初頭）の主導的 CUA である **Claude Opus 4.5**（66.3%）に肉薄。WebArena **58.9%** は Operator（58.1%）超え。
 - **能力の出どころ**: 事前学習段階でデスクトップ・モバイル・Web の **GUI スクリーンショットと操作 trajectory**（人手デモ含む）を混ぜ、OS スクリーンショットを joint 事前学習のデータレシピに含めている。GUI 操作は「読む」（アイコン・ボタンの認識＝視覚知覚）と「当てる」（正確な座標出力＝グラウンディング）の複合であり、K2.5 が視覚 RL で鍛えた位置特定・計数・OCR（→ [[reinforcement-learning-from-human-feedback]]）はこの基礎体力にあたる。
 
 Anthropic の Claude computer use（2024〜）と OpenAI の Operator は、この領域をプロダクトとして先行させた代表例である（それぞれの技術詳細の原典は未 ingest。上記スコアは K2.5 レポートの比較評価による）。

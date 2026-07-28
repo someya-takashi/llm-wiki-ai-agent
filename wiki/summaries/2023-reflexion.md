@@ -101,4 +101,7 @@ ReAct・SayCan・Toolformer などで「LLM ＋ツール＋ループ」のエー
 - [[agent-loop]] — episode 内ループの外側に「試行間の改善ループ」を重ねた形
 - [[agent-evaluation]] — 自己生成テストの FP/FN 分析・汚染対策ベンチ設計
 - [[summaries/2024-building-effective-agents]] — evaluator-optimizer パターンの実務版
+- [[agent-memory]] — 反省文のエピソード記憶蓄積は長期記憶設計の初期例
+- [[reasoning-and-planning]] — 「行動の後に振り返る」推論の拡張形として参照される
+- [[test-time-compute]] — 試行間ループ＝外付けのテスト時計算という位置づけ
 - [[translations/2023-reflexion]] — 全文翻訳

@@ -104,4 +104,5 @@ LLM（Large Language Model, 大規模言語モデル）に「考える（thought
 - [[reasoning-and-planning]] — ReAct が属する概念。CoT との対比の本拠地
 - [[agent-loop]] — thought-action-observation ループの定式化
 - [[tool-use-and-function-calling]] — Wikipedia API を初期のツール利用として位置づけ
+- [[agent-safety-and-guardrails]] — HITL 介入（人間による thought 編集）の最初期の実例
 - [[translations/2022-react]] — 全文翻訳

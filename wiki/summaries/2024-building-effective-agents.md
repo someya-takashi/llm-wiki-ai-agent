@@ -104,4 +104,5 @@ agent は「**環境フィードバックに基づいてループの中でツー
 - [[tool-use-and-function-calling]] — ACI・ツール形式設計の一次資料
 - [[multi-agent-systems]] — orchestrator-workers パターンの出所
 - [[summaries/2025-masft]] — 本記事を設計原則の根拠として引用した研究側の対応物
+- [[agent-safety-and-guardrails]] — ガードレール・サンドボックス・HITL を実務原則として明文化した出所
 - [[translations/2024-building-effective-agents]] — 全文翻訳

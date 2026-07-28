@@ -124,4 +124,7 @@ translation: "[[translations/2026-sakana-fugu]]"
 - [[tool-use-and-function-calling]] — マルチエージェント下の function call loop（発行元追跡・共有メモリ）
 - [[reasoning-and-planning]] — 計画の出力先が思考連鎖からワークフローそのものへ持ち上がった例
 - [[summaries/2022-react]] — 単一エージェントの scaffold の原型。Fugu はその上の「scaffold を生成する層」
+- [[agent-evaluation]] — provider-reported 比較・ベンチ汚染・ハーネス差の論点の出所
+- [[agent-memory]] — ワークフロー内隔離／過去ワークフロー共有という記憶境界の設計例
+- [[reinforcement-learning-from-human-feedback]] — GRPO をオーケストレーション訓練に使った応用例
 - [[translations/2026-sakana-fugu]] — 全文翻訳

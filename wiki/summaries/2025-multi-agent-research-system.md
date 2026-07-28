@@ -134,3 +134,7 @@ Claude の Research 機能——リードエージェントが並列サブエー
 - [[summaries/2024-building-effective-agents]] — 同じ Anthropic による設計一般論（本記事はその本番実践編）
 - [[summaries/2025-masft]] — 本記事が実務で対処した失敗モードの研究側の分類
 - [[summaries/2026-sakana-fugu]] — プロンプトによる統制 vs 学習されたオーケストレーションの対照
+- [[agent-memory]] — 計画の外部メモリ保存・成果物の参照渡しパターンの根拠
+- [[agent-safety-and-guardrails]] — 会話内容を見ないトレーシング・rainbow deployment の運用実例
+- [[llm-inference-optimization]] — 並列サブエージェント・並列ツール呼び出しのスループット前提
+- [[test-time-compute]] — 「性能分散の 80% はトークン量」＝並列スケーリングの実測根拠

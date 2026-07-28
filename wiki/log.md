@@ -264,3 +264,20 @@ type: log
   - HTML 表 8 個（Table 1, 6, 7, 9, 11, 12, 13, 14）を rowspan 展開パーサで markdown 化（太字＝最良値を ar5iv から復元。次点の下線は割愛と訳注明記）。分断された表示数式・\penalty マクロをクリーン LaTeX に正規化。
   - Appendix A.1 の著者一覧（約 300 名）は謝辞相当として割愛（K2・R1 前例）。「* は離職者」の注記と A.2 謝辞は訳出。
   - 概念ページの新規作成なし（8 既存概念で吸収）。DSML が Anthropic 式ツールコール書式と同型である点・「原理未解明だが有効」と明記して安定化技術を公開する姿勢を要約で特記。
+
+## [2026-07-29] schema-update | transformer-architecture の分割基準を設定
+
+- lint での粒度点検を受けた判断: [[concepts/transformer-architecture]]（18KB, 6 テーマ）は現時点では**分割しない**（multi-agent-systems と同水準・attention/MoE/残差/オプティマイザは相互依存が強い）。
+- 分割トリガーを設定: **「マルチモーダル拡張」節がマルチモーダル専業の原典 2 件以上を根拠に持った時点**で `multimodal-language-models`（仮）を新設して同節を移す。次点候補は「訓練の安定化・オプティマイザ」（Muon 系原典が増えた場合）。
+- CLAUDE.md 本体の変更なし（スラグ新設はトリガー成立時に §7 の手順で実施）。
+
+## [2026-07-29] lint | 陳腐化 3 件の修正・双方向リンク補修
+
+- lint（20 原典・17 概念）の検出に基づく修正。孤立ページ 0・dangling は未実現スラグ 6 種のみ（被リンク数: agent-observability 6 / model-context-protocol 5 / coding-agents 3）。
+- 陳腐化修正:
+  - [[concepts/multi-agent-systems]]・[[overview]]: K2.5 Agent Swarm の BrowseComp 78.4「GPT-5.2 Pro 超え」に発表時点の限定を付し、V4 世代（単一エージェント 83.4〜85.9）との突き合わせ注記を追加——「並列化の同一モデル内利得」と「絶対値 SOTA」の区別を明文化。
+  - [[concepts/test-time-compute]]・[[concepts/tool-use-and-function-calling]]: K2 の「非思考エージェント/ツール利用 SOTA」に「当時（2025）」の限定を追加。
+  - [[concepts/computer-use-agents]]: 「主導的 CUA = Opus 4.5」に K2.5 評価時点の限定を追加。
+- 双方向リンク補修: 古い要約 9 ページの「関連ページ」節に概念ページへの逆リンク計 18 件を追加（reflexion→agent-memory/reasoning-and-planning/test-time-compute、multi-agent-research-system→agent-memory/safety/llm-inference-optimization/test-time-compute 等）。
+- [[concepts/agent-safety-and-guardrails]]: sandboxing 節に DSec（[[summaries/2026-deepseek-v4]]）を本番規模の実例として追記、CUA の攻撃面（[[computer-use-agents]]・K2.5 のパスワード平文プロンプト）の段落を新設。frontmatter に summaries/related を追加。
+- 見送り: summary→concept の frontmatter 追加 25 件は傍系言及と判定し現状維持（`summaries` は根拠原典に限る規約）。context-engineering への 2026-llm-optimization-guide 追加も本文未参照のためスキップ。

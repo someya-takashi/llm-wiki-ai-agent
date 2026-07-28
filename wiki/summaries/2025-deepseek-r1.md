@@ -108,4 +108,7 @@ R1 が生成した 80 万サンプルで Qwen/Llama の 1.5B〜70B を **SFT だ
 - [[self-reflection]] — reflection の創発（外付け → 内生）
 - [[agent-evaluation]] — pass@1 推定プロトコル・reward hacking
 - [[summaries/2026-sakana-fugu]] — 同じ GRPO でオーケストレーションを訓練した後続
+- [[context-engineering]] — few-shot が性能を下げる（ゼロショット推奨）という積載設計の世代反転
+- [[test-time-compute]] — 思考長の自己獲得＝計算配分の内在化の根拠原典
+- [[transformer-architecture]] — 大規模 MoE（V3 基盤）上の推論訓練という位置づけ
 - [[translations/2025-deepseek-r1]] — 全文翻訳

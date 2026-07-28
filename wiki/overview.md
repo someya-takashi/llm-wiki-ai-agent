@@ -44,7 +44,7 @@ updated: 2026-07-29
 - multi-agent systems（複数エージェントの分業・協調、orchestrator-worker 構成）→ [[multi-agent-systems]]
   - Sakana Fugu（[[summaries/2026-sakana-fugu]], 2026）は「どのモデルにどう働かせるか」を学習したオーケストレータで個々のフロンティアモデル単体を超え、**オーケストレーションをモデルスケーリングと直交する新しいスケーリング軸**として実証した。固定集約役の debate/MoA からクエリ適応的なワークフロー生成への世代交代を示す原典。
   - 本番運用の実例は Anthropic Research（[[summaries/2025-multi-agent-research-system]], 2025）: リード＋並列サブエージェント＋CitationAgent の orchestrator-worker で単一エージェント比 +90.2%。効果の正体は「別コンテキストで並列にトークンを費やす容量」（BrowseComp 分散の 80% をトークン量が説明）であり、代償はチャット比 **15 倍**のトークン——適用条件（幅優先・高価値・並列化可能）まで含めた経済学を開示した。
-  - Kimi K2.5 の Agent Swarm（[[summaries/2026-kimi-k2.5]], 2026）は、その「いつ・いくつ・どう分けるか」を**プロンプト設計から RL（PARL）へ**移した: 凍結サブエージェント＋補助報酬のアニーリング＋critical steps（最長ブランチ）制約で並列化の意思決定自体を学習し、BrowseComp 78.4%（+17.8pt）・実行時間 3〜4.5 倍短縮。フロンティアモデル自体が並列オーケストレーションを内蔵する段階に入った。
+  - Kimi K2.5 の Agent Swarm（[[summaries/2026-kimi-k2.5]], 2026）は、その「いつ・いくつ・どう分けるか」を**プロンプト設計から RL（PARL）へ**移した: 凍結サブエージェント＋補助報酬のアニーリング＋critical steps（最長ブランチ）制約で並列化の意思決定自体を学習し、BrowseComp 78.4%（同一モデル比 +17.8pt。絶対値は発表時点）・実行時間 3〜4.5 倍短縮。フロンティアモデル自体が並列オーケストレーションを内蔵する段階に入った。
 - agent frameworks（LangGraph, AutoGen, CrewAI, Claude Agent SDK 等）→ [[agent-frameworks]]
   - 実務の標準語彙は Anthropic「Building Effective Agents」（[[summaries/2024-building-effective-agents]], 2024）が確立: workflow（事前定義コードパス）と agent（動的制御）の区別、5 つの設計パターン、「まず単純に、複雑さは実証されたときだけ」の原則。
 

@@ -123,3 +123,4 @@ LLM（Large Language Model, 大規模言語モデル）のコンテキストウ�
 - [[retrieval-augmented-generation]] — 固定 top-K の静的検索を、エージェント自身のページング検索で破る中間形態
 - [[summaries/2025-multi-agent-research-system]] — 計画の外部メモリ保存・フェーズ要約など、本設計の本番実装形（2025）
 - [[summaries/2023-reflexion]] — 同時期の「エピソード記憶に反省を蓄える」記憶設計との対比
+- [[agent-loop]] — イベント駆動制御・ヒュリスティックでない yield の設計はループ制御の変種
