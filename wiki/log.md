@@ -251,3 +251,16 @@ type: log
   - References と Core contributors / Contributors（p.13-15 の著者一覧＝謝辞相当）は訳出対象外（K2・DeepSeek-R1 の前例に準拠）。
   - 画像はケース B の例外規定（ユーザー指示画像）を適用: raw/images/fig1.png・fig2.png → raw/assets/2026-gemma-4/ へ git mv で集約。
   - 概念ページの新規作成なし（Gemma 4 は landmark 規約により既存 5 概念内で記述）。K2.5（共有エンコーダ路線・フロンティア MoE）との対比を transformer-architecture と要約の両方に明記。
+
+## [2026-07-29] ingest | DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence
+
+- 取り込み: `raw/papers/DeepSeek-V4_ Towards Highly Efficient Million-Token Context Intelligence.md`（ar5iv → Obsidian Web Clipper、arXiv:2606.19348, DeepSeek-AI, 2026。プレビュー版）
+- 作成: [[summaries/2026-deepseek-v4]], [[translations/2026-deepseek-v4]], `raw/assets/2026-deepseek-v4/`（PNG 5 枚＋SVG 11 枚 = 16 枚、元名保持）
+- 更新: [[concepts/transformer-architecture]]（attention 系譜に「圧縮してから選ぶ」＝CSA/HCA、残差ストリーム節に HC/mHC と Muon・安定化 2 技）, [[concepts/llm-inference-optimization]]（「100 万トークンの経済」節を新設: 混合精度 KV・on-disk KV cache 3 戦略・batch invariance/決定論・Quick Instruction・MegaMoE と C/B 提言）, [[concepts/reinforcement-learning-from-human-feedback]]（「DeepSeek-V4 — mixed RL を OPD に置換する」節を新設: スペシャリスト RL→全語彙逆 KL 蒸留・actor 兼 GRM・WAL 長さバイアス・DSec）, [[concepts/tool-use-and-function-calling]]（DSML＝XML 型書式。K2 enforcer・Gemma 4 制御トークンとの 3 方比較）, [[concepts/retrieval-augmented-generation]]（agentic search vs RAG の同一モデル実測——精度優位・コスト僅増）, [[concepts/test-time-compute]]（reasoning effort 3 段化）, [[concepts/context-engineering]]（「保持 — 窓が伸びたら捨てない選択肢」節: Interleaved Thinking）, [[concepts/agent-evaluation]]（内製 Codeforces Elo の手続き開示・開発者サーベイ・MCPAtlas/Toolathlon）, [[overview]]（LLM 基盤軸に 1M 効率と OPD の弾）, [[index]]
+- メモ:
+  - クリップ不良: **SVG 形式の図 11 枚が全欠落**（Figure 2〜6, 8〜12: basic_arch, CSA, HCA, mega_moe_pipeline, kv_cache, putnam×2, mrcr, dsv4_effort, winrate, scores。クリップに残存したのは PNG 5 枚のみ）→ ar5iv から SVG のまま取得して復元。
+  - Table 3（Think Max 注入プロンプト）・Table 4（DSML ツールコールスキーマ）はクリップ内にインライン SVG のプロンプトボックスとして残存 → SVG 内の span テキストを抽出してコードブロック化（トークン区切り由来の空白を正規化。訳注明記）。
+  - 脚注 4 件（HF inference dir・DeepGEMM PR・NVIDIA docs×2）の本文欠落 → [^fn1]〜[^fn4] で復元。
+  - HTML 表 8 個（Table 1, 6, 7, 9, 11, 12, 13, 14）を rowspan 展開パーサで markdown 化（太字＝最良値を ar5iv から復元。次点の下線は割愛と訳注明記）。分断された表示数式・\penalty マクロをクリーン LaTeX に正規化。
+  - Appendix A.1 の著者一覧（約 300 名）は謝辞相当として割愛（K2・R1 前例）。「* は離職者」の注記と A.2 謝辞は訳出。
+  - 概念ページの新規作成なし（8 既存概念で吸収）。DSML が Anthropic 式ツールコール書式と同型である点・「原理未解明だが有効」と明記して安定化技術を公開する姿勢を要約で特記。

@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-07-28
+updated: 2026-07-29
 ---
 
 # Index — AI Agent LLM Wiki
@@ -32,6 +32,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2025-long-cot-survey]] — Long CoT サーベイ（2025, 813 文献）。推論モデルを 3 特性（深い推論・探索・反省）で定義し、6 現象（推論境界・overthinking・test-time scaling 等）を体系化。
 - [[summaries/2026-kimi-k2.5]] — Kimi K2.5（Moonshot, 2026）。K2 後継のマルチモーダル agentic モデル。テキスト×視覚の同時最適化（early fusion・zero-vision SFT・双方向転移）と Agent Swarm（PARL で並列化を学習。BrowseComp 78.4%・レイテンシ 1/4.5）。
 - [[summaries/2026-gemma-4]] — Gemma 4（Google DeepMind, 2026）。エッジ〜31B のオープンマルチモーダル系列。encoder-free 12B・KV cache −37.5%・MTP drafter・QAT・thinking トグル。Arena で dense オープン首位。
+- [[summaries/2026-deepseek-v4]] — DeepSeek-V4（2026, プレビュー）。1M コンテキストを日常運用可能に: CSA/HCA（圧縮＋スパース）で KV 10%/FLOPs 27%（対 V3.2）、mHC・Muon・OPD（mixed RL 置換）・DSML・agentic search 実測。Pro-Max はオープン SOTA 再定義。
 
 ### Articles / Blogs
 
@@ -66,6 +67,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2025-multi-agent-research-system]] — Anthropic「How we built our multi-agent research system」の全文翻訳（付録の運用 Tips 含む。図 3 枚収録）。
 - [[translations/2026-kimi-k2.5]] — Kimi K2.5 テクニカルレポートの全文翻訳（欠落していた図7 と脚注 2 件を ar5iv から復元。Table 4 は太字含め正規化。システムプロンプト・ツールスキーマは原文のまま収録）。
 - [[translations/2026-gemma-4]] — Gemma 4 テクニカルレポートの全文翻訳（PDF 原典。表 12 点＋Algorithm 1 を転記、図 2 枚はユーザー提供。制御トークン書式・会話例は原文のまま収録）。
+- [[translations/2026-deepseek-v4]] — DeepSeek-V4 テクニカルレポートの全文翻訳（欠落していた SVG 図 11 枚を ar5iv から復元。プロンプトボックス 2 点は SVG からテキスト化。脚注 4 件復元・HTML 表 8 個を正規化）。
 
 ## Concepts
 
@@ -102,15 +104,18 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - LLM-as-a-judge / pass@k / Cohen's κ → [[agent-evaluation]]
 - ACI / workflow パターン / prompt chaining / evaluator-optimizer → [[agent-frameworks]]
 - Reflexion / Self-Refine / verbal reinforcement → [[self-reflection]]
-- RLHF / RLVR / GRPO / PRM → [[reinforcement-learning-from-human-feedback]]
+- RLHF / RLVR / GRPO / PRM / OPD / On-Policy Distillation / GRM → [[reinforcement-learning-from-human-feedback]]
 - MemGPT / A-Mem / agentic memory / Zettelkasten / memory evolution / working context / archival memory / recursive summary → [[agent-memory]]
 - lost in the middle / scratchpad → [[context-engineering]]
 - PEFT / LoRA / SFT → [[parameter-efficient-fine-tuning]]
 - HITL / CoT モニタリング / CoT faithfulness / prompt injection / sandboxing / safety case → [[agent-safety-and-guardrails]]
 - Long CoT / test-time scaling / overthinking / reasoning boundary / Best-of-N / budget forcing → [[test-time-compute]]
 - KV cache / TTFT / TPS / prefill / decode / FlashAttention / PagedAttention / quantization / continuous batching / speculative decoding / MTP / QAT → [[llm-inference-optimization]]
-- MoE / MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / Mixtral / Switch Transformers / expert capacity / router / MoonViT / NaViT / early fusion / DEP / encoder-free / p-RoPE / per-layer embeddings → [[transformer-architecture]]
+- MoE / MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / Mixtral / Switch Transformers / expert capacity / router / MoonViT / NaViT / early fusion / DEP / encoder-free / p-RoPE / per-layer embeddings / CSA / HCA / mHC / Hyper-Connections / Muon / attention sink → [[transformer-architecture]]
 - Arena / Chatbot Arena / Elo → [[agent-evaluation]]
+- DSML → [[tool-use-and-function-calling]]
+- agentic search → [[retrieval-augmented-generation]]
+- Interleaved Thinking / Quick Instruction → [[context-engineering]]
 - context sharding / Discard-all / Hide-Tool-Result → [[context-engineering]]
 - Toggle / length-overfitting → [[test-time-compute]]
 - expert parallelism / capacity factor / Megablocks / QMoE → [[llm-inference-optimization]]

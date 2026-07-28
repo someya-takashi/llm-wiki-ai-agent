@@ -1,7 +1,7 @@
 ---
 type: overview
 tags: [llm-agents, ai-agent, overview]
-updated: 2026-07-28
+updated: 2026-07-29
 ---
 
 # Overview — AI Agent
@@ -71,12 +71,14 @@ updated: 2026-07-28
   - MoE の基礎は [[summaries/2023-moe-explained]]（Hugging Face, 2023）: 疎な MoE 層＋ルータの仕組み、1991 年からの系譜（Shazeer → GShard → Switch → Mixtral）、負荷分散の 3 点セット（aux loss・z-loss・expert capacity）、「メモリは総パラメータ・計算は活性化分」という MoE 経済の本質。K2/K3・DeepSeek 世代の MoE 採用を理解する土台。
 - post-training（RLHF, RLVR 等）→ [[reinforcement-learning-from-human-feedback]]
   - DeepSeek-R1（[[summaries/2025-deepseek-r1]], 2025）は、検証可能な報酬だけの大規模 RL（RLVR）で長い思考・自己検証・reflection が**創発**することを公開実証し、o1 型推論モデルの製法を開いた。GRPO は [[summaries/2026-sakana-fugu]] のオーケストレータ訓練にも使われ、モデルとエージェントの両方を貫く訓練レシピになっている。
+  - 後継の DeepSeek-V4（[[summaries/2026-deepseek-v4]], 2026）は事後学習の主役を **On-Policy Distillation（OPD）** に置換: ドメイン専門家を RL で個別に鍛え、学生の自己生成軌跡上の全語彙逆 KL 蒸留で単一モデルへ統合する——「発見は RL・統合は蒸留」の分業がパイプライン設計の原理に昇格した。
 - test-time compute（推論時に計算量を増やして精度を上げる考え方）→ [[test-time-compute]]
   - 体系化は Long CoT サーベイ（[[summaries/2025-long-cot-survey]], 2025, 813 文献）: 推論モデルの思考を deep reasoning・extensive exploration・feasible reflection の**3 特性の統合（Long CoT）**として定義し、垂直/並列スケーリングの 2 型、**推論境界**と **overthinking**（長考は閾値を超えると性能が落ちる）、PRM vs ORM、aha moment への反証までを整理した推論モデル時代の地図。
 - 推論の高速化・サービング（KV cache, バッチング, コストとレイテンシ）→ [[llm-inference-optimization]]
   - prefill/decode の 2 相・メモリ帯域律速・カーネル融合の基礎は [[summaries/2026-gpt2-to-kimi3]] が実装レベルで解説（固定状態化でデコード 6 倍、FLOPs 最小 ≠ wall-clock 最小、融合カーネルなしの新活性化は 3 倍遅）。エージェントのトークン経済（[[summaries/2025-multi-agent-research-system]] の 15 倍）の物理的な下部構造。
   - 実務側のレバーと運用の型は [[summaries/2026-llm-optimization-guide]]（Mirantis, 2026）: 量子化 −75%・continuous batching で稼働率 40→90%・PagedAttention −55% の定量カタログと、ワークロードのクラス分け・縮退設計・構成のコード化という運用規律。
   - **エッジ／オンデバイス側の設計**は Gemma 4（[[summaries/2026-gemma-4]], 2026）が参照実装: KV cache −37.5%（local:global 5:1・values=keys・p-RoPE）、QAT（int2/4 で E2B 4.6→0.8GB）、投機的デコード用 MTP drafter の同梱、encoder-free 化（12B は視覚・音声エンコーダを射影に置換）。フロンティア・スケール（K2.5 の 1T MoE）と対をなす「小さく速く配る」路線で、Arena 人間評価では 31B dense が 744B〜1.6T MoE 群に伍した。
+  - **1M コンテキストの効率化**は DeepSeek-V4（[[summaries/2026-deepseek-v4]], 2026）が最初の大規模実証: KV の学習圧縮＋スパース選択（CSA/HCA）で 1M 時の KV cache を V3.2 比 10%・一般的な BF16 GQA8 比約 2% に削り、100 万トークンを「日常運用」の水準にした。on-disk KV cache（shared-prefix 再利用）・batch-invariant 決定論カーネル・agentic search の同一モデル実測（精度優位・コスト僅増）まで含め、長ホライズンのエージェントタスクの物理的基盤を更新している。
 - エージェント特化の基盤モデル訓練（データ合成＋RL でエージェント能力を作る）
   - [[summaries/2025-kimi-k2]]（Moonshot, 2025）: 1.04T MoE を MuonClip で loss spike ゼロ事前学習し、**実 MCP ツール 3000+＋合成ツール 20,000+ による tool-use trajectory 合成**と、検証可能報酬＋自己批評ルーブリックの joint RL でエージェント能力を仕込む。**非思考のまま** SWE-bench Verified 65.8・τ²-Bench 66.1——「長考の創発」（R1）と対をなす「非思考のエージェント化」の代表原典。
   - 後継の Kimi K2.5（[[summaries/2026-kimi-k2.5]], 2026）は**マルチモーダル化**の製法を追加: 15T トークンの joint 事前学習は early fusion・低 vision 比率が最良、視覚エージェント能力の発火はテキストのみの SFT で足りる（zero-vision SFT）、視覚 RL はテキスト性能まで上げる（双方向転移）。MoonViT-3D（画像・動画共有エンコーダ）・DEP（視覚エンコーダの並列化分離）・Toggle（トークン効率 RL, −25〜30%）まで含め、「エージェント基盤モデルは単一モダリティでは作らない」方向を示した。
@@ -91,7 +93,7 @@ updated: 2026-07-28
 | 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学）、[[summaries/2026-kimi-k2.5]]（RL で学習された並列オーケストレーション・context sharding） |
 | 応用 | [[summaries/2026-kimi-k2.5]]（computer use: OSWorld / WebArena・GUI エージェント構成）。[[summaries/2026-sakana-fugu]] もコーディング・自律研究・CAD 等の応用例に言及 |
 | 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）、[[summaries/2025-multi-agent-research-system]]（小規模評価・単一ジャッジ・終了状態評価・本番運用の信頼性）、[[summaries/2025-cot-faithfulness]]（CoT 忠実性・CoT モニタリングの限界・安全性）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
-| LLM 基盤 | [[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）、[[summaries/2025-long-cot-survey]]（Long CoT の体系化・test-time scaling・推論境界）、[[summaries/2026-gpt2-to-kimi3]]（アーキテクチャの系譜・KV cache・推論効率）、[[summaries/2026-llm-optimization-guide]]（本番推論最適化の実務・サービング運用）、[[summaries/2025-kimi-k2]]（エージェント特化の事前学習＋データ合成＋joint RL）、[[summaries/2023-moe-explained]]（MoE の仕組み・歴史・負荷分散）、[[summaries/2026-kimi-k2.5]]（マルチモーダル joint 訓練・zero-vision SFT・トークン効率 RL）、[[summaries/2026-gemma-4]]（エッジ〜31B の効率化設計・encoder-free・QAT・投機的デコード）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
+| LLM 基盤 | [[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）、[[summaries/2025-long-cot-survey]]（Long CoT の体系化・test-time scaling・推論境界）、[[summaries/2026-gpt2-to-kimi3]]（アーキテクチャの系譜・KV cache・推論効率）、[[summaries/2026-llm-optimization-guide]]（本番推論最適化の実務・サービング運用）、[[summaries/2025-kimi-k2]]（エージェント特化の事前学習＋データ合成＋joint RL）、[[summaries/2023-moe-explained]]（MoE の仕組み・歴史・負荷分散）、[[summaries/2026-kimi-k2.5]]（マルチモーダル joint 訓練・zero-vision SFT・トークン効率 RL）、[[summaries/2026-gemma-4]]（エッジ〜31B の効率化設計・encoder-free・QAT・投機的デコード）、[[summaries/2026-deepseek-v4]]（1M コンテキスト効率・CSA/HCA・mHC・OPD・RL/rollout インフラ）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
 
 6 軸すべてに少なくとも 1 件の原典が入った（2026-07-26 時点）。「応用」軸には 2026-07-28 の Kimi K2.5 で初の専用記述（computer use）が入った。以後は各軸の深化（例: 知識の接続における MCP、応用における coding agents の専用原典）を `lint` のデータギャップとして追う。
 

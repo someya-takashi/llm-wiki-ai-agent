@@ -13,7 +13,8 @@ summaries:
   - "[[summaries/2026-llm-optimization-guide]]"
   - "[[summaries/2023-moe-explained]]"
   - "[[summaries/2026-gemma-4]]"
-updated: 2026-07-28
+  - "[[summaries/2026-deepseek-v4]]"
+updated: 2026-07-29
 ---
 
 # LLM Inference Optimization（LLM 推論の高速化・サービング）
@@ -39,6 +40,16 @@ DeltaNet 系のチャンク並列化では、チャンクサイズ **C=1 が FLO
 ### カーネル融合 — 実装成熟度が律速する
 
 Kimi K3 の SiTU 活性化は、**融合カーネル（fused kernel, 複数の演算を 1 つの GPU カーネルにまとめてメモリ往復を省く実装）なしでは元のパスの約 3 倍遅い**。新しいアーキテクチャ要素の速度は、数学ではなくカーネル実装の成熟度で決まることが多い——FlashAttention（softmax attention を N×N 行列を実体化せずに計算するカーネル。概説）が softmax attention の寿命を延ばしたのも同じ構図である。
+
+### 100 万トークンの経済 — 圧縮 KV・オンディスク再利用・決定論
+
+1M コンテキストを「日常運用」の水準にする最初の公開実証が DeepSeek-V4（[[summaries/2026-deepseek-v4]]）である。アーキテクチャ側の圧縮・スパース化（CSA/HCA → [[transformer-architecture]]）に加え、サービング側のレバーが揃っている:
+
+- **KV の混合精度格納**: RoPE 次元は BF16・残りは FP8 で格納してほぼ半減、スパース選択の indexer は **FP4** で計算。合計で 1M 時の KV cache は BF16 GQA8 比約 2%・推論 FLOPs は V3.2 比 27%。
+- **on-disk KV cache**: 圧縮 KV はディスクに置いて **shared-prefix の再 prefill を排除**できる。非圧縮の sliding window 分（圧縮分の約 8 倍の体積）には 3 戦略——全保存（計算ゼロ冗長だが書き込み過多）・周期チェックポイント（調整可能な中間）・ゼロ保存（直近 n_win·L トークンだけ再計算）——を展開先に応じて使い分ける。ストレージと再計算のトレードオフ設計の教科書例。
+- **batch invariance と決定論**: トークンの出力が**バッチ内の位置に依らずビット同一**になるカーネル群（デュアルカーネル attention・split-k 排除の行列積・決定論的縮約）。訓練・推論の数値不一致は RL を不安定にする（→ K2.5 は token-level clipping で「補正」した）が、V4 はカーネル層で**根絶**する路線を取り、デバッグ・再現性・事後学習の一貫性を同時に得ている。
+- **Quick Instruction**: 検索要否判定・クエリ生成などの補助タスクを、別立て小型モデルでなく**本体の計算済み KV cache を再利用する専用トークン**で実行——冗長 prefill を消して TTFT を削る。「前段の分類器は小型モデル」という定石への代替案。
+- **MegaMoE と C/B 提言**: EP（expert parallelism）の通信・計算をウェーブ状に融合した単一カーネルで 1.5〜1.96 倍。「帯域が C/B ≤ 2d の閾値を満たせばボトルネックでなくなる——無条件の帯域スケールでなくバランス点を狙え」というハードウェア設計への提言つき。
 
 ### 投機的デコードとドラフタ — decode の逐次性を破る
 

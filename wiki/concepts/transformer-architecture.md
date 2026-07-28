@@ -15,7 +15,8 @@ summaries:
   - "[[summaries/2023-moe-explained]]"
   - "[[summaries/2026-kimi-k2.5]]"
   - "[[summaries/2026-gemma-4]]"
-updated: 2026-07-28
+  - "[[summaries/2026-deepseek-v4]]"
+updated: 2026-07-29
 ---
 
 # Transformer Architecture（トランスフォーマーアーキテクチャ）
@@ -39,6 +40,7 @@ GPT-2 以来の標準形は **decoder-only**（デコーダのみ）構成であ
 - **KDA（Kimi Delta Attention）**: 減衰を**チャネルごと**に学習する細粒度ゲーティング。
 - **ハイブリッド**（Kimi Linear / K3）: 固定状態の再帰系（KDA）と完全 softmax 検索（**MLA** = Multi-head Latent Attention, 潜在圧縮つきの完全 attention）を**層単位でインターリーブ**する（K3 は KDA 3 : MLA 1）。固定状態は必然的に情報を捨てるため、周期的な完全検索で取りこぼしを回収する分業である。
 - **間引きと共有**（Gemma 系）: 状態を固定サイズに畳む代わりに、**softmax attention のまま KV cache を削る**別路線もある。Gemma 4（[[summaries/2026-gemma-4]]）は (1) local:global 比 5:1（大半の層を sliding window ローカル attention にし、全系列を見るグローバル層を間引く）、(2) グローバル層で **values = keys**（key を value として再利用し保存テンソルを半減）、(3) **p-RoPE**（位置回転を次元の一部 p=0.25 のみに適用）の 3 点でグローバル KV cache を実質 37.5% 削減した。完全検索の表現力を保ったままメモリを削る、エッジ・オンデバイス志向の解である。E2B/E4B の **per-layer embeddings**（層ごとの埋め込みを外部化し、総 5B/8B のうち実効 2.3B/4.5B だけを実効計算に使う）も同系の「容量と実効コストの分離」にあたる。
+- **圧縮してから選ぶ**（DeepSeek-V4）: 第三の路線が **KV の学習圧縮＋スパース選択**の二段構えである（[[summaries/2026-deepseek-v4]], 2026）。**CSA**（Compressed Sparse Attention）は KV を m=4 トークンごとに 1 エントリへ学習された重み付き和で圧縮した上で、軽量な **Lightning Indexer** が各クエリに top-k（512〜1024）個の圧縮エントリだけを選ぶ。**HCA**（Heavily Compressed Attention）は m′=128 の激圧縮＋密 attention で、両者を層で交互配置する。圧縮では拾えない局所依存は直近 128 トークンの sliding window ブランチが補い、attention sink（合計 attention を 1 未満に調整できる学習ロジット）・部分 RoPE・QKV の RMSNorm を併用する。結果は劇的で、**1M コンテキストの KV cache は一般的な BF16 GQA8 構成の約 2%**、推論 FLOPs は前世代 V3.2 の 27%——linear 化が「状態を固定サイズに畳む」なら、この路線は「**可変長のまま解像度を落とし、読む場所を選ぶ**」ことで 100 万トークンを実用化した。1.6T/284B の 2 サイズで実証されている。
 
 この系譜は [[agent-memory]] と美しく同型である——追記だけの記憶が干渉し（A-Mem 以前の生ログ蓄積）、選択的上書き（A-Mem の memory evolution）や退避・要約（MemGPT）が要る、という問題を、アーキテクチャは**重み・状態の内部で**解いている。
 
@@ -65,6 +67,10 @@ MoE の本質は**パラメータ数と計算量の分離**にある——Mixtra
 ## 残差ストリームと深さ方向の検索
 
 各層の入力は「埋め込み＋全先行層出力の等重み和」という**残差ストリーム**であり、層が深くなると古い情報が薄まる（残差の希釈）・後段の層が影響力を得るために出力を肥大させる、という問題を持つ。Kimi K3 の **AttnRes** は、和の各項に学習された重み（query-key ドット積から計算）を掛け、**先行層の出力を選択的に読む**——トークン方向だけでなく**深さ方向にも attention を張る**発想で、+2% のレイテンシで残差希釈の緩和と 1.25 倍の計算優位を得る（12 層ごとの blockwise 適用）。
+
+もう一つの設計軸が**残差ストリームの多重化**である。Hyper-Connections（HC）は残差ストリームを n 倍幅（例: 4 本）に拡張し、層ごとに学習された行列で「どの残差レーンから読み・どう混ぜて書き戻すか」を決める——隠れサイズと独立な補完的スケーリング軸だが、深く積むと数値不安定になる。DeepSeek-V4 の **mHC**（Manifold-Constrained Hyper-Connections, [[summaries/2026-deepseek-v4]]）は、残差混合行列を**二重確率行列の多様体（Birkhoff 多面体）へ Sinkhorn-Knopp 反復で射影**してスペクトルノルム ≤1 の非拡大写像に制約し、「信号が層を経ても増幅されない」保証つきで多重残差を 1.6T 級・61 層で成立させた（実時間オーバーヘッド 6.7%）。AttnRes（読み方を選ぶ）と mHC（レーンを増やして安定に混ぜる）は、「残差接続は無設計の足し算でよい」という前提を壊す同時代の 2 解である。
+
+オプティマイザ側にも系譜がある。**Muon**（勾配行列を Newton-Schulz 反復で直交化してから更新する）は Kimi K2 が MuonClip（QK-Clip 併用）として 1T 級で実証し（→ [[summaries/2025-kimi-k2]]）、DeepSeek-V4 も採用——ただし V4 は attention 側の QKV RMSNorm でロジット爆発を防げるため **QK-Clip を使わない**。1.6T 級で残る loss spike には、**Anticipatory Routing**（MoE のルーティングだけ過去パラメータで先読み計算し、ルーティングと本体の同期更新が作る外れ値の悪循環を断つ。spike 検出時のみ動的起動）と **SwiGLU Clamping**（線形成分 ±10）という「原理は未解明だが有効」と明記された 2 技法で対処している——大規模訓練の安定性が、理論より先に実践知として共有されている現状の記録でもある。
 
 ## 設計論点
 
