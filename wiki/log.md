@@ -206,3 +206,15 @@ type: log
 ## [2026-07-28] schema-update | ingest 完了後のコミットを標準フロー化
 
 - ユーザー指示により、ingest skill（`.claude/skills/ingest/SKILL.md`）の標準フローに手順 10「コミット」を追加。今後は検証完了後、ユーザーに確認せず `git add -A` → 既存フォーマットでのコミットまでを ingest の一部として実施する。
+
+## [2026-07-28] ingest | Kimi K2: Open Agentic Intelligence
+
+- 取り込み: `raw/papers/Kimi K2_ Open Agentic Intelligence.md`（ar5iv → Obsidian Web Clipper、arXiv:2507.20534, Kimi Team / Moonshot AI, 2025-07）
+- 作成: [[summaries/2025-kimi-k2]], [[translations/2025-kimi-k2]], `raw/assets/2025-kimi-k2/`（x2〜x19 の 18 枚。x1 はタイトルロゴのため対象外）
+- 更新: [[concepts/tool-use-and-function-calling]]（「ツール利用能力の製造 — 大規模データ合成」節を新設、function calling 実装の内側＝TypeScript 宣言・enforcer を追記）, [[concepts/reinforcement-learning-from-human-feedback]]（「Kimi K2 — 検証可能報酬と自己批評の統合、エージェント RL」節を新設）, [[concepts/transformer-architecture]]（スパース性スケーリング則・エージェント推論効率優先のヘッド数決定）, [[concepts/test-time-compute]]（予算制御・「非思考のエージェント SOTA」という対照点）, [[overview]]（軸 6 に「エージェント特化の基盤モデル訓練」の弾を追加）, [[index]]
+- メモ:
+  - クリップ不良: 多パネル図の欠落パターン——Figure 2 右（x4）・Figure 6 全体（x8, 本文参照のみで画像とキャプションが両方欠落）・Figure 8(b)（x11）・Figure 9(b)（x13）・Figure 13(b)(c)（x18/x19）の計 6 枚と主キャプション 4 件を ar5iv から復元。
+  - 脚注 6 件（チェックポイント URL・LMSYS・MRCR・Promptfoo・lm-format-enforcer 等）の本文が欠落し、[^N] マーカーが末尾の参考文献と番号衝突していた → ar5iv から復元し [^fnN] として区別。Figure 1 キャプションの「3」は脚注マーカーの残骸と判断し統合。
+  - Table 1・2 はクリップに Markdown で残存、Table 3〜6（ベンチマーク比較・安全性評価）は HTML から rowspan/colspan 展開パーサで全数値を転記。Algorithm 1（MuonClip）は構造を保ってコードブロック化。
+  - Appendix A（Contributions＝著者一覧）は謝辞相当として訳出対象外（DeepSeek-R1 の前例に準拠）。Appendix B のツール呼び出しトークンテンプレートと TypeScript/JSON ツール定義は原文のまま収録。
+  - 概念ページの新規作成なし（Kimi K2 はスキーマ §1 の landmark 規約により既存 4 概念内で記述）。

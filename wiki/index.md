@@ -27,6 +27,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2025-masft]] — MASFT（2025, UC Berkeley）。150+ トレース分析による MAS 失敗の初の分類法（14 モード×3 カテゴリ）。「失敗は組織設計の欠陥」。
 - [[summaries/2025-deepseek-r1]] — DeepSeek-R1（2025）。検証可能報酬だけの大規模 RL で推論・reflection が創発（RLVR）。o1 級推論の初のオープン実証。
 - [[summaries/2025-cot-faithfulness]] — CoT 忠実性（Anthropic, 2025）。効いたヒントを CoT が明かす率 25〜39%。reward hack は >99% 悪用・言語化 <2%。CoT モニタリングの限界の実測。
+- [[summaries/2025-kimi-k2]] — Kimi K2（Moonshot, 2025）。1T MoE のエージェント特化オープンモデル。MuonClip・ツール利用データ合成・自己批評ルーブリック RL。非思考で SWE-bench 65.8。
 - [[summaries/2025-a-mem]] — A-Mem（2025, Rutgers）。Zettelkasten 型の動的記憶: 保存時の意味づけ・LLM によるリンク判断・記憶進化。multi-hop 2 倍超を 1/10 のトークンで。
 - [[summaries/2025-long-cot-survey]] — Long CoT サーベイ（2025, 813 文献）。推論モデルを 3 特性（深い推論・探索・反省）で定義し、6 現象（推論境界・overthinking・test-time scaling 等）を体系化。
 
@@ -49,6 +50,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2023-reflexion]] — Reflexion 論文の全文翻訳（Algorithm 1・欠落パネルを ar5iv から復元。軌跡と反省文は原文のまま収録）。
 - [[translations/2023-memgpt]] — MemGPT 論文の全文翻訳（付録の全プロンプト含む。Figure 8 キャプションを ar5iv から復元。プロンプトは原文のまま収録）。
 - [[translations/2025-cot-faithfulness]] — CoT 忠実性論文の全文翻訳（脚注 2 件を ar5iv から復元。忠実性スコアの定義式は LaTeX 維持、ヒント例は原文のまま収録）。
+- [[translations/2025-kimi-k2]] — Kimi K2 テクニカルレポートの全文翻訳（欠落図 6 枚・キャプション 4 件・脚注 6 件を ar5iv から復元。ツール呼び出しテンプレートは原文のまま収録）。
 - [[translations/2025-a-mem]] — A-Mem 論文の全文翻訳（多パネル図 13 枚と主キャプション 4 件を ar5iv から復元。付録のプロンプト 3 種は SVG から原文のまま起こして収録）。
 - [[translations/2025-long-cot-survey]] — Long CoT サーベイの全文翻訳（図 11 枚・表 7 点収録。分類法ツリーと囲みボックス 10 個をテキスト復元。定義式は LaTeX 維持）。
 - [[translations/2026-gpt2-to-kimi3]] — 「From GPT2 to Kimi3, Explained」の全文翻訳（図 22 枚収録。X の数式連結を復元。コード 12 個は原文のまま収録）。

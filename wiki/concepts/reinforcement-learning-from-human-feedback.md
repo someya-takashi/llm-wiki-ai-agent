@@ -13,7 +13,8 @@ summaries:
   - "[[summaries/2026-sakana-fugu]]"
   - "[[summaries/2025-cot-faithfulness]]"
   - "[[summaries/2025-long-cot-survey]]"
-updated: 2026-07-26
+  - "[[summaries/2025-kimi-k2]]"
+updated: 2026-07-28
 ---
 
 # Reinforcement Learning from Human Feedback（RLHF と事後訓練の強化学習）
@@ -40,6 +41,12 @@ updated: 2026-07-26
 ### GRPO — critic を捨てた RL アルゴリズム
 
 **Group Relative Policy Optimization**。同じ質問に対して G 個の出力をサンプリングし、**グループ内の報酬の平均・標準偏差から advantage を計算**することで、方策と同サイズになりがちな critic（価値推定）モデルを丸ごと排した。計算コストの安さから RLVR の標準装備になった。wiki 内では利用例が 2 つあり、対比が面白い——[[summaries/2025-deepseek-r1]] は**モデルの推論**を GRPO で育て、[[summaries/2026-sakana-fugu]] の Fugu-Ultra は**エージェントのオーケストレーション**を同じ GRPO で育てた。「検証可能な報酬＋グループ相対 advantage」は、対象がトークン列でもワークフローでも機能する汎用レシピである。
+
+### Kimi K2 — 検証可能報酬と自己批評の統合、エージェント RL
+
+[[summaries/2025-kimi-k2]]（2025）は、RLVR と RLHF 的な選好報酬の分業を**単一の joint RL に統合する**設計を公開した。検証できるタスクは Gym 化された検証器群（数学の答え合わせ・コード実行・書式のコード検証・忠実性ジャッジ・「遵守したと嘘をつく」挙動を検出する hack-check 層）で、検証できないオープンエンド領域は **Self-Critique Rubric Reward**——モデル自身が critic となり、コア価値＋reward hacking 排除の規範＋人間注釈のルーブリックに照らして自己出力をペアワイズ評価——で報酬化する。鍵は**閉ループの critic 洗練**: critic を RLVR の検証可能な信号で継続的に更新し、客観的な性能を主観的判断へ蒸留する（検証で鍛えた評価力を検証不能領域へ転移）。付録 F.3 は率直な自己開示として貴重で、ヘッジ禁止・決定的回答への選好という規範が**曖昧な場面での過剰な自信**を生む副作用を明記している。
+
+アルゴリズム面の追加も実務的: **予算制御**（タスク種別ごとの最大トークン予算＋超過ペナルティ——RL が応答を長くする傾向への直接対処）、**PTX loss**（高品質データの忘却防止）、**温度減衰**（探索→活用）。またツール利用のような**エージェント的タスクの RL**（agentic rollout）には、環境待ちで GPU が遊ぶ・trajectory が極端に長いという固有の困難があり、環境の専用サービス化・大量並行ロールアウト・partial rollout（長い trajectory を一時停止して次反復で再開）で対処している——エージェント RL のインフラ実務の初期の公開記録である。
 
 ### 蒸留 — 発見と転写の分業
 

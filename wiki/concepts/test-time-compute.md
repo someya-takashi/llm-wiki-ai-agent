@@ -15,7 +15,8 @@ summaries:
   - "[[summaries/2022-chain-of-thought]]"
   - "[[summaries/2025-multi-agent-research-system]]"
   - "[[summaries/2023-reflexion]]"
-updated: 2026-07-26
+  - "[[summaries/2025-kimi-k2]]"
+updated: 2026-07-28
 ---
 
 # Test-Time Compute（テスト時計算）
@@ -46,7 +47,8 @@ updated: 2026-07-26
 
 ## 設計論点
 
-- **適応的な配分**: タスク難易度に応じて考える深さを変える（考える/考えないの切り替え・トークン予算・budget forcing）。overthinking の存在ゆえ、「常に最長で考える」は精度でもコストでも損をする。
+- **適応的な配分**: タスク難易度に応じて考える深さを変える（考える/考えないの切り替え・トークン予算・budget forcing）。overthinking の存在ゆえ、「常に最長で考える」は精度でもコストでも損をする。訓練時にこれを仕込む実例が [[summaries/2025-kimi-k2]] の**予算制御**——RL 中にタスク種別ごとの最大トークン予算を課し、超過に切り詰め＋ペナルティを与えることで、簡潔で効果的な解を促す。
+- **テスト時計算なしでどこまで行けるか**: Kimi K2（[[summaries/2025-kimi-k2]]）は**非思考（長考なし・出力 8192 トークン上限）のまま** SWE-bench Verified 65.8・τ²-Bench 66.1 のエージェント SOTA を達成した。エージェント的データ合成と RL の設計で「考える前に正しく動ける」能力を仕込めるなら、テスト時計算は最後に積む上乗せであって前提ではない——R1（長考の創発）と K2（非思考のエージェント化）は、能力をどの段階で買うかの対照実験として読める。
 - **検証器がボトルネック**: 並列スケーリングの効果は選抜の質で決まる。ルールベース検証（テスト実行・答え合わせ）が使える領域から並列化するのが定跡で、ニューラル検証器は reward hacking のリスクを持ち込む → [[reinforcement-learning-from-human-feedback]]。
 - **明示的探索の実務的困難**: ToT/MCTS 型の木探索はサーベイでは有望株として整理されるが、[[summaries/2025-deepseek-r1]] はトークン生成の指数的探索空間で MCTS の再現を断念しており、スケール時の実装コストは高い。現在の主流は「木を外に作る」より「長い直列の思考の中に探索を畳み込む」方向にある。
 - **評価との接続**: 長出力の推論モデルは貪欲デコードで測ると不安定になり、temperature サンプリング＋pass@1 平均のようなプロトコル更新が要る → [[agent-evaluation]]。
@@ -58,5 +60,5 @@ updated: 2026-07-26
 - [[self-reflection]] — 試行間ループという外付けのテスト時計算
 - [[reinforcement-learning-from-human-feedback]] — 計算配分を内在化させる訓練側
 - [[multi-agent-systems]] — 並列スケーリングとしてのマルチエージェント
-- [[llm-inference-optimization]] — 同じ推論時の「速くする」側（未作成。本ページは「賢くする」側）
+- [[llm-inference-optimization]] — 同じ推論時の「速くする」側（本ページは「賢くする」側）
 - [[summaries/2025-long-cot-survey]] — 本ページの主要な根拠原典
