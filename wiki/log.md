@@ -293,3 +293,10 @@ type: log
   - 脚注 11 件の本文欠落（クリップは sup マーカーのみ・番号が途中で重複）→ ar5iv から復元し出現順に [^fn1]〜[^fn11] へ振り直し（訳注明記）。
   - Table 7（HTML 表）を markdown 化。Table 5 の 3 段組は 3 表に分割。
   - 概念ページの新規作成なし（Switch Transformers は landmark 規約により transformer-architecture 内で記述。既存の入門解説 2023-moe-explained の一次資料という位置づけ）。
+
+## [2026-07-30] query | Gemma 4 の実効パラメータと per-layer embeddings
+
+- 質問: E2B/E4B の総パラメータ 5B/8B に対して実効 2.3B/4.5B となる理由。
+- 参照: [[summaries/2026-gemma-4]], [[translations/2026-gemma-4]]（表1 の内訳）, [[concepts/transformer-architecture]], [[summaries/2023-moe-explained]], [[summaries/2021-switch-transformers]]
+- 作成: [[questions/gemma-4-effective-parameters]]（表1 の実効/非実効の分解表＋MoE との「分離」比較表）。index を更新。
+- メモ: per-layer embeddings の機構詳細は Gemma 3n 由来だが同原典は未 ingest のため概説と明記（今後の ingest 候補）。
