@@ -16,7 +16,8 @@ summaries:
   - "[[summaries/2025-kimi-k2]]"
   - "[[summaries/2026-kimi-k2.5]]"
   - "[[summaries/2026-deepseek-v4]]"
-updated: 2026-07-29
+  - "[[summaries/2024-deepseekmath]]"
+updated: 2026-07-31
 ---
 
 # Reinforcement Learning from Human Feedback（RLHF と事後訓練の強化学習）
@@ -42,7 +43,11 @@ updated: 2026-07-29
 
 ### GRPO — critic を捨てた RL アルゴリズム
 
-**Group Relative Policy Optimization**。同じ質問に対して G 個の出力をサンプリングし、**グループ内の報酬の平均・標準偏差から advantage を計算**することで、方策と同サイズになりがちな critic（価値推定）モデルを丸ごと排した。計算コストの安さから RLVR の標準装備になった。wiki 内では利用例が 2 つあり、対比が面白い——[[summaries/2025-deepseek-r1]] は**モデルの推論**を GRPO で育て、[[summaries/2026-sakana-fugu]] の Fugu-Ultra は**エージェントのオーケストレーション**を同じ GRPO で育てた。「検証可能な報酬＋グループ相対 advantage」は、対象がトークン列でもワークフローでも機能する汎用レシピである。
+**Group Relative Policy Optimization**。一次資料は DeepSeekMath（[[summaries/2024-deepseekmath]], 2024）で、R1 の 1 年前に数学特化 7B のために発明された。動機は PPO の構造的な重さにある: PPO は policy／value（critic）／reward／reference の 4 モデル構成で、**critic は方策と同サイズの別モデル**になりがちな上、LLM では報酬が最終トークンにしか付かないため「トークンごとの価値」を学習させること自体が難しい。GRPO は critic を丸ごと排し、**同じ質問に対する G 個（原典では 64）のサンプルの報酬から、グループ平均との偏差 ÷ 標準偏差で advantage を計算**する: $\hat{A}_i=(r_i-\text{mean}(\mathbf{r}))/\text{std}(\mathbf{r})$。「同一問題内の相対比較」という形は、比較データで訓練される報酬モデルの性質とも整合する。KL 正則化は報酬に混ぜず損失側に不偏推定量で加える。outcome／process supervision・iterative（報酬モデルもリプレイ付きで更新）の 3 変種も原典が定式化済み。
+
+原典はさらに 2 つの理論的整理を残した。第一に**統一パラダイム**: SFT・RFT・DPO・PPO・GRPO はすべて「データソース（人手／オフライン／オンライン）× 報酬関数（人間選択／ルール／モデル）× 勾配係数」の組として単一の勾配式に還元できる——事後学習手法の選択とは、この 3 変数の選択である。第二に**「RL は Maj@K を上げるが Pass@K を上げない」**という実測: この設定の RL は正解を引き当てる確率を尖らせる（分布の頑健化）のであって、モデルが出せる解の集合（Pass@K）は広げない——「尖鋭化であって能力獲得ではない」という率直な自己診断で、報酬モデルの汎化・分布外プロンプト・木探索型サンプリングを処方箋として挙げた。
+
+計算コストの安さから RLVR の標準装備になった。wiki 内では利用例の系譜が追える——[[summaries/2025-deepseek-r1]] は同じ GRPO を**ベースモデル×ルール報酬のみ×大規模**で回して長考・自己検証の創発を報告し（「尖鋭化に過ぎない」Math と「創発する」R1 のギャップは、初期方策・出力長上限・報酬の質・規模のどれが効いたかという読み合わせ問題として残る）、[[summaries/2026-sakana-fugu]] の Fugu-Ultra は**エージェントのオーケストレーション**を、[[summaries/2026-deepseek-v4]] は**ドメインスペシャリスト訓練**を同じ GRPO で行う。「検証可能な報酬＋グループ相対 advantage」は、対象がトークン列でもワークフローでも機能する汎用レシピである。
 
 ### Kimi K2 — 検証可能報酬と自己批評の統合、エージェント RL
 

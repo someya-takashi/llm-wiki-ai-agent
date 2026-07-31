@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-07-29
+updated: 2026-07-31
 ---
 
 # Index — AI Agent LLM Wiki
@@ -23,6 +23,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2022-chain-of-thought]] — CoT（NeurIPS 2022）。例示に思考連鎖を入れるだけで推論が創発。「考えてから答える」設計すべての祖形。
 - [[summaries/2022-react]] — ReAct（ICLR 2023）。思考と行動を交互に生成させ、外部接地で幻覚を抑えつつ行動を推論で導くパラダイム。agent loop の原型。
 - [[summaries/2023-reflexion]] — Reflexion（NeurIPS 2023）。報酬を反省文に増幅して記憶し、重み更新なしで試行間学習。HumanEval 91%。
+- [[summaries/2024-deepseekmath]] — DeepSeekMath（2024）。GRPO の発明論文。critic をグループ相対 advantage で置換・統一パラダイム・「RL は Maj@K を上げ Pass@K を上げない」。120B 数学コーパスの採掘パイプラインとコード訓練→推論の転移実証。
 - [[summaries/2023-memgpt]] — MemGPT（ICML 2024）。OS の仮想メモリに倣い、LLM 自身が function call で記憶を階層管理。working context・archival memory の語彙の出発点。
 - [[summaries/2026-sakana-fugu]] — Sakana Fugu（2026, テクニカルレポート）。フロンティア LLM 群を束ねる学習されたオーケストレータ。オーケストレーション＝新スケーリング軸の実証。
 - [[summaries/2025-masft]] — MASFT（2025, UC Berkeley）。150+ トレース分析による MAS 失敗の初の分類法（14 モード×3 カテゴリ）。「失敗は組織設計の欠陥」。
@@ -70,6 +71,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2026-gemma-4]] — Gemma 4 テクニカルレポートの全文翻訳（PDF 原典。表 12 点＋Algorithm 1 を転記、図 2 枚はユーザー提供。制御トークン書式・会話例は原文のまま収録）。
 - [[translations/2026-deepseek-v4]] — DeepSeek-V4 テクニカルレポートの全文翻訳（欠落していた SVG 図 11 枚を ar5iv から復元。プロンプトボックス 2 点は SVG からテキスト化。脚注 4 件復元・HTML 表 8 個を正規化）。
 - [[translations/2021-switch-transformers]] — Switch Transformers 論文の全文翻訳（多パネル図の欠落 4 枚と Mesh TF 擬似コード 3 本・脚注 11 件を ar5iv から復元。付録 A〜F 含む）。
+- [[translations/2024-deepseekmath]] — DeepSeekMath 論文の全文翻訳（欠落していた貢献箇条書き・脚注 7 件を ar5iv から復元。ar5iv 自体で平文化していた表 6 個をセル順序から再構成。付録 A.1 の全導出含む）。
 
 ## Concepts
 
@@ -106,7 +108,9 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - LLM-as-a-judge / pass@k / Cohen's κ → [[agent-evaluation]]
 - ACI / workflow パターン / prompt chaining / evaluator-optimizer → [[agent-frameworks]]
 - Reflexion / Self-Refine / verbal reinforcement → [[self-reflection]]
-- RLHF / RLVR / GRPO / PRM / OPD / On-Policy Distillation / GRM → [[reinforcement-learning-from-human-feedback]]
+- RLHF / RLVR / GRPO / PPO / DPO / RFT / PRM / OPD / On-Policy Distillation / GRM → [[reinforcement-learning-from-human-feedback]]
+- PoT / Program-of-Thought / ツール統合推論 → [[reasoning-and-planning]]
+- Maj@K → [[test-time-compute]]
 - MemGPT / A-Mem / agentic memory / Zettelkasten / memory evolution / working context / archival memory / recursive summary → [[agent-memory]]
 - lost in the middle / scratchpad → [[context-engineering]]
 - PEFT / LoRA / SFT → [[parameter-efficient-fine-tuning]]

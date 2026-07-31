@@ -300,3 +300,14 @@ type: log
 - 参照: [[summaries/2026-gemma-4]], [[translations/2026-gemma-4]]（表1 の内訳）, [[concepts/transformer-architecture]], [[summaries/2023-moe-explained]], [[summaries/2021-switch-transformers]]
 - 作成: [[questions/gemma-4-effective-parameters]]（表1 の実効/非実効の分解表＋MoE との「分離」比較表）。index を更新。
 - メモ: per-layer embeddings の機構詳細は Gemma 3n 由来だが同原典は未 ingest のため概説と明記（今後の ingest 候補）。
+
+## [2026-07-31] ingest | DeepSeekMath
+
+- 取り込み: `raw/papers/DeepSeekMath_ Pushing the Limits of Mathematical Reasoning in Open Language Models.md`（ar5iv → Obsidian Web Clipper、arXiv:2402.03300, Shao et al. / DeepSeek-AI, 2024-02）
+- 作成: [[summaries/2024-deepseekmath]], [[translations/2024-deepseekmath]], `raw/assets/2024-deepseekmath/`（Math.png, corpus_comparisons.png, x1〜x5 の 7 枚、元名保持）
+- 更新: [[concepts/reinforcement-learning-from-human-feedback]]（GRPO 節を一次資料化——PPO からの導出・統一パラダイム・「RL は Maj@K↑/Pass@K→」。R1 は「大規模実証」に位置づけ直し）, [[concepts/test-time-compute]]（検証器ボトルネック論に Pass@K 不変の実測を追加——RL と並列サンプリング＋検証は同じ利得を別の場所で買う）, [[concepts/reasoning-and-planning]]（「推論はどこから来るか」節: コード訓練の転移・PoT/ツール統合推論）, [[overview]]（post-training 行に GRPO の起点を追加）, [[index]]
+- メモ:
+  - クリップ不良: §1.1 の「Math Pre-Training at Scale」の貢献箇条書き 4 点が丸ごと欠落 → ar5iv から復元。脚注 7 件の本文欠落 → [^fn1]〜[^fn7] で復元。
+  - **表 6 個（Table 1, 2, 5, 6, 7, 8）が ar5iv 自体のレンダリング段階で表構造を失い平文化**していた（クリップは忠実）——原ページに構造が存在しないため、平文のセル順序を保って markdown 表に再構成（数値は原文のまま・訳注明記）。Table 5 の「グレー＝32 候補多数決」の書式区別は平文化で失われており再現不可（訳注明記）。Table 3（HTML 表）は通常どおり正規化。
+  - 画像 7 枚はすべてクリップに残存（多パネル欠落なし——今回は良好なケース）。
+  - 概念ページの新規作成なし（GRPO はスキーマ規定どおり reinforcement-learning-from-human-feedback 内で扱う）。DeepSeek 推論系譜（Math 2024 → R1 2025 → V4 2026 OPD）が一次資料から現在まで貫通。
