@@ -311,3 +311,14 @@ type: log
   - **表 6 個（Table 1, 2, 5, 6, 7, 8）が ar5iv 自体のレンダリング段階で表構造を失い平文化**していた（クリップは忠実）——原ページに構造が存在しないため、平文のセル順序を保って markdown 表に再構成（数値は原文のまま・訳注明記）。Table 5 の「グレー＝32 候補多数決」の書式区別は平文化で失われており再現不可（訳注明記）。Table 3（HTML 表）は通常どおり正規化。
   - 画像 7 枚はすべてクリップに残存（多パネル欠落なし——今回は良好なケース）。
   - 概念ページの新規作成なし（GRPO はスキーマ規定どおり reinforcement-learning-from-human-feedback 内で扱う）。DeepSeek 推論系譜（Math 2024 → R1 2025 → V4 2026 OPD）が一次資料から現在まで貫通。
+
+## [2026-07-31] ingest | Effective harnesses for long-running agents（Anthropic）
+
+- 取り込み: `raw/articles/Effective harnesses for long-running agents.md`（Anthropic Engineering Blog, Justin Young, 2025 → Obsidian Web Clipper。ケース C）
+- 作成: [[summaries/2025-effective-harnesses]], [[translations/2025-effective-harnesses]], **[[concepts/coding-agents]]（新設・ユーザー確認済み。lint ギャップ指摘（被リンク 3）の解消）**, `raw/assets/2025-effective-harnesses/puppeteer-testing.gif`
+- 更新: [[concepts/context-engineering]]（「切り詰めに備える」を拡張——compaction の限界・構造化 artifact での引き継ぎ・JSON の改変耐性）, [[concepts/agent-frameworks]]（harness の語彙・Anthropic 実務 3 部作・「同一ハーネスでプロンプトだけ違う」= simplicity の実践）, [[overview]]（応用軸の coding-agents 行を実体化）, [[index]]（coding-agents を未作成スラグから昇格・リダイレクト追加）
+- メモ:
+  - クリップ復元: 脚注 1 件（「initializer/coding は初期プロンプトが違うだけで、システムプロンプト・ツール・ハーネスは同一」——重要な設計情報）を原ページから復元。GIF 1 枚を Next.js 変換 URL から素の CDN URL で取得。表タイトルの平文化をキャプションとして整形。
+  - 除外 chrome: サイトロゴ SVG。Acknowledgements は謝辞として除外。
+  - feature JSON・bearings 指示文・典型セッション例はコードブロック原文のまま収録。
+  - coding-agents 新設により、agent-evaluation・tool-use-and-function-calling・overview からの旧 dangling link 3 箇所が実体ページへ解決。未作成スラグ残: llm-agents / model-context-protocol / web-agents / agent-observability / parameter-efficient-fine-tuning。

@@ -10,7 +10,8 @@ related:
   - "[[agent-evaluation]]"
 summaries:
   - "[[summaries/2024-building-effective-agents]]"
-updated: 2026-07-24
+  - "[[summaries/2025-effective-harnesses]]"
+updated: 2026-07-31
 ---
 
 # Agent Frameworks（エージェントフレームワークと設計パターン)
@@ -50,6 +51,8 @@ LLM（Large Language Model, 大規模言語モデル）エージェントを**�
 - **本番に向かうほど抽象化を剥がす**。立ち上げの速さと運用の可観測性はトレードオフ → [[agent-observability]]。
 
 なお [[summaries/2025-masft]] の分析対象（ChatDev・MetaGPT・AG2 等）は、フレームワークの上に組まれた MAS が実際にどう失敗するかの実測を与えており、「フレームワークがあること」と「正しく設計されていること」が別問題であることを示す。
+
+フレームワークの一段外側の層が **harness（ハーネス）**——ループ・ツール・コンテキスト管理・プロンプトを束ねた実行基盤——である。Anthropic の実務系譜は 3 部作として読める: 設計パターンの語彙（[[summaries/2024-building-effective-agents]], 2024）→ 並列分業の本番運用（[[summaries/2025-multi-agent-research-system]], 2025）→ **長時間タスクのハーネス設計**（[[summaries/2025-effective-harnesses]], 2025）。3 本目は、数日級のプロジェクトをセッションの連鎖でやり遂げるための二部構成（initializer agent が環境の足場を作り、coding agent が毎セッション 1 単位ずつ進めてクリーンに終了する → 詳細は [[coding-agents]]）を開示した。特筆すべきは復元した脚注の設計情報で、**initializer と coding は「別エージェント」ではなく、同一ハーネスで初期プロンプトだけが違う**——新しい問題（セッション境界）に対して、マルチエージェント化でもフレームワーク追加でもなく「最初のウィンドウにだけ別プロンプト」という最小の介入で応えており、下記 simplicity 原則の実践例そのものである。
 
 ## 実装原則（simplicity / transparency / ACI）
 

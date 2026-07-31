@@ -91,6 +91,6 @@ LLM（Large Language Model, 大規模言語モデル）エージェントの能�
 - [[multi-agent-systems]] — 失敗分類（MASFT）の対象領域
 - [[agent-loop]] — trajectory が評価の一次データになる
 - [[agent-observability]] — トレースの収集・可視化基盤（未作成）
-- [[coding-agents]] — SWE-bench 系評価の主戦場（未作成）
+- [[coding-agents]] — SWE-bench 系評価の主戦場
 - [[computer-use-agents]] — OSWorld / WebArena 系評価の対象領域
 - [[summaries/2025-masft]] / [[summaries/2026-sakana-fugu]] / [[summaries/2025-multi-agent-research-system]] — 本ページの根拠原典
