@@ -1,7 +1,7 @@
 ---
 type: overview
 tags: [llm-agents, ai-agent, overview]
-updated: 2026-07-31
+updated: 2026-08-01
 ---
 
 # Overview — AI Agent
@@ -14,6 +14,8 @@ updated: 2026-07-31
 **AI Agent（AI エージェント）** とは、LLM（Large Language Model, 大規模言語モデル）を推論エンジンとして、目標を与えられると自ら計画を立て、ツールを呼び出し、環境から返ってきた結果を観測しながら多段階のタスクを遂行するシステムを指す。1 回のプロンプトで答えを返す従来の LLM 利用と違い、**観測→思考→行動を繰り返すループ**を回す点、そして**外部世界に副作用を及ぼせる**点が本質的な差になる。
 
 この wiki は、エージェント本体だけでなく、その土台となる LLM と開発基盤までを射程に入れる。
+
+この領域全体の初期の見取り図は Fudan NLP のサーベイ（[[summaries/2023-llm-agents-survey]], 2023, 686 文献）が与えた: エージェント概念の哲学→AI の系譜、LLM が脳に適する 4 性質（自律性・反応性・能動性・社会的能力）、**brain / perception / action** の 3 モジュール枠組み、応用 3 分類（単一・マルチ・人間協調）、エージェント社会、評価 4 観点と安全リスク。総論の概念ページ [[llm-agents]] はこのサーベイを主要根拠に、以下の各軸への入口をまとめている。ただし同サーベイは 2023 年秋時点の地図であり、その後の「訓練で作るエージェント」（K2/K2.5・RLVR）・ハーネス工学・MCP・computer use は射程外——以後の原典群がこの地図をどう更新したかは各要約の「限界」節を参照。
 
 ## 骨組み（今後埋めていく軸）
 
@@ -92,7 +94,7 @@ updated: 2026-07-31
 
 | 軸 | 取り込み済みの原典 |
 | --- | --- |
-| 基本構造 | [[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習）、[[summaries/2023-memgpt]]（階層記憶・仮想コンテキスト管理・イベント駆動制御）、[[summaries/2025-a-mem]]（動的記憶組織化・記憶進化） |
+| 基本構造 | [[summaries/2023-llm-agents-survey]]（総論: brain/perception/action・応用 3 分類・エージェント社会）、[[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習）、[[summaries/2023-memgpt]]（階層記憶・仮想コンテキスト管理・イベント駆動制御）、[[summaries/2025-a-mem]]（動的記憶組織化・記憶進化） |
 | 知識の接続 | [[summaries/2020-rag]]（検索拡張生成・非パラメトリック記憶・hot-swap） |
 | 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学）、[[summaries/2026-kimi-k2.5]]（RL で学習された並列オーケストレーション・context sharding） |
 | 応用 | [[summaries/2026-kimi-k2.5]]（computer use: OSWorld / WebArena・GUI エージェント構成）、[[summaries/2025-effective-harnesses]]（coding agents: 長時間自律コーディングのハーネス）、[[summaries/2026-harness-design]]（coding agents: 3 エージェント構成とハーネス縮小）、[[summaries/2026-meta-harness]]（coding agents / frameworks: ハーネスの自動探索・TerminalBench-2）。[[summaries/2026-sakana-fugu]] もコーディング・自律研究・CAD 等の応用例に言及 |

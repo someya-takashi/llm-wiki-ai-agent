@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-07-31
+updated: 2026-08-01
 ---
 
 # Index — AI Agent LLM Wiki
@@ -18,6 +18,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ### Papers
 
+- [[summaries/2023-llm-agents-survey]] — Xi et al.（Fudan NLP, 2023, 686 文献）。分野の語彙を定めた古典サーベイ: brain/perception/action の 3 モジュール・応用 3 分類（単一/マルチ/人間協調）・エージェント社会・評価 4 観点・安全 3 論点。
 - [[summaries/2021-switch-transformers]] — Switch Transformers（JMLR 2022）。MoE 実用化の転換点: top-1 ルーティング・selective precision・負荷分散損失・蒸留 30%・初の 1.6T モデル。並列化体系（data/model/expert）の原典。
 - [[summaries/2020-rag]] — RAG（NeurIPS 2020）。パラメトリック/非パラメトリック記憶の end-to-end 結合。幻覚減・索引差し替えによる知識更新・retrieval collapse の初記録。
 - [[summaries/2022-chain-of-thought]] — CoT（NeurIPS 2022）。例示に思考連鎖を入れるだけで推論が創発。「考えてから答える」設計すべての祖形。
@@ -78,9 +79,11 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2025-effective-harnesses]] — Anthropic「Effective harnesses for long-running agents」の全文翻訳（脚注 1 件を原ページから復元。feature JSON・セッション例は原文のまま収録。GIF 1 枚）。
 - [[translations/2026-harness-design]] — Anthropic「Harness design for long-running application development」の全文翻訳（欠落していた画像 4 枚を原ページの Sanity データから位置特定して復元。QA フィードバック・プラン例は原文のまま収録）。
 - [[translations/2026-meta-harness]] — Meta-Harness 論文の全文翻訳（欠落していた Figure 1 右パネルと Table 2 を ar5iv から復元＝クリップは図に Table 2 のキャプションが誤結合。脚注 2 件復元・SVG フロー図 4 点と要点／ログボックスをテキスト再構成。proposer の推論ログは原文のまま収録）。
+- [[translations/2023-llm-agents-survey]] — LLM エージェント・サーベイ（Xi et al.）の全文翻訳（PDF 原典・86 ページ中本文 45 ページ。画像なし＝ar5iv 変換失敗。分類ツリー図 5 点はネスト箇条書きとしてテキスト転写、脚注 6 件収録）。
 
 ## Concepts
 
+- [[llm-agents]] — 総論ハブ。エージェントの定義と系譜・brain/perception/action・応用 3 形態・エージェント社会。各論ページへの入口。
 - [[reasoning-and-planning]] — LLM に思考過程・計画を明示的に生成させる手法群。CoT・CoT-SC・ReAct・ToT を扱う。
 - [[agent-loop]] — 観測→思考→行動の実行ループ。定式化、thought の密度、停止条件、典型的失敗モード。
 - [[tool-use-and-function-calling]] — モデルが外部ツールを呼ぶ仕組み。ReAct の Wikipedia API から function calling までの系譜。
@@ -100,7 +103,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[coding-agents]] — コードを書き・実行し・検証するエージェント。ACI・最小ツール構成・長時間ハーネス（initializer/coding）・検証の設計・SWE-bench 系。
 
 未作成の想定スラグ（CLAUDE.md §1 の命名規約より。作成したら上のリストへ移す）：
-`llm-agents` / `model-context-protocol` / `web-agents` / `agent-observability` / `parameter-efficient-fine-tuning`
+`model-context-protocol` / `web-agents` / `agent-observability` / `parameter-efficient-fine-tuning`
 
 ### 略称リダイレクト
 
@@ -110,7 +113,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - MCP → [[model-context-protocol]]
 - CoT / CoT-SC / ToT / ReAct → [[reasoning-and-planning]]
 - function calling / tool call → [[tool-use-and-function-calling]]
-- MoA / Mixture-of-Agents / orchestrator-worker / MASFT / Agent Swarm / PARL → [[multi-agent-systems]]
+- MoA / Mixture-of-Agents / orchestrator-worker / MASFT / Agent Swarm / PARL / エージェント社会 / agent society / Generative Agents / CAMEL / MetaGPT → [[multi-agent-systems]]
+- brain-perception-action / AI エージェント / autonomous agents / AutoGPT / Voyager / instructor-executor / World Scope / AGI / embodied action / AaaS → [[llm-agents]]
 - CUA / computer use / GUI エージェント / OSWorld / WebArena / Operator → [[computer-use-agents]]
 - LLM-as-a-judge / pass@k / Cohen's κ → [[agent-evaluation]]
 - ACI / workflow パターン / prompt chaining / evaluator-optimizer / harness / ハーネス / Meta-Harness / ハーネスエンジニアリング / GEPA / AlphaEvolve / OpenEvolve / プロンプト自動最適化 → [[agent-frameworks]]

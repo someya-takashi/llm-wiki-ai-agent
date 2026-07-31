@@ -341,3 +341,10 @@ type: log
 - 更新: [[concepts/agent-frameworks]]（「ハーネスの自動探索 — 第三の道」節を新設）, [[concepts/coding-agents]]（「コーディングエージェントがハーネスを書く」節を新設）, [[concepts/context-engineering]]（ハーネス定義の明文化・自動探索と転移の設計論点）, [[concepts/agent-evaluation]]（探索セット過適合の監視・ハーネスのモデル間汎化）, [[overview]], [[index]]
 - 画像: `raw/assets/2026-meta-harness/` に 6 枚（x1〜x5・val_vs_test_by_dataset.png, 元名保持）
 - メモ: クリップ不良を ar5iv 照合で復元——(1) Figure 1 右パネル（x2.png）の欠落、(2) **Figure 3 の画像に Table 2 のキャプションが誤結合し、本物の Table 2（数値表）が丸ごと欠落**（図表取り違えの既知パターン）→ 表と Figure 3 キャプションを復元、(3) 脚注 2 件の本文欠落、(4) HTML 表 3 個（Table 7/8/9）の markdown 化＋太字復元、(5) SVG の要点ボックス 3 個とプロポーザー推論ログ引用 8 個をテキスト復元（英文ログは原文のまま＋訳を併記）、(6) Figure 5/6/8/9 は原ページでもインライン SVG フロー図（画像アセットなし）のためテキストのフロー図として再構成、(7) Algorithm 1 を擬似コードブロックに整形。Anthropic ハーネス連作（作る→剥がす）への「探索で発見する」という応答として位置づけ、agent-frameworks を接続の主軸にした。
+
+## [2026-08-01] ingest | The Rise and Potential of Large Language Model Based Agents: A Survey
+
+- 取り込み: `raw/papers/The Rise and Potential of Large Language Model Based Agents- A Survey.pdf`（Xi et al., Fudan NLP, arXiv:2309.07864v3, 86 ページ・686 文献）
+- 作成: [[summaries/2023-llm-agents-survey]], [[translations/2023-llm-agents-survey]], [[concepts/llm-agents]]（**新設**・ユーザー承認済み。総論ハブ）
+- 更新: [[concepts/multi-agent-systems]]（2023 年サーベイの協調/敵対分類・エージェント社会・幻覚増幅と誤合意の警告を起源として追記）, [[concepts/agent-safety-and-guardrails]]（§6.3 の脅威整理＝「行動空間を持つエージェントでは敵対的攻撃が破壊的行動になる」を起点として追記）, [[concepts/agent-evaluation]]（評価 4 観点 utility/sociability/values/継続進化を評価史の起点として追記）, [[overview]]（総論原典の位置づけ）, [[index]]（llm-agents を未作成リストから昇格）
+- メモ: ケース B（PDF）。ar5iv は本論文の変換に失敗（プレースホルダのみ・図アセットなし）を確認したため**画像なし**で作成。図 12 点はキャプション全訳＋「訳注: PDF 原典のため画像省略」、分類ツリー図 5 点（Figure 3/4/5/6/11）は図中テキストをネスト箇条書きに転写（リーフの引用番号は省略と訳注明記）。脚注 6 件復元収録。翻訳は 7 チャンク分割で作成し切り詰めなし。要約では 2023 年時点の地図としての鮮度限界（プロンプト外装時代の前提・ハーネス論/MCP/computer use/RLVR 以前）を明示し、後続原典との対応を記載。

@@ -16,7 +16,8 @@ summaries:
   - "[[summaries/2024-building-effective-agents]]"
   - "[[summaries/2025-multi-agent-research-system]]"
   - "[[summaries/2026-deepseek-v4]]"
-updated: 2026-07-29
+  - "[[summaries/2023-llm-agents-survey]]"
+updated: 2026-08-01
 ---
 
 # Agent Safety and Guardrails（エージェントの安全性とガードレール）
@@ -29,6 +30,8 @@ LLM（Large Language Model, 大規模言語モデル）エージェントが**�
 - **権限過多と誤操作**: 必要以上のツール・認証情報を持ったエージェントが、悪意なく破壊的な操作をする。
 - **ミスアラインメント（misalignment）**: モデル自身が訓練の副作用として意図に反した目標や挙動を獲得する。reward hacking（報酬の抜け穴を突く学習 → [[reinforcement-learning-from-human-feedback]]）はその訓練時の代表例で、alignment faking（アラインメント偽装）・sandbagging（実力隠し）といった、ほとんど推論を要さず単一の forward pass で実行できてしまう挙動も報告されている（[[summaries/2025-cot-faithfulness]] の背景文献）。
 - **暴走・逸脱**: 明確な悪意がなくても、ループが止まらない・過剰にリソースを消費する・タスクから脱線する（[[summaries/2025-multi-agent-research-system]] は「エージェントが制御不能に陥るのを防ぐ明示的なガードレール」を本番運用の必須要素として挙げた）。
+
+この脅威認識の原点は 2023 年サーベイ（[[summaries/2023-llm-agents-survey]] §6.3）にある。核心の指摘は「**敵対的攻撃の影響は、LLM ではテキストの誤りに留まるが、行動空間を持つエージェントでは真に破壊的な行動になりうる**」——perception への攻撃（画像・音声の敵対的入力）と action への攻撃（ツール指示の悪意ある改変）まで含め、モジュールごとの攻撃面を最初に整理した。同節は信頼性（キャリブレーション問題・バイアス・幻覚）と、悪用（世論操作・サイバー攻撃・違法合成——化学エージェントが敵対的プロンプトで危険物合成に誘導されうるという実験の警告つき）・失業・人類の福祉への脅威という社会的リスクの三層も提示しており、対策として敵対的訓練・過程監督・HITL を挙げた。以後の研究はこの見取り図の各項を実測で埋めてきた（CoT モニタリングの限界・本番 sandboxing 等、下記）。
 
 ## 対策の 4 層
 
