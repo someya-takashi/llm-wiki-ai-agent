@@ -11,6 +11,7 @@ related:
   - "[[computer-use-agents]]"
 summaries:
   - "[[summaries/2025-effective-harnesses]]"
+  - "[[summaries/2026-harness-design]]"
 updated: 2026-07-31
 ---
 
@@ -32,6 +33,15 @@ updated: 2026-07-31
 - **initializer agent**（初回のみ・実体は同一ハーネスでプロンプトだけ別）: 環境の足場を作る——**feature list JSON**（全機能を `"passes": false` で列挙し「完成の定義」を外部化。JSON は Markdown より改変されにくく、「テスト削除は容認不可」の強い文言で守る）・進捗ログファイル・`init.sh`（起動手順の固定）・初期 git commit。
 - **coding agent**（毎セッション）: **状況把握**（pwd → 進捗ファイル・git log → 未完了の最優先機能を 1 つ選ぶ）→ **基本 E2E テスト**（壊れていたら新機能より先に修復）→ **1 機能だけ**実装・検証 → **クリーンに終了**（「main にマージできる状態」で commit＋進捗更新）。
 - 位置づけ: [[summaries/2025-multi-agent-research-system]] が**空間方向の分業**（並列サブエージェント）なら、これは**時間方向の分業**（直列セッションの引き継ぎ）である。引き継ぎ媒体を「要約」でなく**検査可能な構造化 artifact**（git 履歴・JSON・ログ）にした点が [[summaries/2023-memgpt]] の recursive summary からの進化 → [[context-engineering]]。
+
+## generator / evaluator / planner — 分業とハーネスの縮小
+
+initializer/coding ハーネスの続編（[[summaries/2026-harness-design]], 2026）は、この構成を **3 エージェント**へ発展させ、そして**縮小する方法論**まで開示した:
+
+- **planner**: 1〜4 文のプロンプトを完全な仕様へ拡張（一文 → 16 機能・10 スプリント）。**成果物レベルで縛り技術詳細は指定しない**——細かい技術指定の誤りは下流へ連鎖するため。外すと generator は仕様化を省いて under-scope する。
+- **generator / evaluator の分離**: 自己評価は構造的に甘い（自分の仕事を自信満々に承認する）が、**独立した evaluator を懐疑的にチューニングする方が、generator を自己批判的にするよりはるかに扱いやすい**。evaluator は Playwright で実操作 QA を行い、基準ごとの硬い閾値で不合格判定＋具体的フィードバックを返す。着手前には **sprint contract**——「このチャンクの完了とは何か」への事前合意——を generator と交渉する。
+- **実測の対比**（Opus 4.5, レトロゲームメーカー）: solo 20 分/$9 は見た目それらしいが**ゲームが動かない**。フルハーネス 6 時間/$200 は動く。v2（Opus 4.6, DAW）は 3h50m/$124.70 で、QA は合計 $10 程度のコストで「表示だけの機能」（録音がスタブ・クリップ移動不可）級の欠陥を捕捉し続けた。
+- **ハーネスの縮小**: 「**各部品は『モデルが単独でできないこと』への仮定であり、モデルの改善で陳腐化する**」。一気に削ると何が load-bearing か分からなくなるため、**1 部品ずつ外して影響を確認**する。実際に Opus 4.5→4.6 で context reset（context anxiety の消滅）とスプリント分解（2 時間超を分解なしで一貫走行）が不要になった。**evaluator は固定の yes/no でなく、タスクがモデルの単独信頼境界の外にあるときだけコストに見合う**——モデルが強くなるたびに境界は動く。
 
 ## 検証の設計 — 「コードだけ見て完了宣言」問題
 
@@ -60,3 +70,4 @@ updated: 2026-07-31
 - [[agent-frameworks]] — ハーネスという設計層
 - [[computer-use-agents]] — E2E 検証手段としてのブラウザ操作
 - [[summaries/2025-effective-harnesses]] — 本ページの主要な根拠原典（長時間ハーネス）
+- [[summaries/2026-harness-design]] — 続編（3 エージェント構成・ハーネス縮小の方法論）

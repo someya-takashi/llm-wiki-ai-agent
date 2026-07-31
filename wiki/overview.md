@@ -52,6 +52,7 @@ updated: 2026-07-29
 
 - coding agents（SWE-agent, Devin, Claude Code, Cursor 等）→ [[coding-agents]]
   - 初出典は Anthropic の長時間ハーネス記事（[[summaries/2025-effective-harnesses]], 2025）: 数日級の自律コーディングを「initializer が環境の足場（feature list JSON・進捗ログ・init.sh・git）を作り、coding agent が毎セッション 1 機能ずつクリーンに進める」二部構成で解く。引き継ぎは要約でなく検査可能な構造化 artifact——時間方向の分業の実務解。
+  - 続編（[[summaries/2026-harness-design]], 2026）は planner/generator/evaluator の 3 エージェント（GAN 着想の生成・採点分離、sprint contract）へ発展させ、同時に**縮小の方法論**——「ハーネスの部品はモデル能力への仮定であり、新モデルごとに 1 部品ずつ外して検証する」——を実録（Opus 4.5→4.6 で context reset・スプリント分解が不要化）。ハーネス設計を「作る技術」から「保守する技術」へ更新した。
 - computer use / GUI 操作エージェント → [[computer-use-agents]]
   - 初出典は Kimi K2.5（[[summaries/2026-kimi-k2.5]], 2026）: スクリーンショット観測 → pyautogui 操作のループで、汎用マルチモーダルモデルのまま OSWorld-Verified 63.3%（Operator 42.9% 超え・Opus 4.5 の 66.3% に肉薄）・WebArena 58.9%。GUI trajectory を事前学習データに混ぜ、視覚 RL でグラウンディングを鍛える製法まで開示。
 - web agents（ブラウザ操作・情報収集）→ `[[web-agents]]`

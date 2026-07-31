@@ -44,6 +44,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2026-gpt2-to-kimi3]] — X 記事（@waterloo_intern, 2026）。GPT-2→Kimi K3 の 22,580 倍を「固定容量メモリ＋追い出しポリシー」の系譜として実装コード付きで解説。
 - [[summaries/2026-llm-optimization-guide]] — Mirantis（2026, ベンダーブログ）。本番推論最適化の実務ガイド。量子化 −75%・batching で稼働率 40→90%・PagedAttention −55% の定量カタログと運用の型。
 - [[summaries/2025-effective-harnesses]] — Anthropic（2025）。長時間エージェントのハーネス設計。initializer/coding の二部構成・feature list JSON・bearings 手順・E2E 検証。「要約でなく構造化 artifact で継ぐ」。
+- [[summaries/2026-harness-design]] — Anthropic Labs（2026, 前作の続編）。GAN 着想の planner/generator/evaluator・sprint contract・context anxiety と reset・「部品＝モデル能力への仮定」と 1 部品ずつ剥がす縮小の方法論。solo $9 vs ハーネス $200 の実測。
 
 ### Docs
 
@@ -74,6 +75,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2021-switch-transformers]] — Switch Transformers 論文の全文翻訳（多パネル図の欠落 4 枚と Mesh TF 擬似コード 3 本・脚注 11 件を ar5iv から復元。付録 A〜F 含む）。
 - [[translations/2024-deepseekmath]] — DeepSeekMath 論文の全文翻訳（欠落していた貢献箇条書き・脚注 7 件を ar5iv から復元。ar5iv 自体で平文化していた表 6 個をセル順序から再構成。付録 A.1 の全導出含む）。
 - [[translations/2025-effective-harnesses]] — Anthropic「Effective harnesses for long-running agents」の全文翻訳（脚注 1 件を原ページから復元。feature JSON・セッション例は原文のまま収録。GIF 1 枚）。
+- [[translations/2026-harness-design]] — Anthropic「Harness design for long-running application development」の全文翻訳（欠落していた画像 4 枚を原ページの Sanity データから位置特定して復元。QA フィードバック・プラン例は原文のまま収録）。
 
 ## Concepts
 
@@ -110,8 +112,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - CUA / computer use / GUI エージェント / OSWorld / WebArena / Operator → [[computer-use-agents]]
 - LLM-as-a-judge / pass@k / Cohen's κ → [[agent-evaluation]]
 - ACI / workflow パターン / prompt chaining / evaluator-optimizer / harness / ハーネス → [[agent-frameworks]]
-- SWE-agent / Claude Code / Devin / Cursor / initializer agent / feature list → [[coding-agents]]
-- compaction / claude-progress → [[context-engineering]]
+- SWE-agent / Claude Code / Devin / Cursor / initializer agent / feature list / generator-evaluator / sprint contract → [[coding-agents]]
+- compaction / claude-progress / context anxiety / context reset → [[context-engineering]]
 - Reflexion / Self-Refine / verbal reinforcement → [[self-reflection]]
 - RLHF / RLVR / GRPO / PPO / DPO / RFT / PRM / OPD / On-Policy Distillation / GRM → [[reinforcement-learning-from-human-feedback]]
 - PoT / Program-of-Thought / ツール統合推論 → [[reasoning-and-planning]]

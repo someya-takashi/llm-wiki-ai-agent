@@ -322,3 +322,14 @@ type: log
   - 除外 chrome: サイトロゴ SVG。Acknowledgements は謝辞として除外。
   - feature JSON・bearings 指示文・典型セッション例はコードブロック原文のまま収録。
   - coding-agents 新設により、agent-evaluation・tool-use-and-function-calling・overview からの旧 dangling link 3 箇所が実体ページへ解決。未作成スラグ残: llm-agents / model-context-protocol / web-agents / agent-observability / parameter-efficient-fine-tuning。
+
+## [2026-07-31] ingest | Harness design for long-running application development（Anthropic Labs）
+
+- 取り込み: `raw/articles/Harness design for long-running application development.md`（Anthropic Engineering Blog, Prithvi Rajasekaran / Labs, 2026 → Obsidian Web Clipper。ケース C。2025-effective-harnesses の直接の続編）
+- 作成: [[summaries/2026-harness-design]], [[translations/2026-harness-design]], `raw/assets/2026-harness-design/`（PNG 6 枚、内容ベースの安定名）
+- 更新: [[concepts/coding-agents]]（「generator/evaluator/planner — 分業とハーネスの縮小」節を新設）, [[concepts/agent-evaluation]]（judge の懐疑チューニング 4 手順・「基準の文言は出力を方向づける」）, [[concepts/context-engineering]]（context anxiety・reset vs compaction を基本制約に追記）, [[concepts/self-reflection]]（自己評価の甘さと「分離した懐疑」という実務解）, [[concepts/agent-frameworks]]（実務連作 4 本目・「部品＝モデル能力への仮定」の運用形）, [[overview]], [[index]]
+- メモ:
+  - クリップ不良: **画像 4 枚が欠落**（原ページ 6 枚中クリップ 2 枚のみ）——solo のスプライトエディタ／プレイ失敗・ハーネスのスプライトエディタ／AI レベル生成。原ページの Sanity データからキャプションと文書内位置を確定して復元。
+  - 動画 2 本（美術館サイトデモ・DAW デモ）は規定どおり DL せず参照リンクとして訳注に記載。付録プラン例末尾の「...」は原文自体の省略と原ページで確認（クリップ切断ではない）。
+  - QA フィードバック引用・evaluator の発見表・プラン例はコード/引用ブロック原文のまま収録。Acknowledgements は除外。
+  - 概念ページの新規作成なし（前作で新設した coding-agents に主として吸収）。
