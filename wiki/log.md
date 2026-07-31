@@ -333,3 +333,11 @@ type: log
   - 動画 2 本（美術館サイトデモ・DAW デモ）は規定どおり DL せず参照リンクとして訳注に記載。付録プラン例末尾の「...」は原文自体の省略と原ページで確認（クリップ切断ではない）。
   - QA フィードバック引用・evaluator の発見表・プラン例はコード/引用ブロック原文のまま収録。Acknowledgements は除外。
   - 概念ページの新規作成なし（前作で新設した coding-agents に主として吸収）。
+
+## [2026-07-31] ingest | Meta-Harness: End-to-End Optimization of Model Harnesses
+
+- 取り込み: `raw/papers/Meta-Harness_ End-to-End Optimization of Model Harnesses.md`（ar5iv クリップ, arXiv:2603.28052, Stanford/MIT/KRAFTON）
+- 作成: [[summaries/2026-meta-harness]], [[translations/2026-meta-harness]]
+- 更新: [[concepts/agent-frameworks]]（「ハーネスの自動探索 — 第三の道」節を新設）, [[concepts/coding-agents]]（「コーディングエージェントがハーネスを書く」節を新設）, [[concepts/context-engineering]]（ハーネス定義の明文化・自動探索と転移の設計論点）, [[concepts/agent-evaluation]]（探索セット過適合の監視・ハーネスのモデル間汎化）, [[overview]], [[index]]
+- 画像: `raw/assets/2026-meta-harness/` に 6 枚（x1〜x5・val_vs_test_by_dataset.png, 元名保持）
+- メモ: クリップ不良を ar5iv 照合で復元——(1) Figure 1 右パネル（x2.png）の欠落、(2) **Figure 3 の画像に Table 2 のキャプションが誤結合し、本物の Table 2（数値表）が丸ごと欠落**（図表取り違えの既知パターン）→ 表と Figure 3 キャプションを復元、(3) 脚注 2 件の本文欠落、(4) HTML 表 3 個（Table 7/8/9）の markdown 化＋太字復元、(5) SVG の要点ボックス 3 個とプロポーザー推論ログ引用 8 個をテキスト復元（英文ログは原文のまま＋訳を併記）、(6) Figure 5/6/8/9 は原ページでもインライン SVG フロー図（画像アセットなし）のためテキストのフロー図として再構成、(7) Algorithm 1 を擬似コードブロックに整形。Anthropic ハーネス連作（作る→剥がす）への「探索で発見する」という応答として位置づけ、agent-frameworks を接続の主軸にした。

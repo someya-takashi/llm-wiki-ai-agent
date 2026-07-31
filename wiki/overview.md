@@ -1,7 +1,7 @@
 ---
 type: overview
 tags: [llm-agents, ai-agent, overview]
-updated: 2026-07-29
+updated: 2026-07-31
 ---
 
 # Overview — AI Agent
@@ -53,6 +53,7 @@ updated: 2026-07-29
 - coding agents（SWE-agent, Devin, Claude Code, Cursor 等）→ [[coding-agents]]
   - 初出典は Anthropic の長時間ハーネス記事（[[summaries/2025-effective-harnesses]], 2025）: 数日級の自律コーディングを「initializer が環境の足場（feature list JSON・進捗ログ・init.sh・git）を作り、coding agent が毎セッション 1 機能ずつクリーンに進める」二部構成で解く。引き継ぎは要約でなく検査可能な構造化 artifact——時間方向の分業の実務解。
   - 続編（[[summaries/2026-harness-design]], 2026）は planner/generator/evaluator の 3 エージェント（GAN 着想の生成・採点分離、sprint contract）へ発展させ、同時に**縮小の方法論**——「ハーネスの部品はモデル能力への仮定であり、新モデルごとに 1 部品ずつ外して検証する」——を実録（Opus 4.5→4.6 で context reset・スプリント分解が不要化）。ハーネス設計を「作る技術」から「保守する技術」へ更新した。
+  - Meta-Harness（[[summaries/2026-meta-harness]], 2026）はその先——**ハーネス設計の自動化**——を実証: コーディングエージェントを proposer に、過去の全候補のコード・スコア・実行トレースをファイルシステム越しに検分させてハーネスコードを探索させると、テキスト分類（ACE +7.7pt・トークン 1/4）・数学検索（未見 5 モデルへ転移 +4.7pt）・TerminalBench-2（人手ベースライン超え）の 3 領域で人手設計を上回った。鍵は「フィードバックを要約せず生のまま選択的に読ませる」こと。人手の連作（作る→剥がす）に対する「探索で発見する」第三の道であり、コーディングエージェントの成熟が自分自身の実行基盤の改善という再帰を可能にした記録 → [[agent-frameworks]]。
 - computer use / GUI 操作エージェント → [[computer-use-agents]]
   - 初出典は Kimi K2.5（[[summaries/2026-kimi-k2.5]], 2026）: スクリーンショット観測 → pyautogui 操作のループで、汎用マルチモーダルモデルのまま OSWorld-Verified 63.3%（Operator 42.9% 超え・Opus 4.5 の 66.3% に肉薄）・WebArena 58.9%。GUI trajectory を事前学習データに混ぜ、視覚 RL でグラウンディングを鍛える製法まで開示。
 - web agents（ブラウザ操作・情報収集）→ `[[web-agents]]`
@@ -94,7 +95,7 @@ updated: 2026-07-29
 | 基本構造 | [[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習）、[[summaries/2023-memgpt]]（階層記憶・仮想コンテキスト管理・イベント駆動制御）、[[summaries/2025-a-mem]]（動的記憶組織化・記憶進化） |
 | 知識の接続 | [[summaries/2020-rag]]（検索拡張生成・非パラメトリック記憶・hot-swap） |
 | 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学）、[[summaries/2026-kimi-k2.5]]（RL で学習された並列オーケストレーション・context sharding） |
-| 応用 | [[summaries/2026-kimi-k2.5]]（computer use: OSWorld / WebArena・GUI エージェント構成）、[[summaries/2025-effective-harnesses]]（coding agents: 長時間自律コーディングのハーネス）。[[summaries/2026-sakana-fugu]] もコーディング・自律研究・CAD 等の応用例に言及 |
+| 応用 | [[summaries/2026-kimi-k2.5]]（computer use: OSWorld / WebArena・GUI エージェント構成）、[[summaries/2025-effective-harnesses]]（coding agents: 長時間自律コーディングのハーネス）、[[summaries/2026-harness-design]]（coding agents: 3 エージェント構成とハーネス縮小）、[[summaries/2026-meta-harness]]（coding agents / frameworks: ハーネスの自動探索・TerminalBench-2）。[[summaries/2026-sakana-fugu]] もコーディング・自律研究・CAD 等の応用例に言及 |
 | 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）、[[summaries/2025-multi-agent-research-system]]（小規模評価・単一ジャッジ・終了状態評価・本番運用の信頼性）、[[summaries/2025-cot-faithfulness]]（CoT 忠実性・CoT モニタリングの限界・安全性）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
 | LLM 基盤 | [[summaries/2024-deepseekmath]]（GRPO の発明・統一パラダイム・数学コーパス採掘）、[[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）、[[summaries/2025-long-cot-survey]]（Long CoT の体系化・test-time scaling・推論境界）、[[summaries/2026-gpt2-to-kimi3]]（アーキテクチャの系譜・KV cache・推論効率）、[[summaries/2026-llm-optimization-guide]]（本番推論最適化の実務・サービング運用）、[[summaries/2025-kimi-k2]]（エージェント特化の事前学習＋データ合成＋joint RL）、[[summaries/2023-moe-explained]]（MoE の仕組み・歴史・負荷分散）、[[summaries/2026-kimi-k2.5]]（マルチモーダル joint 訓練・zero-vision SFT・トークン効率 RL）、[[summaries/2026-gemma-4]]（エッジ〜31B の効率化設計・encoder-free・QAT・投機的デコード）、[[summaries/2026-deepseek-v4]]（1M コンテキスト効率・CSA/HCA・mHC・OPD・RL/rollout インフラ）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
 

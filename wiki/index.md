@@ -35,6 +35,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2026-kimi-k2.5]] — Kimi K2.5（Moonshot, 2026）。K2 後継のマルチモーダル agentic モデル。テキスト×視覚の同時最適化（early fusion・zero-vision SFT・双方向転移）と Agent Swarm（PARL で並列化を学習。BrowseComp 78.4%・レイテンシ 1/4.5）。
 - [[summaries/2026-gemma-4]] — Gemma 4（Google DeepMind, 2026）。エッジ〜31B のオープンマルチモーダル系列。encoder-free 12B・KV cache −37.5%・MTP drafter・QAT・thinking トグル。Arena で dense オープン首位。
 - [[summaries/2026-deepseek-v4]] — DeepSeek-V4（2026, プレビュー）。1M コンテキストを日常運用可能に: CSA/HCA（圧縮＋スパース）で KV 10%/FLOPs 27%（対 V3.2）、mHC・Muon・OPD（mixed RL 置換）・DSML・agentic search 実測。Pro-Max はオープン SOTA 再定義。
+- [[summaries/2026-meta-harness]] — Meta-Harness（Stanford/MIT/KRAFTON, 2026）。ハーネス設計を外側ループ探索で自動化。コーディングエージェント proposer＋ファイルシステム全履歴。ACE +7.7pt（トークン 1/4）・未見 5 モデルへ転移 +4.7pt・TerminalBench-2 で人手超え。
 
 ### Articles / Blogs
 
@@ -76,6 +77,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2024-deepseekmath]] — DeepSeekMath 論文の全文翻訳（欠落していた貢献箇条書き・脚注 7 件を ar5iv から復元。ar5iv 自体で平文化していた表 6 個をセル順序から再構成。付録 A.1 の全導出含む）。
 - [[translations/2025-effective-harnesses]] — Anthropic「Effective harnesses for long-running agents」の全文翻訳（脚注 1 件を原ページから復元。feature JSON・セッション例は原文のまま収録。GIF 1 枚）。
 - [[translations/2026-harness-design]] — Anthropic「Harness design for long-running application development」の全文翻訳（欠落していた画像 4 枚を原ページの Sanity データから位置特定して復元。QA フィードバック・プラン例は原文のまま収録）。
+- [[translations/2026-meta-harness]] — Meta-Harness 論文の全文翻訳（欠落していた Figure 1 右パネルと Table 2 を ar5iv から復元＝クリップは図に Table 2 のキャプションが誤結合。脚注 2 件復元・SVG フロー図 4 点と要点／ログボックスをテキスト再構成。proposer の推論ログは原文のまま収録）。
 
 ## Concepts
 
@@ -111,8 +113,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - MoA / Mixture-of-Agents / orchestrator-worker / MASFT / Agent Swarm / PARL → [[multi-agent-systems]]
 - CUA / computer use / GUI エージェント / OSWorld / WebArena / Operator → [[computer-use-agents]]
 - LLM-as-a-judge / pass@k / Cohen's κ → [[agent-evaluation]]
-- ACI / workflow パターン / prompt chaining / evaluator-optimizer / harness / ハーネス → [[agent-frameworks]]
-- SWE-agent / Claude Code / Devin / Cursor / initializer agent / feature list / generator-evaluator / sprint contract → [[coding-agents]]
+- ACI / workflow パターン / prompt chaining / evaluator-optimizer / harness / ハーネス / Meta-Harness / ハーネスエンジニアリング / GEPA / AlphaEvolve / OpenEvolve / プロンプト自動最適化 → [[agent-frameworks]]
+- SWE-agent / Claude Code / Devin / Cursor / initializer agent / feature list / generator-evaluator / sprint contract / TerminalBench / Terminus / 環境ブートストラップ → [[coding-agents]]
 - compaction / claude-progress / context anxiety / context reset → [[context-engineering]]
 - Reflexion / Self-Refine / verbal reinforcement → [[self-reflection]]
 - RLHF / RLVR / GRPO / PPO / DPO / RFT / PRM / OPD / On-Policy Distillation / GRM → [[reinforcement-learning-from-human-feedback]]
