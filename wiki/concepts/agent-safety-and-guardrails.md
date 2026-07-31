@@ -17,6 +17,7 @@ summaries:
   - "[[summaries/2025-multi-agent-research-system]]"
   - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2023-llm-agents-survey]]"
+  - "[[summaries/2024-llm-security-privacy-survey]]"
 updated: 2026-08-01
 ---
 
@@ -26,7 +27,12 @@ LLM（Large Language Model, 大規模言語モデル）エージェントが**�
 
 ## 脅威モデルの俯瞰
 
-- **prompt injection**（プロンプトインジェクション）: エージェントが読む外部データ（Web ページ・文書・ツール出力）に埋め込まれた指示が、本来の指示を乗っ取る攻撃。検索やブラウジングを行うエージェントの最も現実的な脅威（専用原典は未 ingest のため概説）。
+攻撃の全体像は LLM セキュリティ・プライバシーのサーベイ（[[summaries/2024-llm-security-privacy-survey]], 2024）が体系化した。大枠は **セキュリティ攻撃**（システムを誤作動させる）と **プライバシー攻撃**（学習データ・個人情報を漏らす）の 2 系統で、両者は目標を共有しうる（バックドアとポイズニングは共に誤作動誘発、プロンプトインジェクションとジェイルブレイクは共に制約回避・機密奪取）。エージェントの文脈では、下記のうち**プロンプト経由の攻撃**（特に間接インジェクション）と**権限・行動空間の悪用**が中心的脅威になる。
+
+- **prompt injection**（プロンプトインジェクション）: エージェントが読む外部データ（Web ページ・文書・ツール出力）に埋め込まれた指示が、本来の指示を乗っ取る攻撃。検索やブラウジングを行うエージェントの最も現実的な脅威。攻撃の分類は [[summaries/2024-llm-security-privacy-survey]] が詳しい——**goal hijacking**（元の目標を差し替えて特定出力を吐かせる）と **prompt leaking**（システムプロンプト自体を再現させる）、そして**アプリ統合型 LLM が外部の汚染テキストを読む「間接インジェクション」**（HOUYI・P2SQL インジェクション等）。間接インジェクションは、[[computer-use-agents]]（画面全部が入力）・[[retrieval-augmented-generation]]（検索結果をコンテキストへ戻す）・[[tool-use-and-function-calling]]（ツール出力の取り込み）のすべてに刺さる——外部由来のテキストをコンテキストに入れる経路はどれも攻撃面である。
+- **jailbreaking**（ジェイルブレイク）: 安全制約を回避してモデルに禁止内容を生成させる。プロンプトのパターンは pretending（ロールプレイ）・attention shifting（物語生成へ注意そらし）・privilege escalation（制約を破らせる）、代表は DAN（Do Anything Now）。理論的な核は Wei et al. の**2 つの失敗モード**（[[summaries/2024-llm-security-privacy-survey]]）——**competing objectives**（「常に指示に従う」能力と無害性の報酬の衝突。prefix injection・refusal suppression）と **mismatched generalization**（入力が事前学習分布の内側だが安全訓練データの外＝OOD）。どちらも**事後訓練で安全性を付ける（RLHF）ことの構造的な穴**を突いており、入力フィルタ（レッドフラグ語）だけでは巧妙なプロンプトを止められない → [[reinforcement-learning-from-human-feedback]]。
+- **backdoor / data poisoning**（バックドア・データポイズニング）: 訓練データやプロンプトに毒・隠れトリガーを仕込み、良性入力では正常・トリガー入力で異常動作させる。同サーベイの知見として、**LLM のバックドア化は固定能力の分類器より難しい**（どうプロンプトされてもトリガーで発動しつつ他タスクへの影響を最小化する必要がある）ことと、モデルを外部（信頼できない提供者・汚染データセット）から取り込む供給網が攻撃面になることが重要。
+- **プライバシー攻撃**（学習データ側）: 勾配漏洩（TAG・LAMP——連合学習の共有勾配から訓練データ復元）・メンバーシップ推論（MIA——あるサンプルが訓練データにあったかを判定、shadow training が原型）・**PII 漏洩**（記憶＝memorization による逐語抽出。Carlini et al. の GPT-2 抽出、ProPILE）。エージェントが会話履歴や PII をファイルへ蓄える設計（[[context-engineering]] の外部化・[[agent-memory]]）は、この漏洩面を運用側へも広げる。
 - **権限過多と誤操作**: 必要以上のツール・認証情報を持ったエージェントが、悪意なく破壊的な操作をする。
 - **ミスアラインメント（misalignment）**: モデル自身が訓練の副作用として意図に反した目標や挙動を獲得する。reward hacking（報酬の抜け穴を突く学習 → [[reinforcement-learning-from-human-feedback]]）はその訓練時の代表例で、alignment faking（アラインメント偽装）・sandbagging（実力隠し）といった、ほとんど推論を要さず単一の forward pass で実行できてしまう挙動も報告されている（[[summaries/2025-cot-faithfulness]] の背景文献）。
 - **暴走・逸脱**: 明確な悪意がなくても、ループが止まらない・過剰にリソースを消費する・タスクから脱線する（[[summaries/2025-multi-agent-research-system]] は「エージェントが制御不能に陥るのを防ぐ明示的なガードレール」を本番運用の必須要素として挙げた）。
@@ -46,6 +52,12 @@ sandboxing の本番規模の実例が DeepSeek の **DSec**（[[summaries/2026-
 ### (2) 入出力のガードレール
 
 入力（プロンプト・取得したデータ）と出力（応答・ツール呼び出しの引数）を検査し、逸脱を止める層。実務指針（[[summaries/2024-building-effective-agents]]）は、エージェントの自律性はコスト・エラー増幅と引き換えである以上、**サンドボックス化されたテスト・ガードレール・停止条件（最大反復回数）** を自律性とセットで設計せよとする。
+
+具体的な防御手法のカタログは [[summaries/2024-llm-security-privacy-survey]] §6 が整理する:
+- **プロンプトインジェクション**: 予防（前処理で注入指示を除去・**言い換え**で注入系列を崩す・**再トークン化**・データと指示の分離）＋検出（応答が期待タスクから逸脱していないか／**パープレキシティ検出**——注入で入力の質が落ちると perplexity が上がる）。P2SQL には DB 権限の最小化と Auxiliary LLM Guard（SQL 実行結果を LLM に渡す前に検査）。
+- **ジェイルブレイク**: 内容フィルタ・レッドフラグ語検出・**system-mode self-reminder**（システムプロンプトで「不適切生成を控えよ」と自己想起させる。成功率 67.21%→19.34%）・**SmoothLLM**（入力を複数コピーして各々を摂動し出力を集約、randomized smoothing 由来。成功率を 1/100〜1/50）。
+- **バックドア・ポイズニング**: 汚染サンプルの検出（CUBE の HDBSCAN クラスタリング・RAP・ONION の perplexity 分析・MDP のマスク感度差）、Fine-mixing、訓練エポック制限、重複除去。ただし大半は**ホワイトボックス前提でブラックボックス防御が欠落**。
+これらに共通する根本的限界は「**防御はほぼ必ずモデル有用性とのトレードオフを抱える**」ことで、SmoothLLM の非保守性やフィルタの誤検知はその現れ。ガードレールの評価は「攻撃成功率をどれだけ下げたか」だけでなく「通常タスクの性能・レイテンシをどれだけ損なったか」を併記する規律が要る（→ [[agent-evaluation]]）。
 
 ### (3) 監視 — CoT モニタリングの可能性と限界
 
@@ -79,5 +91,6 @@ CoT より硬い監視面は**行動そのもの**である。ツール呼び出
 - [[agent-observability]] — 行動ログ・トレースの監視基盤（未作成）
 - [[agent-evaluation]] — 安全性指標の測定規律
 - [[computer-use-agents]] — 露出面が最大級の行動空間（画面全部が入力・実マシン全操作が出力）
-- [[summaries/2025-cot-faithfulness]] — 本ページの主要な根拠原典
+- [[summaries/2025-cot-faithfulness]] — 監視（CoT モニタリング）側の根拠原典
+- [[summaries/2024-llm-security-privacy-survey]] — 攻撃側カタログ（prompt injection・jailbreak・backdoor・privacy 攻撃と防御）の根拠原典
 - [[summaries/2026-deepseek-v4]] — 本番規模 sandboxing（DSec）の実例

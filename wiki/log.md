@@ -356,3 +356,11 @@ type: log
 - 更新: [[concepts/context-engineering]]（KV cache 経済＝「積んだものを動かさない」規律・復元可能圧縮とファイルシステム外部化・復唱（recitation）節を新設・「履歴が意図せぬ few-shot になる」・「失敗の痕跡は消さない」節を新設）, [[concepts/agent-memory]]（「ファイルシステム＝究極のコンテキスト — Manus」節）, [[concepts/tool-use-and-function-calling]]（「削除するな、マスクせよ」＝ロジットマスク・prefill 3 モード・プレフィックス命名）, [[concepts/llm-inference-optimization]]（KV cache ヒット率をアプリ層の設計変数として追記）, [[overview]], [[index]]
 - 画像: `raw/assets/2025-manus-context-engineering/` に 6 枚（原ページから取得, 4K PNG, 元 CDN 名保持）。アプリ DL バナーと「part of Meta」バナーは chrome として除外
 - メモ: クリップ不良 1 件を復元——「Manipulate Attention Through Recitation」節の一文の冒頭「By constantly rewriting the todo list, Manus is」が本文から脱落し、リンク付きの句が frontmatter の author 欄に混入していた（新パターン: リンク句の author 欄化け）。原ページと照合して復元。著者名（Yichao 'Peak' Ji）も原ページから確定。
+
+## [2026-08-01] ingest | Security and Privacy Challenges of Large Language Models: A Survey
+
+- 取り込み: `raw/papers/Security and Privacy Challenges of Large Language Models_ A Survey.md`（ar5iv クリップ, Das/Amini/Wu, Florida International University, arXiv:2402.00888, 2024）
+- 作成: [[summaries/2024-llm-security-privacy-survey]], [[translations/2024-llm-security-privacy-survey]]
+- 更新: [[concepts/agent-safety-and-guardrails]]（脅威モデルの俯瞰を攻撃分類＝prompt injection/jailbreak/backdoor/poisoning/privacy へ大幅拡充・入出力ガードレール節に §6 の防御手法カタログを追加・攻撃側カタログの根拠原典として登録）, [[concepts/reinforcement-learning-from-human-feedback]]（ジェイルブレイクの 2 失敗モード＝competing objectives/mismatched generalization を安全訓練の構造的穴として追記）, [[overview]], [[index]]
+- 画像: `raw/assets/2024-llm-security-privacy-survey/` に 7 枚（x1〜x7, ar5iv から取得, 元名保持）
+- メモ: ケース A（ar5iv クリップ）。クリップは比較的健全。脚注 1 件（Figure 1 の Hugging Face 出典注記）を [^fn1] で復元。Table 1（略語 34 語）・Table 2（既存サーベイ 17 件との比較・✓/× マトリクス 12 列）を markdown 表として収録。図 2（脅威の集合ベン図）・図 7（魚骨図）は画像を保存しつつ図中テキストを訳注で補足。数式（敵対的サンプルの定式化）は LaTeX 維持。この wiki の agent-safety-and-guardrails に「攻撃側カタログ」を供給し、lint で挙がっていた prompt injection 一次原典の不足を埋めた。新概念ページは作らず既存 agent-safety-and-guardrails を受け皿とした。

@@ -19,6 +19,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 ### Papers
 
 - [[summaries/2023-llm-agents-survey]] — Xi et al.（Fudan NLP, 2023, 686 文献）。分野の語彙を定めた古典サーベイ: brain/perception/action の 3 モジュール・応用 3 分類（単一/マルチ/人間協調）・エージェント社会・評価 4 観点・安全 3 論点。
+- [[summaries/2024-llm-security-privacy-survey]] — Das et al.（FIU, 2024）。LLM のセキュリティ攻撃（prompt injection・jailbreak・backdoor・poisoning）とプライバシー攻撃（勾配漏洩・MIA・PII 漏洩）＋防御機構＋応用リスクの脅威分類サーベイ。ジェイルブレイクの 2 失敗モード。
 - [[summaries/2021-switch-transformers]] — Switch Transformers（JMLR 2022）。MoE 実用化の転換点: top-1 ルーティング・selective precision・負荷分散損失・蒸留 30%・初の 1.6T モデル。並列化体系（data/model/expert）の原典。
 - [[summaries/2020-rag]] — RAG（NeurIPS 2020）。パラメトリック/非パラメトリック記憶の end-to-end 結合。幻覚減・索引差し替えによる知識更新・retrieval collapse の初記録。
 - [[summaries/2022-chain-of-thought]] — CoT（NeurIPS 2022）。例示に思考連鎖を入れるだけで推論が創発。「考えてから答える」設計すべての祖形。
@@ -82,6 +83,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2026-meta-harness]] — Meta-Harness 論文の全文翻訳（欠落していた Figure 1 右パネルと Table 2 を ar5iv から復元＝クリップは図に Table 2 のキャプションが誤結合。脚注 2 件復元・SVG フロー図 4 点と要点／ログボックスをテキスト再構成。proposer の推論ログは原文のまま収録）。
 - [[translations/2023-llm-agents-survey]] — LLM エージェント・サーベイ（Xi et al.）の全文翻訳（PDF 原典・86 ページ中本文 45 ページ。画像なし＝ar5iv 変換失敗。分類ツリー図 5 点はネスト箇条書きとしてテキスト転写、脚注 6 件収録）。
 - [[translations/2025-manus-context-engineering]] — Manus「Context Engineering for AI Agents」の全文翻訳（クリップで脱落した一文の冒頭を原ページから復元＝リンク句が frontmatter author 欄に化けていた。図 6 枚収録・prefill 文字列は原文のまま）。
+- [[translations/2024-llm-security-privacy-survey]] — LLM セキュリティ・プライバシー・サーベイ（Das et al.）の全文翻訳（ar5iv クリップ。図 7 枚・Table 1/2・脚注 1 件・数式を収録。分類図と魚骨図は訳注でテキスト補足）。
 
 ## Concepts
 
@@ -129,7 +131,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - MemGPT / A-Mem / agentic memory / Zettelkasten / memory evolution / working context / archival memory / recursive summary → [[agent-memory]]
 - lost in the middle / scratchpad → [[context-engineering]]
 - PEFT / LoRA / SFT → [[parameter-efficient-fine-tuning]]
-- HITL / CoT モニタリング / CoT faithfulness / prompt injection / sandboxing / safety case → [[agent-safety-and-guardrails]]
+- HITL / CoT モニタリング / CoT faithfulness / prompt injection / sandboxing / safety case / jailbreak / DAN / backdoor attack / data poisoning / membership inference / MIA / PII leakage / gradient leakage / SmoothLLM / goal hijacking / competing objectives → [[agent-safety-and-guardrails]]
 - Long CoT / test-time scaling / overthinking / reasoning boundary / Best-of-N / budget forcing → [[test-time-compute]]
 - KV cache / TTFT / TPS / prefill / decode / FlashAttention / PagedAttention / quantization / continuous batching / speculative decoding / MTP / QAT → [[llm-inference-optimization]]
 - MoE / MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / Mixtral / Switch Transformers / expert capacity / router / MoonViT / NaViT / early fusion / DEP / encoder-free / p-RoPE / per-layer embeddings / CSA / HCA / mHC / Hyper-Connections / Muon / attention sink → [[transformer-architecture]]
