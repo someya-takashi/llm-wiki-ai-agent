@@ -34,6 +34,7 @@ updated: 2026-08-01
 - context engineering（限られたコンテキストウィンドウに何をどう積むかの設計）→ [[context-engineering]]
   - MemGPT の main context 3 分割（不変の規則／更新される要点／流れる履歴）と閾値駆動の退避が区画化の原型。本番運用のパターン（フェーズ要約・handoff・参照渡し）は [[summaries/2025-multi-agent-research-system]] が記録。
   - Kimi K2.5（[[summaries/2026-kimi-k2.5]], 2026）は「溢れてから削る」reactive な切り詰め（Summary / Discard-all 等）に対し、分解時点でコンテキストを分割する **context sharding**（Agent Swarm）を対置し、同一モデル比較で精度・効率の優位を示した。
+  - 本番製品側の 6 原則は Manus（[[summaries/2025-manus-context-engineering]], 2025）が開示: **KV cache ヒット率を最重要指標**とする追記専用設計（入出力比 100:1・キャッシュ有無で単価 10 倍）、ツールは削除せずロジットマスク、ファイルシステム＝復元可能な外部化メモリ、todo.md の復唱、失敗トレースの保持、few-shot の轍の回避——コンテキスト設計と推論経済を 1 つの問題として扱う視点の原点。
 
 ### 2. 知識の接続
 
@@ -94,7 +95,7 @@ updated: 2026-08-01
 
 | 軸 | 取り込み済みの原典 |
 | --- | --- |
-| 基本構造 | [[summaries/2023-llm-agents-survey]]（総論: brain/perception/action・応用 3 分類・エージェント社会）、[[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習）、[[summaries/2023-memgpt]]（階層記憶・仮想コンテキスト管理・イベント駆動制御）、[[summaries/2025-a-mem]]（動的記憶組織化・記憶進化） |
+| 基本構造 | [[summaries/2023-llm-agents-survey]]（総論: brain/perception/action・応用 3 分類・エージェント社会）、[[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習）、[[summaries/2023-memgpt]]（階層記憶・仮想コンテキスト管理・イベント駆動制御）、[[summaries/2025-a-mem]]（動的記憶組織化・記憶進化）、[[summaries/2025-manus-context-engineering]]（本番のコンテキスト設計 6 原則・KV cache 経済） |
 | 知識の接続 | [[summaries/2020-rag]]（検索拡張生成・非パラメトリック記憶・hot-swap） |
 | 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学）、[[summaries/2026-kimi-k2.5]]（RL で学習された並列オーケストレーション・context sharding） |
 | 応用 | [[summaries/2026-kimi-k2.5]]（computer use: OSWorld / WebArena・GUI エージェント構成）、[[summaries/2025-effective-harnesses]]（coding agents: 長時間自律コーディングのハーネス）、[[summaries/2026-harness-design]]（coding agents: 3 エージェント構成とハーネス縮小）、[[summaries/2026-meta-harness]]（coding agents / frameworks: ハーネスの自動探索・TerminalBench-2）。[[summaries/2026-sakana-fugu]] もコーディング・自律研究・CAD 等の応用例に言及 |

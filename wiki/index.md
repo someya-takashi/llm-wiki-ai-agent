@@ -47,6 +47,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2026-llm-optimization-guide]] — Mirantis（2026, ベンダーブログ）。本番推論最適化の実務ガイド。量子化 −75%・batching で稼働率 40→90%・PagedAttention −55% の定量カタログと運用の型。
 - [[summaries/2025-effective-harnesses]] — Anthropic（2025）。長時間エージェントのハーネス設計。initializer/coding の二部構成・feature list JSON・bearings 手順・E2E 検証。「要約でなく構造化 artifact で継ぐ」。
 - [[summaries/2026-harness-design]] — Anthropic Labs（2026, 前作の続編）。GAN 着想の planner/generator/evaluator・sprint contract・context anxiety と reset・「部品＝モデル能力への仮定」と 1 部品ずつ剥がす縮小の方法論。solo $9 vs ハーネス $200 の実測。
+- [[summaries/2025-manus-context-engineering]] — Manus（Yichao 'Peak' Ji, 2025）。本番エージェントのコンテキスト設計 6 原則: KV cache 中心設計（入出力比 100:1・単価 10 倍差）・マスクせよ削除するな・ファイルシステム＝究極のコンテキスト・復唱・誤りを残す・few-shot の轍。
 
 ### Docs
 
@@ -80,6 +81,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2026-harness-design]] — Anthropic「Harness design for long-running application development」の全文翻訳（欠落していた画像 4 枚を原ページの Sanity データから位置特定して復元。QA フィードバック・プラン例は原文のまま収録）。
 - [[translations/2026-meta-harness]] — Meta-Harness 論文の全文翻訳（欠落していた Figure 1 右パネルと Table 2 を ar5iv から復元＝クリップは図に Table 2 のキャプションが誤結合。脚注 2 件復元・SVG フロー図 4 点と要点／ログボックスをテキスト再構成。proposer の推論ログは原文のまま収録）。
 - [[translations/2023-llm-agents-survey]] — LLM エージェント・サーベイ（Xi et al.）の全文翻訳（PDF 原典・86 ページ中本文 45 ページ。画像なし＝ar5iv 変換失敗。分類ツリー図 5 点はネスト箇条書きとしてテキスト転写、脚注 6 件収録）。
+- [[translations/2025-manus-context-engineering]] — Manus「Context Engineering for AI Agents」の全文翻訳（クリップで脱落した一文の冒頭を原ページから復元＝リンク句が frontmatter author 欄に化けていた。図 6 枚収録・prefill 文字列は原文のまま）。
 
 ## Concepts
 
@@ -112,14 +114,14 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - RAG / DPR / dense retrieval / BM25 → [[retrieval-augmented-generation]]
 - MCP → [[model-context-protocol]]
 - CoT / CoT-SC / ToT / ReAct → [[reasoning-and-planning]]
-- function calling / tool call → [[tool-use-and-function-calling]]
+- function calling / tool call / logit masking / response prefill → [[tool-use-and-function-calling]]
 - MoA / Mixture-of-Agents / orchestrator-worker / MASFT / Agent Swarm / PARL / エージェント社会 / agent society / Generative Agents / CAMEL / MetaGPT → [[multi-agent-systems]]
 - brain-perception-action / AI エージェント / autonomous agents / AutoGPT / Voyager / instructor-executor / World Scope / AGI / embodied action / AaaS → [[llm-agents]]
 - CUA / computer use / GUI エージェント / OSWorld / WebArena / Operator → [[computer-use-agents]]
 - LLM-as-a-judge / pass@k / Cohen's κ → [[agent-evaluation]]
 - ACI / workflow パターン / prompt chaining / evaluator-optimizer / harness / ハーネス / Meta-Harness / ハーネスエンジニアリング / GEPA / AlphaEvolve / OpenEvolve / プロンプト自動最適化 → [[agent-frameworks]]
 - SWE-agent / Claude Code / Devin / Cursor / initializer agent / feature list / generator-evaluator / sprint contract / TerminalBench / Terminus / 環境ブートストラップ → [[coding-agents]]
-- compaction / claude-progress / context anxiety / context reset → [[context-engineering]]
+- compaction / claude-progress / context anxiety / context reset / recitation / 復唱 / KV cache ヒット率 / Manus / restorable compression → [[context-engineering]]
 - Reflexion / Self-Refine / verbal reinforcement → [[self-reflection]]
 - RLHF / RLVR / GRPO / PPO / DPO / RFT / PRM / OPD / On-Policy Distillation / GRM → [[reinforcement-learning-from-human-feedback]]
 - PoT / Program-of-Thought / ツール統合推論 → [[reasoning-and-planning]]

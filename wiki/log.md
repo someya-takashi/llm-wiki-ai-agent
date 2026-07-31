@@ -348,3 +348,11 @@ type: log
 - 作成: [[summaries/2023-llm-agents-survey]], [[translations/2023-llm-agents-survey]], [[concepts/llm-agents]]（**新設**・ユーザー承認済み。総論ハブ）
 - 更新: [[concepts/multi-agent-systems]]（2023 年サーベイの協調/敵対分類・エージェント社会・幻覚増幅と誤合意の警告を起源として追記）, [[concepts/agent-safety-and-guardrails]]（§6.3 の脅威整理＝「行動空間を持つエージェントでは敵対的攻撃が破壊的行動になる」を起点として追記）, [[concepts/agent-evaluation]]（評価 4 観点 utility/sociability/values/継続進化を評価史の起点として追記）, [[overview]]（総論原典の位置づけ）, [[index]]（llm-agents を未作成リストから昇格）
 - メモ: ケース B（PDF）。ar5iv は本論文の変換に失敗（プレースホルダのみ・図アセットなし）を確認したため**画像なし**で作成。図 12 点はキャプション全訳＋「訳注: PDF 原典のため画像省略」、分類ツリー図 5 点（Figure 3/4/5/6/11）は図中テキストをネスト箇条書きに転写（リーフの引用番号は省略と訳注明記）。脚注 6 件復元収録。翻訳は 7 チャンク分割で作成し切り詰めなし。要約では 2023 年時点の地図としての鮮度限界（プロンプト外装時代の前提・ハーネス論/MCP/computer use/RLVR 以前）を明示し、後続原典との対応を記載。
+
+## [2026-08-01] ingest | Context Engineering for AI Agents: Lessons from Building Manus
+
+- 取り込み: `raw/articles/Context Engineering for AI Agents_ Lessons from Building Manus.md`（Manus 公式ブログ, Yichao 'Peak' Ji, 2025-07）
+- 作成: [[summaries/2025-manus-context-engineering]], [[translations/2025-manus-context-engineering]]
+- 更新: [[concepts/context-engineering]]（KV cache 経済＝「積んだものを動かさない」規律・復元可能圧縮とファイルシステム外部化・復唱（recitation）節を新設・「履歴が意図せぬ few-shot になる」・「失敗の痕跡は消さない」節を新設）, [[concepts/agent-memory]]（「ファイルシステム＝究極のコンテキスト — Manus」節）, [[concepts/tool-use-and-function-calling]]（「削除するな、マスクせよ」＝ロジットマスク・prefill 3 モード・プレフィックス命名）, [[concepts/llm-inference-optimization]]（KV cache ヒット率をアプリ層の設計変数として追記）, [[overview]], [[index]]
+- 画像: `raw/assets/2025-manus-context-engineering/` に 6 枚（原ページから取得, 4K PNG, 元 CDN 名保持）。アプリ DL バナーと「part of Meta」バナーは chrome として除外
+- メモ: クリップ不良 1 件を復元——「Manipulate Attention Through Recitation」節の一文の冒頭「By constantly rewriting the todo list, Manus is」が本文から脱落し、リンク付きの句が frontmatter の author 欄に混入していた（新パターン: リンク句の author 欄化け）。原ページと照合して復元。著者名（Yichao 'Peak' Ji）も原ページから確定。
