@@ -1,14 +1,16 @@
 ---
 type: concept
-aliases: [トランスフォーマー, decoder-only, attention, linear attention, DeltaNet, Mamba, MLA, MoE, Mixture of Experts]
+aliases: [トランスフォーマー, decoder-only, attention, linear attention, DeltaNet, Mamba, MLA]
 tags: [transformer-architecture, llm-foundations]
 related:
+  - "[[mixture-of-experts]]"
   - "[[llm-inference-optimization]]"
   - "[[agent-memory]]"
   - "[[context-engineering]]"
   - "[[test-time-compute]]"
   - "[[reinforcement-learning-from-human-feedback]]"
 summaries:
+  - "[[summaries/2025-moe-survey]]"
   - "[[summaries/2026-gpt2-to-kimi3]]"
   - "[[summaries/2025-deepseek-r1]]"
   - "[[summaries/2025-kimi-k2]]"
@@ -17,7 +19,7 @@ summaries:
   - "[[summaries/2026-gemma-4]]"
   - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2021-switch-transformers]]"
-updated: 2026-07-29
+updated: 2026-08-02
 ---
 
 # Transformer Architecture（トランスフォーマーアーキテクチャ）
@@ -47,13 +49,11 @@ GPT-2 以来の標準形は **decoder-only**（デコーダのみ）構成であ
 
 ## MoE — 条件付き容量
 
-**MoE**（Mixture-of-Experts）は、MLP を多数の「エキスパート」に分割し、学習された**ルータ**がトークンごとに一部だけを起動する疎な構造。総パラメータを増やしながら 1 トークンあたりの計算を抑える「条件付き容量」の手法である。系譜は古く、1991 年の Adaptive Mixture of Local Experts（エキスパート＋ゲートの原型）→ Shazeer 2017 のスパース化（Noisy Top-k Gating, 137B LSTM）→ GShard（transformer への適用・expert capacity）→ Switch Transformers（**top-1 で十分**という簡素化・1.6T/2048 エキスパート・事前学習 4 倍速）→ Mixtral 8x7B（オープン MoE の実用化）と発展した（[[summaries/2023-moe-explained]] が定番の入門整理）。
+**MoE**（Mixture-of-Experts, 専門家混合）は、MLP を多数の「エキスパート」に分割し、学習された**ルータ**がトークンごとに一部だけを起動する疎な構造。総パラメータを増やしながら 1 トークンあたりの計算を抑える「条件付き計算」の手法であり、現在のフロンティア級モデルの大半（DeepSeek 系・Kimi 系・Mixtral 等）がこの形をとる。
 
-実用化を決めた転換点が **Switch Transformers**（[[summaries/2021-switch-transformers]], 2021）で、その貢献は機構の追加でなく**削除**にある。「ルータの学習には k≥2 のエキスパート比較が要る」という通念（Shazeer 2017）に反して **top-1** で品質を保てることを実証し（ゲート値を出力に掛ければ微分可能性は残る）、補助損失も単一の負荷分散損失 $\alpha N\sum_i f_i P_i$（$\alpha=10^{-2}$）へ簡素化した。安定化の実装レシピ——**selective precision**（ルータ関数の内部のみ float32。dispatch/combine は bfloat16 へ戻すので通信は軽いまま）・**0.1x の小初期化**（実行間分散 0.68→0.01）・**expert dropout**（微調整時にエキスパート層のみ 0.4）——はこの論文が確立したもので、同一計算資源で T5-Base 比 7 倍の事前学習高速化と、初の 1.6T モデル（Switch-C。訓練不安定ゼロ。むしろ FLOPs が 10 倍の Switch-XXL の方が不安定＝**不安定性はパラメータ数でなく FLOPs/トークンに相関**という観察も）に到達した。否定的結果の公開も価値が高い: attention への Switch 適用は bfloat16 で発散、あふれトークンを第 2 候補へ回す No-Token-Left-Behind は**効かない**（学習されたトークン・エキスパートの関連を崩すと逆効果）——「単純化が勝つ」という本論文の主題の裏づけである。
+transformer 側から見た要点は 3 つ。**(1) 置き場所は FFN 層**——FFN は深いモデルで総計算コストの大きな割合を占め、self-attention より疎性が高いので、疎な活性化を入れる素地がある。self-attention の置き換えは中核機構を壊すため避けるのが標準だが、attention ヘッド自体をエキスパートと見なす MoA / SwitchHead / MoH という変種もある。**(2) 実用化は削除によって起きた**——[[summaries/2021-switch-transformers]]（2021）が「ルータの学習には k≥2 が要る」という通念に反して **top-1 で足りる**ことを示し、補助損失も単一の負荷分散損失へ簡素化して、T5-Base 比 7 倍の事前学習高速化と初の 1.6T モデルに到達した。**(3) 経済性の本質はパラメータ数と計算量の分離**——Mixtral 8x7B は「メモリ 47B・推論 FLOPs 12B 相当」。エキスパートの専門化は「言語」のような大きな単位ではなくトークン群・浅い概念の単位で起こる。
 
-MoE の本質は**パラメータ数と計算量の分離**にある——Mixtral 8x7B は「メモリ 47B・推論 FLOPs 12B 相当」（attention 等は共有されるため 8×7B にはならない）。訓練の急所は**負荷分散**: 放置するとルータは少数の人気エキスパートへ自己強化的に収束するため、auxiliary loss（均等な重要度）・router z-loss（ゲートの大きなロジットへのペナルティ）・expert capacity（あふれの制御）の 3 点セットで抑える。**ルータは指数関数を含むため高精度必須**（エキスパートは bfloat16 でも、ルーティングは full precision——selective precision）。エキスパートの専門化は「言語」のような大きな単位ではなく**トークン群・浅い概念**の単位で起こり（句読点・固有名詞のエキスパート等）、疎モデルは過学習しやすい一方で **instruction tuning からは密モデル以上の恩恵**を受ける。Kimi K3 の実例（[[summaries/2026-gpt2-to-kimi3]]）: 898 エキスパートのうち**共有 2 つ**が全トークンを処理し、残り 896 から**各トークンに 16** をルータが選ぶ。さらにエキスパートを圧縮された**潜在空間**で動かして FLOPs をほぼ半減させる。DeepSeek-V3/R1（[[summaries/2025-deepseek-r1]] の基盤モデル）も大規模 MoE の代表例である。
-
-「どれだけ疎にするか」には経験則がある。Kimi K2（[[summaries/2025-kimi-k2]], 1.04T/活性 32B）は**スパース性スケーリング則**——活性化パラメータ（FLOPs）を固定したまま総エキスパート数を増やすほど loss が下がる——を実測し、同じ検証 loss 到達に必要な FLOPs がスパース性 48 でスパース性 8 比 1.69 倍削減されることを示して、384 エキスパート・スパース性 48 を採用した。もうひとつの設計判断が示唆的である: **attention ヘッドを 128→64 に半減**した——128k 系列でヘッド倍増は推論 FLOPs +83% に対し loss 改善 0.5〜1.2% しかなく、**エージェント用途の長コンテキスト推論効率が事前学習品質より優先された**。アーキテクチャがエージェントのワークロードから逆算され始めた実例である → [[llm-inference-optimization]]。
+**MoE の詳細——ゲーティング関数の設計空間（コサインルータ・Soft MoE 等）、ルーティングの水準（トークン／モダリティ／タスク）、負荷分散と安定化、システム設計（All-to-All 通信・メモリ）、スパース性スケーリング則、そしてアーキテクチャの外側での利用（継続学習・メタ学習・マルチタスク・RL）と理論——は [[mixture-of-experts]] に独立させた**（2026-08-02）。本ページで押さえるべきは「transformer のどこに、なぜ入るか」までである。
 
 ## マルチモーダル拡張 — 視覚をいつ・どう繋ぐか
 
@@ -84,6 +84,7 @@ MoE の本質は**パラメータ数と計算量の分離**にある——Mixtra
 
 ## 関連ページ
 
+- [[mixture-of-experts]] — MoE の詳細（ゲーティング設計・ルーティング水準・負荷分散・システム・理論）
 - [[llm-inference-optimization]] — KV cache・メモリ帯域・カーネルという「速さ」の側
 - [[agent-memory]] — 同型の記憶問題をモデルの外側で解く系譜
 - [[context-engineering]] — 有限ウィンドウ制約の使い方の側

@@ -119,6 +119,7 @@ data / model / expert parallelism を「重みの分割」と「データの分�
 
 ## 関連ページ
 
+- [[mixture-of-experts]] — 本論文が確立した設計（top-1・負荷分散損失・selective precision）の受け皿
 - [[transformer-architecture]] — MoE 節の一次資料（top-1・負荷分散・安定化レシピ）
 - [[llm-inference-optimization]] — expert parallelism・蒸留・selective precision の出典
 - [[summaries/2023-moe-explained]] — 本論文を中心に据えた入門解説（2 年後の整理）

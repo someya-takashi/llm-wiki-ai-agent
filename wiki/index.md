@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-08-01
+updated: 2026-08-02
 ---
 
 # Index — AI Agent LLM Wiki
@@ -22,6 +22,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2024-llm-security-privacy-survey]] — Das et al.（FIU, 2024）。LLM のセキュリティ攻撃（prompt injection・jailbreak・backdoor・poisoning）とプライバシー攻撃（勾配漏洩・MIA・PII 漏洩）＋防御機構＋応用リスクの脅威分類サーベイ。ジェイルブレイクの 2 失敗モード。
 - [[summaries/2022-instructgpt]] — InstructGPT（Ouyang et al., OpenAI, NeurIPS 2022）。RLHF を汎用の指示追従に初適用した一次資料で ChatGPT の前身。SFT→報酬モデル→PPO の 3 段・1.3B が 175B に勝つ・**アラインメント税**と PPO-ptx・整合コストは事前学習の 1.6%・「誰に整合させているのか」の 4 層分解。バイアスは改善せず、指示されれば GPT-3 より有害になる。
 - [[summaries/2023-dpo]] — DPO（Rafailov et al., Stanford, NeurIPS 2023）。KL 制約付き最適化の解を逆に解いて報酬を方策で表し、Bradley-Terry が差にしか依存しないので分配関数が消える——**報酬モデルの訓練と RL ループを両方排除**して二値交差エントロピー 1 本にする。報酬-KL フロンティアが PPO を（真の報酬を持つ PPO-GT ですら）支配。GPT-4 ジャッジ検証の参照実装も。
+- [[summaries/2025-moe-survey]] — MoE 包括サーベイ（Mu & Lin, arXiv:2503.07137, 2025-03）。基本設計・学習パラダイム別アルゴリズム・理論・応用の 4 部。**wiki に無かった 2 領域**を持ち込む: ゲーティングの設計空間（コサイン・Soft MoE・指数型分布族）とルーティング水準、継続学習/メタ学習/マルチタスク/RL での MoE、そして理論（普遍近似・MLE 収束と Voronoi 損失・2 層 CNN 単一エキスパートの 87.5% 上限）。独自実験はなく、システム記述は DeepSeek-V3 で止まる。
 - [[summaries/2021-switch-transformers]] — Switch Transformers（JMLR 2022）。MoE 実用化の転換点: top-1 ルーティング・selective precision・負荷分散損失・蒸留 30%・初の 1.6T モデル。並列化体系（data/model/expert）の原典。
 - [[summaries/2020-rag]] — RAG（NeurIPS 2020）。パラメトリック/非パラメトリック記憶の end-to-end 結合。幻覚減・索引差し替えによる知識更新・retrieval collapse の初記録。
 - [[summaries/2022-chain-of-thought]] — CoT（NeurIPS 2022）。例示に思考連鎖を入れるだけで推論が創発。「考えてから答える」設計すべての祖形。
@@ -88,6 +89,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2026-kimi-k2.5]] — Kimi K2.5 テクニカルレポートの全文翻訳（欠落していた図7 と脚注 2 件を ar5iv から復元。Table 4 は太字含め正規化。システムプロンプト・ツールスキーマは原文のまま収録）。
 - [[translations/2026-gemma-4]] — Gemma 4 テクニカルレポートの全文翻訳（PDF 原典。表 12 点＋Algorithm 1 を転記、図 2 枚はユーザー提供。制御トークン書式・会話例は原文のまま収録）。
 - [[translations/2026-deepseek-v4]] — DeepSeek-V4 テクニカルレポートの全文翻訳（欠落していた SVG 図 11 枚を ar5iv から復元。プロンプトボックス 2 点は SVG からテキスト化。脚注 4 件復元・HTML 表 8 個を正規化）。
+- [[translations/2025-moe-survey]] — MoE 包括サーベイの全文翻訳（本文 §I〜VII 全訳）。**ar5iv でも画像化されていない Figure 1（TikZ forest の分類ツリー）を LaTeX マークアップからネスト箇条書きに再構成**。本文図 2 枚を収録。原典に表・脚注は 1 つも存在しないことを ar5iv 照合で確認。
 - [[translations/2021-switch-transformers]] — Switch Transformers 論文の全文翻訳（多パネル図の欠落 4 枚と Mesh TF 擬似コード 3 本・脚注 11 件を ar5iv から復元。付録 A〜F 含む）。
 - [[translations/2024-deepseekmath]] — DeepSeekMath 論文の全文翻訳（欠落していた貢献箇条書き・脚注 7 件を ar5iv から復元。ar5iv 自体で平文化していた表 6 個をセル順序から再構成。付録 A.1 の全導出含む）。
 - [[translations/2025-effective-harnesses]] — Anthropic「Effective harnesses for long-running agents」の全文翻訳（脚注 1 件を原ページから復元。feature JSON・セッション例は原文のまま収録。GIF 1 枚）。
@@ -117,7 +119,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[context-engineering]] — 限られたウィンドウに何をどう積むか。注意予算と context rot・各構成要素の絞り方・just-in-time 取得・区画化・圧縮と引き継ぎ・参照渡し・長時間タスクの 3 手法。
 - [[agent-safety-and-guardrails]] — 安全対策の 4 層（行動空間・ガードレール・監視・HITL）。CoT モニタリングの可能性と限界。モデル内在の安全性がどこから来るか（整合の宛先の 4 層分解）。
 - [[test-time-compute]] — 推論時に計算を積んで精度を買う第二のスケーリング軸。垂直/並列の 2 型・推論境界・overthinking。
-- [[transformer-architecture]] — decoder-only の基本構造と attention の系譜（softmax→linear→delta→gated→ハイブリッド）・MoE・AttnRes。
+- [[transformer-architecture]] — decoder-only の基本構造と attention の系譜（softmax→linear→delta→gated→ハイブリッド）・AttnRes。MoE は概要のみで詳細は下記へ。
+- [[mixture-of-experts]] — 条件付き計算としての MoE。ゲーティング関数の設計空間・ルーティング水準・負荷分散とシステム設計・スパース性の経済・アーキテクチャ外での利用（継続学習/メタ学習/マルチタスク/RL）・理論の現在地。
 - [[llm-inference-optimization]] — 推論を速く安く捌く側。prefill/decode・TTFT/TPS・KV cache の帯域律速・カーネル融合。
 - [[computer-use-agents]] — スクリーンショットを観測し GUI を直接操作するエージェント（CUA）。行動空間・OSWorld/WebArena・グラウンディング律速・安全性。
 - [[coding-agents]] — コードを書き・実行し・検証するエージェント。ACI・最小ツール構成・長時間ハーネス（initializer/coding）・検証の設計・SWE-bench 系。
@@ -158,7 +161,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - HITL / CoT モニタリング / CoT faithfulness / prompt injection / sandboxing / safety case / jailbreak / DAN / backdoor attack / data poisoning / membership inference / MIA / PII leakage / gradient leakage / SmoothLLM / goal hijacking / competing objectives → [[agent-safety-and-guardrails]]
 - Long CoT / test-time scaling / overthinking / reasoning boundary / Best-of-N / budget forcing → [[test-time-compute]]
 - KV cache / TTFT / TPS / prefill / decode / FlashAttention / PagedAttention / quantization / continuous batching / speculative decoding / MTP / QAT → [[llm-inference-optimization]]
-- MoE / MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / Mixtral / Switch Transformers / expert capacity / router / MoonViT / NaViT / early fusion / DEP / encoder-free / p-RoPE / per-layer embeddings / CSA / HCA / mHC / Hyper-Connections / Muon / attention sink → [[transformer-architecture]]
+- MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / MoonViT / NaViT / early fusion / DEP / encoder-free / p-RoPE / per-layer embeddings / CSA / HCA / mHC / Hyper-Connections / Muon / attention sink → [[transformer-architecture]]
+- MoE / Mixture of Experts / 専門家混合 / Mixtral / Switch Transformers / GShard / GLaM / ゲーティング関数 / gating function / router / ルータ / expert capacity / 負荷分散 / load balancing / token dropping / Soft MoE / コサインルータ / Top-P ルーティング / 共有エキスパート / shared expert / スパース性スケーリング則 / MMoE / MoA / 条件付き計算 / conditional computation → [[mixture-of-experts]]
 - Arena / Chatbot Arena / Elo → [[agent-evaluation]]
 - DSML → [[tool-use-and-function-calling]]
 - agentic search → [[retrieval-augmented-generation]]

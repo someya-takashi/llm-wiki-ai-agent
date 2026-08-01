@@ -3,11 +3,13 @@ type: concept
 aliases: [推論最適化, inference optimization, KV cache, TTFT, TPS, serving, サービング, デコードスループット]
 tags: [llm-inference-optimization, llm-foundations]
 related:
+  - "[[mixture-of-experts]]"
   - "[[transformer-architecture]]"
   - "[[test-time-compute]]"
   - "[[context-engineering]]"
   - "[[multi-agent-systems]]"
 summaries:
+  - "[[summaries/2025-moe-survey]]"
   - "[[summaries/2026-gpt2-to-kimi3]]"
   - "[[summaries/2025-multi-agent-research-system]]"
   - "[[summaries/2026-llm-optimization-guide]]"
@@ -16,7 +18,7 @@ summaries:
   - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2021-switch-transformers]]"
   - "[[summaries/2025-manus-context-engineering]]"
-updated: 2026-08-01
+updated: 2026-08-02
 ---
 
 # LLM Inference Optimization（LLM 推論の高速化・サービング）
@@ -75,7 +77,7 @@ decode が 1 トークンずつ逐次的でメモリ帯域律速なら、**下�
 
 ### MoE のサービング — パラメータと FLOPs の分離
 
-MoE（→ [[transformer-architecture]]）の推論経済は独特で、**計算は活性化パラメータ分・メモリは総パラメータ分**という分離が本質（Mixtral 8x7B は FLOPs 12B 相当だが VRAM は 47B 分必要——[[summaries/2023-moe-explained]]）。したがって「高スループット・多マシンなら疎、低スループット・低 VRAM なら密」が使い分けの基本。サービングの論点:
+MoE（→ [[mixture-of-experts]]）の推論経済は独特で、**計算は活性化パラメータ分・メモリは総パラメータ分**という分離が本質（Mixtral 8x7B は FLOPs 12B 相当だが VRAM は 47B 分必要——[[summaries/2023-moe-explained]]）。したがって「高スループット・多マシンなら疎、低スループット・低 VRAM なら密」が使い分けの基本。サービングの論点:
 
 - **expert parallelism**: エキスパートを別デバイスに置き、トークンを目的エキスパートへ **all-to-all 通信**で送る。通信が律速になりやすく、**capacity factor**（エキスパートあたり処理トークン上限の係数）は品質と通信コストのトレードオフ——top-2・CF 1.25・コアあたり 1 エキスパートが出発点で、評価時に CF を下げて計算削減もできる。この分割戦略の体系化は Switch Transformers（[[summaries/2021-switch-transformers]] §5・図9）が原典で、data / model / expert parallelism を「重みの分割」×「データの分割」の 2 軸で統一的に整理した: データ並列は勾配集約まで通信ゼロ、モデル並列は分割次元の総和のたびに all-reduce、エキスパート並列は all-to-all——そして 3 者の結合では FLOPs・通信・メモリの最適マッピングが「経験的にしか決まらない」という課題提起が、後の通信・計算融合（MegaMoE → [[summaries/2026-deepseek-v4]]）まで続く研究線の出発点になった。付録 F の Mesh TF 擬似コード（dispatch/combine テンソル・cumsum 容量制御）は MoE 実装の最短の教科書である。
 - **パラメータ削減**: 密モデルへの**蒸留**（疎の事前学習利得の 30〜40% を保持したまま小さく配れる——一次数値は [[summaries/2021-switch-transformers]] 表7: 非エキスパート重みで学生を初期化＋教師 0.25/正解 0.75 の混合損失で、1/20 圧縮時 30%・99% 圧縮でも 28% 保持）、文/タスク単位ルーティングによるサブネット抽出、エキスパートのマージ、**QMoE** の 1 ビット未満量子化（1.6T の Switch Transformer を 3.2TB→160GB）。
