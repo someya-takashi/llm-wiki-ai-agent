@@ -63,5 +63,5 @@ updated: 2026-08-01
 - [[tool-use-and-function-calling]] / [[coding-agents]] / [[computer-use-agents]] — action と応用の各論
 - [[multi-agent-systems]] — 協調・敵対・エージェント社会
 - [[agent-frameworks]] — 設計パターンとハーネス層
-- [[agent-evaluation]] / [[agent-safety-and-guardrails]] / [[agent-observability]] — 評価・安全・運用（observability は未作成）
+- [[agent-evaluation]] / [[agent-safety-and-guardrails]] / [[agent-observability]] — 評価・安全・運用
 - [[summaries/2023-llm-agents-survey]] — 本ページの主要な根拠原典

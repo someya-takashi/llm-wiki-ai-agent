@@ -70,7 +70,9 @@ updated: 2026-08-01
 - agent safety and guardrails（prompt injection（外部入力に埋め込まれた指示でエージェントを乗っ取る攻撃）、権限設計、sandboxing、HITL）→ [[agent-safety-and-guardrails]]
   - 攻撃側の脅威分類は [[summaries/2024-llm-security-privacy-survey]]（Das et al., 2024）が体系化: セキュリティ攻撃（prompt injection の goal hijacking/prompt leaking・間接インジェクション、jailbreak の DAN と 2 失敗モード＝competing objectives/mismatched generalization、backdoor、data poisoning）とプライバシー攻撃（勾配漏洩・MIA・記憶による PII 漏洩）、および各防御（SmoothLLM・self-reminder・DP-SGD・PII スクラビング等）。防御はほぼ必ずモデル有用性とのトレードオフを抱える。
   - 監視面の実測が [[summaries/2025-cot-faithfulness]]（Anthropic, 2025）: 推論モデルの CoT が実際の判断理由（ヒント）を明かす率は平均 25〜39%、RL で仕込んだ reward hack は >99% 悪用されながら言語化 <2%。**CoT モニタリングは「気づく層」としては有望だが「排除の保証」には使えない**という運用原則を確立した。
-- agent observability（trajectory のトレーシングとデバッグ）→ `[[agent-observability]]`
+- agent observability（trajectory のトレーシングとデバッグ、指標の集約、監査証跡）→ [[agent-observability]]
+  - 概念ページは 2026-08-01 に新設。評価が「開発時に良し悪しを測る」のに対し、可観測性は「本番稼働中に何が起きているかを見る」——非決定的で・エラーが複利で効き・静かに失敗するエージェントでは、行動ログ／指標／改変不可能な監査証跡の 3 層が要る。トレース中の thought は行動の理由とは限らないため（CoT 忠実性 25〜39%）、**思考の記述より行動と観測の系列を一次データとして扱う**のが規律になる。
+  - エンタープライズ運用の語彙（デプロイ形態 6 パターン・暴走コスト上限・承認ゲート・policy-as-code）は [[summaries/2026-agent-orchestration-guide]]（Databricks, 2026）。ただしベンダーブログであり、提示される統計値には出典がない。
 
 ### 6. 土台となる LLM 側
 
@@ -101,10 +103,10 @@ updated: 2026-08-01
 | 知識の接続 | [[summaries/2020-rag]]（検索拡張生成・非パラメトリック記憶・hot-swap） |
 | 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学）、[[summaries/2026-kimi-k2.5]]（RL で学習された並列オーケストレーション・context sharding） |
 | 応用 | [[summaries/2026-kimi-k2.5]]（computer use: OSWorld / WebArena・GUI エージェント構成）、[[summaries/2025-effective-harnesses]]（coding agents: 長時間自律コーディングのハーネス）、[[summaries/2026-harness-design]]（coding agents: 3 エージェント構成とハーネス縮小）、[[summaries/2026-meta-harness]]（coding agents / frameworks: ハーネスの自動探索・TerminalBench-2）。[[summaries/2026-sakana-fugu]] もコーディング・自律研究・CAD 等の応用例に言及 |
-| 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）、[[summaries/2025-multi-agent-research-system]]（小規模評価・単一ジャッジ・終了状態評価・本番運用の信頼性）、[[summaries/2025-cot-faithfulness]]（CoT 忠実性・CoT モニタリングの限界・安全性）、[[summaries/2024-llm-security-privacy-survey]]（セキュリティ・プライバシー攻撃と防御の脅威分類）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
+| 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）、[[summaries/2025-multi-agent-research-system]]（小規模評価・単一ジャッジ・終了状態評価・本番運用の信頼性）、[[summaries/2025-cot-faithfulness]]（CoT 忠実性・CoT モニタリングの限界・安全性）、[[summaries/2024-llm-security-privacy-survey]]（セキュリティ・プライバシー攻撃と防御の脅威分類）、[[summaries/2026-agent-orchestration-guide]]（エンタープライズ運用・デプロイ形態 6 パターン・ガバナンスと可観測性の実務層。ベンダーブログ・統計値は出典なし）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
 | LLM 基盤 | [[summaries/2024-deepseekmath]]（GRPO の発明・統一パラダイム・数学コーパス採掘）、[[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）、[[summaries/2025-long-cot-survey]]（Long CoT の体系化・test-time scaling・推論境界）、[[summaries/2026-gpt2-to-kimi3]]（アーキテクチャの系譜・KV cache・推論効率）、[[summaries/2026-llm-optimization-guide]]（本番推論最適化の実務・サービング運用）、[[summaries/2025-kimi-k2]]（エージェント特化の事前学習＋データ合成＋joint RL）、[[summaries/2023-moe-explained]]（MoE の仕組み・歴史・負荷分散）、[[summaries/2026-kimi-k2.5]]（マルチモーダル joint 訓練・zero-vision SFT・トークン効率 RL）、[[summaries/2026-gemma-4]]（エッジ〜31B の効率化設計・encoder-free・QAT・投機的デコード）、[[summaries/2026-deepseek-v4]]（1M コンテキスト効率・CSA/HCA・mHC・OPD・RL/rollout インフラ）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
 
-6 軸すべてに少なくとも 1 件の原典が入った（2026-07-26 時点）。「応用」軸には 2026-07-28 の Kimi K2.5 で初の専用記述（computer use）が入った。「知識の接続」軸のプロトコル層は 2026-08-01 の横断レビュー（[[summaries/2025-llm-reasoning-to-agents]]）で概念ページ [[model-context-protocol]] を新設し、MCP/A2A/ACP の三つ巴として初めて記述が入った——ただし各プロトコルの一次仕様（MCP spec 等）はまだ ingest しておらず、次に読むべき docs 候補として残る。以後は各軸の深化（プロトコル一次仕様、応用における coding agents の専用原典）を `lint` のデータギャップとして追う。
+6 軸すべてに少なくとも 1 件の原典が入った（2026-07-26 時点）。「応用」軸には 2026-07-28 の Kimi K2.5 で初の専用記述（computer use）が入った。「知識の接続」軸のプロトコル層は 2026-08-01 の横断レビュー（[[summaries/2025-llm-reasoning-to-agents]]）で概念ページ [[model-context-protocol]] を新設し、MCP/A2A/ACP の三つ巴として初めて記述が入った——ただし各プロトコルの一次仕様（MCP spec 等）はまだ ingest しておらず、次に読むべき docs 候補として残る。「評価・運用・安全性」軸では 2026-08-01 に概念ページ [[agent-observability]] を新設し、既存原典に散在していた可観測性の記述（本番運用報告・トレース分析方法論・CoT 忠実性の限界）を集約した——ただし可観測性を主題とする一次資料（OpenTelemetry の生成 AI 向け規約、トレーシング基盤の設計文書、本番インシデントの事後報告など）はまだ 1 件も入っていない。以後は各軸の深化（プロトコル一次仕様、可観測性の一次資料、応用における coding agents の専用原典）を `lint` のデータギャップとして追う。
 
 ## 関連ページ
 

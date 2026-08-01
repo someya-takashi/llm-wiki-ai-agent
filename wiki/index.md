@@ -51,6 +51,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2025-effective-harnesses]] — Anthropic（2025）。長時間エージェントのハーネス設計。initializer/coding の二部構成・feature list JSON・bearings 手順・E2E 検証。「要約でなく構造化 artifact で継ぐ」。
 - [[summaries/2026-harness-design]] — Anthropic Labs（2026, 前作の続編）。GAN 着想の planner/generator/evaluator・sprint contract・context anxiety と reset・「部品＝モデル能力への仮定」と 1 部品ずつ剥がす縮小の方法論。solo $9 vs ハーネス $200 の実測。
 - [[summaries/2025-manus-context-engineering]] — Manus（Yichao 'Peak' Ji, 2025）。本番エージェントのコンテキスト設計 6 原則: KV cache 中心設計（入出力比 100:1・単価 10 倍差）・マスクせよ削除するな・ファイルシステム＝究極のコンテキスト・復唱・誤りを残す・few-shot の轍。
+- [[summaries/2026-agent-orchestration-guide]] — Databricks（2026, ベンダーブログ）。エンタープライズ運用の実務チェックリスト。デプロイ形態 6 パターン（中央集権/分散/階層/ハイブリッド/フェデレーション/創発）・単一責務と入出力契約・CI/CD と policy-as-code・暴走コスト上限・承認ゲートと監査証跡。**掲載される 3 つの統計値（35%/30%/75%）はいずれも出典なし**。
 
 ### Docs
 
@@ -87,6 +88,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2023-llm-agents-survey]] — LLM エージェント・サーベイ（Xi et al.）の全文翻訳（PDF 原典・86 ページ中本文 45 ページ。画像なし＝ar5iv 変換失敗。分類ツリー図 5 点はネスト箇条書きとしてテキスト転写、脚注 6 件収録）。
 - [[translations/2025-manus-context-engineering]] — Manus「Context Engineering for AI Agents」の全文翻訳（クリップで脱落した一文の冒頭を原ページから復元＝リンク句が frontmatter author 欄に化けていた。図 6 枚収録・prefill 文字列は原文のまま）。
 - [[translations/2024-llm-security-privacy-survey]] — LLM セキュリティ・プライバシー・サーベイ（Das et al.）の全文翻訳（ar5iv クリップ。図 7 枚・Table 1/2・脚注 1 件・数式を収録。分類図と魚骨図は訳注でテキスト補足）。
+- [[translations/2026-agent-orchestration-guide]] — Databricks「AI Agent Orchestration: A Guide for Enterprise Systems」の全文翻訳（本文中に図版なし＝原ページ照合済み、画像はすべてサイト UI）。本文に混入していた資料 DL のプロモ枠を除外し、自社製品への誘導リンクはテキストのみ訳出して URL は不収録。
 - [[translations/2025-llm-reasoning-to-agents]] — 「From LLM Reasoning to Autonomous AI Agents」（Ferrag et al.）の全文翻訳（Abstract〜VI 全章、929 行）。ar5iv クリップ底本。図 6 枚（x1/x3/x4/x5・agentic/RAG_agentic drawio）を `<figure>` 収録、SVG のみの図（2・3・8〜12 等）はテキスト補足。平坦化していた Table V〜XII を markdown 表に再構成。IV-B 応用（11 領域）は各研究を訳出しドメイン別網羅表を併載。
 
 ## Concepts
@@ -110,9 +112,10 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[computer-use-agents]] — スクリーンショットを観測し GUI を直接操作するエージェント（CUA）。行動空間・OSWorld/WebArena・グラウンディング律速・安全性。
 - [[coding-agents]] — コードを書き・実行し・検証するエージェント。ACI・最小ツール構成・長時間ハーネス（initializer/coding）・検証の設計・SWE-bench 系。
 - [[model-context-protocol]] — エージェントを外部ツール・データ・他エージェントに繋ぐ標準プロトコル群。MCP（縦＝ツール接続）／A2A（横＝エージェント間相互運用）／ACP（ローカル協調）の三つ巴とプロトコル層のセキュリティ。
+- [[agent-observability]] — 本番で動くエージェントを外から見えるようにする層。評価との境界・行動ログ/指標/監査証跡の 3 層・非決定性とトレースの限界（CoT の不忠実性）。
 
 未作成の想定スラグ（CLAUDE.md §1 の命名規約より。作成したら上のリストへ移す）：
-`web-agents` / `agent-observability` / `parameter-efficient-fine-tuning`
+`web-agents` / `parameter-efficient-fine-tuning`
 
 ### 略称リダイレクト
 
@@ -126,6 +129,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - brain-perception-action / AI エージェント / autonomous agents / AutoGPT / Voyager / instructor-executor / World Scope / AGI / embodied action / AaaS → [[llm-agents]]
 - CUA / computer use / GUI エージェント / OSWorld / WebArena / Operator → [[computer-use-agents]]
 - LLM-as-a-judge / pass@k / Cohen's κ → [[agent-evaluation]]
+- observability / 可観測性 / トレーシング / tracing / 監査証跡 / audit trail / immutable trace / rainbow deployment / ウォッチドッグ / watchdog / スコープ漂流 / context drift → [[agent-observability]]
+- オーケストレーション / orchestration / 中央集権型 / 非中央集権型 / 階層型 / ハイブリッド / フェデレーション型 / 創発型 / policy-as-code / 入出力契約 / group chat orchestration → [[multi-agent-systems]]
 - ACI / workflow パターン / prompt chaining / evaluator-optimizer / harness / ハーネス / Meta-Harness / ハーネスエンジニアリング / GEPA / AlphaEvolve / OpenEvolve / プロンプト自動最適化 → [[agent-frameworks]]
 - SWE-agent / Claude Code / Devin / Cursor / initializer agent / feature list / generator-evaluator / sprint contract / TerminalBench / Terminus / 環境ブートストラップ → [[coding-agents]]
 - compaction / claude-progress / context anxiety / context reset / recitation / 復唱 / KV cache ヒット率 / Manus / restorable compression → [[context-engineering]]
