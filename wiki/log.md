@@ -364,3 +364,11 @@ type: log
 - 更新: [[concepts/agent-safety-and-guardrails]]（脅威モデルの俯瞰を攻撃分類＝prompt injection/jailbreak/backdoor/poisoning/privacy へ大幅拡充・入出力ガードレール節に §6 の防御手法カタログを追加・攻撃側カタログの根拠原典として登録）, [[concepts/reinforcement-learning-from-human-feedback]]（ジェイルブレイクの 2 失敗モード＝competing objectives/mismatched generalization を安全訓練の構造的穴として追記）, [[overview]], [[index]]
 - 画像: `raw/assets/2024-llm-security-privacy-survey/` に 7 枚（x1〜x7, ar5iv から取得, 元名保持）
 - メモ: ケース A（ar5iv クリップ）。クリップは比較的健全。脚注 1 件（Figure 1 の Hugging Face 出典注記）を [^fn1] で復元。Table 1（略語 34 語）・Table 2（既存サーベイ 17 件との比較・✓/× マトリクス 12 列）を markdown 表として収録。図 2（脅威の集合ベン図）・図 7（魚骨図）は画像を保存しつつ図中テキストを訳注で補足。数式（敵対的サンプルの定式化）は LaTeX 維持。この wiki の agent-safety-and-guardrails に「攻撃側カタログ」を供給し、lint で挙がっていた prompt injection 一次原典の不足を埋めた。新概念ページは作らず既存 agent-safety-and-guardrails を受け皿とした。
+
+## [2026-08-01] ingest | Toolformer: Language Models Can Teach Themselves to Use Tools
+
+- 取り込み: `raw/papers/Toolformer_ Language Models Can Teach Themselves to Use Tools.md`（ar5iv クリップ, Schick et al., Meta AI Research, arXiv:2302.04761, NeurIPS 2023）
+- 作成: [[summaries/2023-toolformer]], [[translations/2023-toolformer]]
+- 更新: [[concepts/tool-use-and-function-calling]]（「Toolformer — ツール利用を重みに埋め込む（自己教師あり学習）」節を本格化＝従来は「原典未 ingest のため概説」だった。自己採点フィルタリング・GPT-3 超え・775M での創発・連鎖/対話の限界と agent 化の動機・RLVR/データ合成との類縁）, [[overview]]（ツール利用の系譜に Toolformer 追加・カバレッジ表）, [[index]]
+- 画像: `raw/assets/2023-toolformer/` に 4 枚（x1〜x4, ar5iv から取得, 元名保持）
+- メモ: ケース A（ar5iv クリップ）。本文中に `<sup>N</sup>` マーカーだけが残り本文が欠落していた**脚注 8 件を ar5iv から復元**して [^fnN] で収録（特殊トークンの実装注記・フィルタリングの設計理由・perplexity 評価が扱いにくい理由など、再現に効く情報）。Table 2/9 の HTML テーブルを markdown 化。付録 A.2・C のプロンプト（QA/計算機/WikiSearch/MT/カレンダー）は一字一句が挙動に効くため原文のまま収録し、計算機プロンプト 2 例目のクリップ崩れ（"This is 11.4Output:"）を原文に補正。Table 10（10 例の API 呼び出し一覧）は長いため代表 3 例のみ訳注つきで収録。tool-use-and-function-calling の Toolformer 記述が「概説のみ」だったのを本格記述に格上げし、ReAct（プロンプト時代）との「同じ目的・逆の層」の対比を明示。

@@ -24,7 +24,7 @@ updated: 2026-08-01
 - agent loop（エージェントループ, 観測→思考→行動の反復）、ReAct 型の推論と行動の交互実行 → [[agent-loop]], [[reasoning-and-planning]]
   - この骨格の原型は ReAct（[[summaries/2022-react]], 2022）が確立した。思考を「環境に作用しない行動」として行動空間に加えるという定式化により、外部接地で幻覚を抑えつつ（CoT の失敗要因 56% → 0%）、few-shot プロンプトのみで模倣・強化学習を上回れることを示した。
 - tool use / function calling（モデルが JSON スキーマに沿った引数で外部ツールを呼ぶ仕組み）→ [[tool-use-and-function-calling]]
-  - 初期形は ReAct の 3 アクション Wikipedia API のようなプロンプト規約によるツール定義で、その後 API レベルの構造化された function calling へ発展した。
+  - 初期形は ReAct の 3 アクション Wikipedia API のようなプロンプト規約によるツール定義で、その後 API レベルの構造化された function calling へ発展した。並行して、ツール利用能力を**プロンプトでなくモデルの重みに埋め込む**系譜が Toolformer（[[summaries/2023-toolformer]], 2023）で始まった——「その API 呼び出しが将来トークンの予測を助けたか」という自己教師あり信号で訓練例を選別し、6.7B の GPT-J が GPT-3(175B) を zero-shot で上回った。連鎖・対話ができないという限界が、後のエージェントループ（[[agent-loop]]）とデータ合成（[[summaries/2025-kimi-k2]]）の動機になった。
 - planning（計画立案）と self-reflection（自己反省による軌道修正）→ [[reasoning-and-planning]], [[self-reflection]]
   - 推論の系譜の起点は CoT（[[summaries/2022-chain-of-thought]], 2022）。few-shot 例示に思考連鎖を入れるだけで推論が創発する（約 100B 規模で急伸）ことを示し、「答える前に考えさせる」設計と test-time compute の発想の源流となった。
   - Reflexion（[[summaries/2023-reflexion]], 2023）は、失敗の反省文をエピソード記憶に蓄えて次試行に注入する「言語的強化学習」で、重み更新なしの試行間学習を実現した——CoT（考えてから答える）→ ReAct（考えて動く）→ Reflexion（失敗から学ぶ）で単一エージェントの基本系譜が完結する。
@@ -96,7 +96,7 @@ updated: 2026-08-01
 
 | 軸 | 取り込み済みの原典 |
 | --- | --- |
-| 基本構造 | [[summaries/2023-llm-agents-survey]]（総論: brain/perception/action・応用 3 分類・エージェント社会）、[[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-reflexion]]（自己反省・試行間学習）、[[summaries/2023-memgpt]]（階層記憶・仮想コンテキスト管理・イベント駆動制御）、[[summaries/2025-a-mem]]（動的記憶組織化・記憶進化）、[[summaries/2025-manus-context-engineering]]（本番のコンテキスト設計 6 原則・KV cache 経済） |
+| 基本構造 | [[summaries/2023-llm-agents-survey]]（総論: brain/perception/action・応用 3 分類・エージェント社会）、[[summaries/2022-chain-of-thought]]（推論の創発・CoT）、[[summaries/2022-react]]（agent loop・推論と行動の統合・初期のツール利用）、[[summaries/2023-toolformer]]（自己教師ありツール利用学習・重みへの埋め込み）、[[summaries/2023-reflexion]]（自己反省・試行間学習）、[[summaries/2023-memgpt]]（階層記憶・仮想コンテキスト管理・イベント駆動制御）、[[summaries/2025-a-mem]]（動的記憶組織化・記憶進化）、[[summaries/2025-manus-context-engineering]]（本番のコンテキスト設計 6 原則・KV cache 経済） |
 | 知識の接続 | [[summaries/2020-rag]]（検索拡張生成・非パラメトリック記憶・hot-swap） |
 | 構成とスケール | [[summaries/2026-sakana-fugu]]（学習されたオーケストレータ）、[[summaries/2025-masft]]（MAS の失敗分類）、[[summaries/2024-building-effective-agents]]（設計パターンとフレームワーク観）、[[summaries/2025-multi-agent-research-system]]（本番 orchestrator-worker・トークン経済学）、[[summaries/2026-kimi-k2.5]]（RL で学習された並列オーケストレーション・context sharding） |
 | 応用 | [[summaries/2026-kimi-k2.5]]（computer use: OSWorld / WebArena・GUI エージェント構成）、[[summaries/2025-effective-harnesses]]（coding agents: 長時間自律コーディングのハーネス）、[[summaries/2026-harness-design]]（coding agents: 3 エージェント構成とハーネス縮小）、[[summaries/2026-meta-harness]]（coding agents / frameworks: ハーネスの自動探索・TerminalBench-2）。[[summaries/2026-sakana-fugu]] もコーディング・自律研究・CAD 等の応用例に言及 |

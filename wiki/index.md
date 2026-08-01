@@ -24,6 +24,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2020-rag]] — RAG（NeurIPS 2020）。パラメトリック/非パラメトリック記憶の end-to-end 結合。幻覚減・索引差し替えによる知識更新・retrieval collapse の初記録。
 - [[summaries/2022-chain-of-thought]] — CoT（NeurIPS 2022）。例示に思考連鎖を入れるだけで推論が創発。「考えてから答える」設計すべての祖形。
 - [[summaries/2022-react]] — ReAct（ICLR 2023）。思考と行動を交互に生成させ、外部接地で幻覚を抑えつつ行動を推論で導くパラダイム。agent loop の原型。
+- [[summaries/2023-toolformer]] — Toolformer（Meta AI, NeurIPS 2023）。LM が自己教師ありでツール使用を学習。パープレキシティ改善で API 呼び出しを自己採点・選別。6.7B が GPT-3(175B) を上回る。ツール利用を重みに埋め込む系譜の起点。
 - [[summaries/2023-reflexion]] — Reflexion（NeurIPS 2023）。報酬を反省文に増幅して記憶し、重み更新なしで試行間学習。HumanEval 91%。
 - [[summaries/2024-deepseekmath]] — DeepSeekMath（2024）。GRPO の発明論文。critic をグループ相対 advantage で置換・統一パラダイム・「RL は Maj@K を上げ Pass@K を上げない」。120B 数学コーパスの採掘パイプラインとコード訓練→推論の転移実証。
 - [[summaries/2023-memgpt]] — MemGPT（ICML 2024）。OS の仮想メモリに倣い、LLM 自身が function call で記憶を階層管理。working context・archival memory の語彙の出発点。
@@ -59,6 +60,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2020-rag]] — RAG 論文の全文翻訳（付録 A〜I 含む。周辺化・DPR の式は LaTeX 維持、生成例は原文のまま収録）。
 - [[translations/2022-chain-of-thought]] — CoT 論文の全文翻訳（付録の全プロンプト・結果表含む。プロンプトと例は原文のまま収録）。
 - [[translations/2022-react]] — ReAct 論文の全文翻訳（付録・プロンプト含む。プロンプトと軌跡は原文のまま収録）。
+- [[translations/2023-toolformer]] — Toolformer 論文の全文翻訳（ar5iv クリップ。欠落していた脚注 8 件を復元。付録 A〜D のプロンプト・実装詳細を原文のまま収録。図 4 枚・Table 2/9 を markdown 化）。
 - [[translations/2023-reflexion]] — Reflexion 論文の全文翻訳（Algorithm 1・欠落パネルを ar5iv から復元。軌跡と反省文は原文のまま収録）。
 - [[translations/2023-memgpt]] — MemGPT 論文の全文翻訳（付録の全プロンプト含む。Figure 8 キャプションを ar5iv から復元。プロンプトは原文のまま収録）。
 - [[translations/2025-cot-faithfulness]] — CoT 忠実性論文の全文翻訳（脚注 2 件を ar5iv から復元。忠実性スコアの定義式は LaTeX 維持、ヒント例は原文のまま収録）。
@@ -116,7 +118,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - RAG / DPR / dense retrieval / BM25 → [[retrieval-augmented-generation]]
 - MCP → [[model-context-protocol]]
 - CoT / CoT-SC / ToT / ReAct → [[reasoning-and-planning]]
-- function calling / tool call / logit masking / response prefill → [[tool-use-and-function-calling]]
+- function calling / tool call / logit masking / response prefill / Toolformer / Gorilla / TALM / 自己教師ありツール学習 → [[tool-use-and-function-calling]]
 - MoA / Mixture-of-Agents / orchestrator-worker / MASFT / Agent Swarm / PARL / エージェント社会 / agent society / Generative Agents / CAMEL / MetaGPT → [[multi-agent-systems]]
 - brain-perception-action / AI エージェント / autonomous agents / AutoGPT / Voyager / instructor-executor / World Scope / AGI / embodied action / AaaS → [[llm-agents]]
 - CUA / computer use / GUI エージェント / OSWorld / WebArena / Operator → [[computer-use-agents]]
