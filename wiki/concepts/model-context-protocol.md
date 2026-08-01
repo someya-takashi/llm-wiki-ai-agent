@@ -1,0 +1,71 @@
+---
+type: concept
+aliases: [MCP, Model Context Protocol, A2A, Agent-to-Agent Protocol, ACP, Agent Communication Protocol, エージェントプロトコル, agent protocols]
+tags: [model-context-protocol, tool-use-and-function-calling, multi-agent-systems, agent-frameworks]
+related:
+  - "[[tool-use-and-function-calling]]"
+  - "[[multi-agent-systems]]"
+  - "[[agent-frameworks]]"
+  - "[[agent-safety-and-guardrails]]"
+  - "[[retrieval-augmented-generation]]"
+summaries:
+  - "[[summaries/2025-llm-reasoning-to-agents]]"
+updated: 2026-08-01
+---
+
+# Model Context Protocol / エージェント間プロトコル
+
+**LLM（Large Language Model, 大規模言語モデル）エージェントを、外部のツール・データソース・他のエージェントと接続するための標準化された通信プロトコル**の総称。2024〜2025 年に相次いで登場した 3 つが代表: **MCP（Model Context Protocol）**・**A2A（Agent-to-Agent Protocol）**・**ACP（Agent Communication Protocol）**。それ以前、各エージェント実装は独自のツール呼び出し規約・エージェント間通信形式を持ち、相互運用ができなかった——これらのプロトコルは「N×M のアドホックな接続」を「共通の規格」に置き換えようとする。主要な根拠原典は横断サーベイ [[summaries/2025-llm-reasoning-to-agents]]（Ferrag et al., 2025）の §IV-C。
+
+## なぜプロトコルが要るのか
+
+エージェントの能力が増すほど、繋ぐ先——ツール（検索・DB・コード実行）・データソース・他のエージェント——が増える。接続を個別に実装すると、ツールが M 個・エージェント実装が N 個あれば N×M の接続コードが要り、片方が変わるたびに壊れる。[[tool-use-and-function-calling]] が「1 つのエージェントがツールをどう呼ぶか」の問題なら、プロトコルは「**多数のエージェントとツールが共通規格でどう繋がるか**」の問題である。役割で 3 種に分かれる:
+
+| プロトコル | 提唱（年） | 繋ぐ対象 | 比喩・焦点 |
+| --- | --- | --- | --- |
+| **MCP** | Anthropic（2024後半） | エージェント ↔ **ツール/データ**（縦の接続） | 「AI の **USB-C**」。LLM に文脈を渡す標準インターフェース |
+| **A2A** | Google（2025） | エージェント ↔ **エージェント**（横の接続） | 異フレームワーク・異ベンダー間の相互運用 |
+| **ACP** | IBM（2025） | **ローカルの複数エージェント**の編成 | BeeAI プラットフォームでの発見・委譲・テレメトリ |
+
+## 代表プロトコル
+
+### MCP（Model Context Protocol）— ツール接続の標準
+
+Anthropic が 2024 年後半に導入。「AI システムが外部ツール・データソースとどう相互作用するかを標準化する、デバイスの USB-C ポートのような普遍的な接続」（[[summaries/2025-llm-reasoning-to-agents]]）。設計の要点:
+
+- **Language Server Protocol 着想の client-server アーキテクチャ**: ホストアプリケーション（AI エージェント側）が複数の軽量な **MCP サーバー**に接続する。各サーバーは特定のツール/データ（ファイル・DB・API）を MCP の規格で公開する。
+- **自律的なサービス選択**: エージェントは各タスクの文脈に基づいて、利用可能なサービスを自ら特定・選択・管理する。
+- **成長するエコシステム**: 公式リファレンスサーバー（PostgreSQL・SQLite・Google Drive の安全なアクセス）、開発ツール（Git・GitHub・GitLab）、生産性（Slack・Google Maps）、特化 AI ツール（画像生成・検索 API）まで。
+- **LLM プロバイダ非依存**: 異なる LLM プロバイダを切り替えられ、組織インフラ内でのデータ保護のベストプラクティスを提供する。
+
+MCP は [[tool-use-and-function-calling]] の function calling を「**個別実装からプロトコル標準へ**」引き上げたものと読める——ツール定義を各アプリが書くのでなく、MCP サーバーが公開し、任意の MCP 対応エージェントが繋げる。「ツールとデータソースの接続を標準化するプロトコル」という位置づけは、この wiki が長く `[[model-context-protocol]]` として参照してきた概念そのものである。
+
+### A2A（Agent-to-Agent Protocol）— エージェント間の相互運用
+
+Google が 2025 年に導入。**根底のフレームワークやベンダーを問わず、自律エージェント同士が協働する**ための動的なプロトコル。
+
+- **馴染みの標準の上に構築**: HTTP・SSE（Server-Sent Events）・JSON-RPC を使い、既存 IT インフラとの統合を単純化。実証済みの認証・認可でエンタープライズグレードのセキュリティを保証。
+- **記憶・ツールを共有しない協調**: エージェントは内部の記憶・リソース・ツールを共有せずに協働する——疎結合なエージェント間交換。
+- **Agent Card による能力発見**: 構造化された "Agent Card" を介して、相手エージェントの能力を発見する。リアルタイム更新の交換・UI 要求の交渉・迅速/長時間タスクの両対応。
+
+A2A は [[multi-agent-systems]] のオーケストレーションを、**単一フレームワーク内から異フレームワーク間へ**広げる規格である。サーベイの図13 は、CrewAI・LangChain・Haystack・Microsoft AutoGen といった**異なるフレームワークで作られたエージェントが A2A で相互通信し、各々が MCP で自分のツールに繋ぐ**構成を示す——A2A（横）と MCP（縦）が直交して組み合わさる。
+
+### ACP（Agent Communication Protocol）— ローカルのエージェント編成
+
+IBM が 2025 年に提案。オープンソースエージェントのオーケストレーションを効率化する実験的プラットフォーム **BeeAI** の中核。MCP に着想を得つつ、当初のツール接続から、**発見・委譲・マルチエージェントオーケストレーション**へ進化した。BeeAI Server がローカルファーストな環境でエージェント過程をオーケストレートし統一 REST エンドポイントを提供、ACP SDK（Python・TypeScript ＋ CLI/UI）がエージェントの発見・起動を容易にする。MCP がツール接続、A2A がクロスフレームワーク協調に焦点を当てるのに対し、ACP は**ローカルでの複数エージェントの編成**に焦点を当てる。
+
+## 設計論点
+
+- **三者は競合でなく補完**: MCP=ツール接続（縦）、A2A=エージェント間協調（横）、ACP=ローカル編成。実システムは A2A で異エージェントを繋ぎ、各エージェントが MCP で自分のツールに繋ぐ、という**縦横の組み合わせ**になる（サーベイ図13）。「どれを使うか」でなく「どの層に何を使うか」。
+- **プロトコルは新しい攻撃面**: [[summaries/2025-llm-reasoning-to-agents]] §V-F は MCP の弱点を指摘する——**分散設計ゆえに中央権威がなく、実装ごとに防御が不均一**。標準化された認証機構の欠如は無許可アクセスとデータ漏洩のリスクを、ロギング/デバッグツールの不足は異常検出の遅れを、多段の分散ワークフローの複雑さは状態不整合を招く。プロトコルを導入するなら認証・監査ログ・状態一貫性を最初から設計に含める → [[agent-safety-and-guardrails]]。加えて、外部の MCP サーバーが供給するツールは説明文の品質がばらつき、間接プロンプトインジェクションの経路にもなりうる（[[tool-use-and-function-calling]] の「MCP 時代の課題」）。
+- **標準化とロックインのトレードオフ**: プロトコルはツール/エージェントの相互運用を高めるが、特定プロトコルへの依存は新たなロックインを生みうる。プロバイダ非依存を謳う MCP でも、サーバーエコシステムの偏りが実質的な依存になりうる。
+- **ツール説明文の品質は外部化される**: MCP でツールが外部サーバーから来ると、[[tool-use-and-function-calling]] の ACI（Agent-Computer Interface, ツール定義をプロンプト同格に磨く）を自前で統制できなくなる——見たことのないツールの品質ばらつきにエージェントが対処する必要が生じる。
+
+## 関連ページ
+
+- [[tool-use-and-function-calling]] — MCP が標準化するツール呼び出しの基礎
+- [[multi-agent-systems]] — A2A/ACP が標準化するエージェント間協調
+- [[agent-frameworks]] — プロトコルを実装するフレームワーク層（LangChain・CrewAI・AutoGen 等）
+- [[agent-safety-and-guardrails]] — プロトコルのセキュリティ脆弱性（§V-F）
+- [[retrieval-augmented-generation]] — MCP 経由のデータソース接続は検索の標準化でもある
+- [[summaries/2025-llm-reasoning-to-agents]] — 本ページの主要な根拠原典（§IV-C プロトコル比較）

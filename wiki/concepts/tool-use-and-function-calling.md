@@ -77,7 +77,7 @@ LLM（Large Language Model, 大規模言語モデル）が**外部のツール�
 
 - [[agent-loop]] — ツール呼び出しが埋め込まれる実行ループ
 - [[reasoning-and-planning]] — どのツールをいつ呼ぶかを決める推論
-- [[model-context-protocol]] — ツール接続の標準プロトコル（未作成）
+- [[model-context-protocol]] — ツール接続の標準プロトコル（MCP/A2A/ACP）
 - [[retrieval-augmented-generation]] — 検索ツール利用の体系化
 - [[summaries/2022-react]] — 本ページの主要な根拠原典（プロンプトでのツール定義）
 - [[summaries/2023-toolformer]] — ツール利用を重みに埋め込む自己教師あり学習の起点

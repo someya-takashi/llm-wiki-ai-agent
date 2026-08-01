@@ -13,7 +13,8 @@ summaries:
   - "[[summaries/2025-effective-harnesses]]"
   - "[[summaries/2026-harness-design]]"
   - "[[summaries/2026-meta-harness]]"
-updated: 2026-07-31
+  - "[[summaries/2025-llm-reasoning-to-agents]]"
+updated: 2026-08-01
 ---
 
 # Agent Frameworks（エージェントフレームワークと設計パターン)
@@ -44,7 +45,7 @@ LLM（Large Language Model, 大規模言語モデル）エージェントを**�
 
 ## フレームワーク観
 
-代表的なフレームワーク・SDK には Claude Agent SDK、Strands Agents SDK（AWS）、LangGraph・AutoGen（AG2）・CrewAI、GUI 系の Rivet・Vellum などがある（顔ぶれと API は変わり続けるので、個別の使い方は各公式 docs を一次資料とする）。
+代表的なフレームワーク・SDK には Claude Agent SDK、Strands Agents SDK（AWS）、LangGraph・AutoGen（AG2）・CrewAI、GUI 系の Rivet・Vellum などがある（顔ぶれと API は変わり続けるので、個別の使い方は各公式 docs を一次資料とする）。横断サーベイ（[[summaries/2025-llm-reasoning-to-agents]], 2025）の整理では、これらは大きく **(1) 汎用オーケストレーション系**（LangChain / LangGraph——チェーンとグラフでツール・記憶・分岐を組む）、**(2) データ／RAG 指向系**（LlamaIndex——文書接続と検索を軸に据える）、**(3) マルチエージェント協調系**（CrewAI・AutoGen（AG2）・Microsoft Semantic Kernel——役割分担した複数エージェントの会話・協調を組む）、**(4) 軽量・低抽象系**（OpenAI Swarm / Agents SDK・OctoTools——最小限の足場でエージェントループを書く）に類型化できる。同サーベイは、抽象度の高いフレームワークほど素早く組めるが内部挙動が見えにくく、低抽象なものほど自由度と引き換えに実装量が増える、というトレードオフを指摘する。近年はこれらフレームワーク間・エージェント間の相互接続を担う標準プロトコル（[[model-context-protocol]] の MCP／A2A／ACP）の層が立ち上がりつつあり、「どのフレームワークで書くか」と「エージェント同士をどう繋ぐか」は別の設計軸になった。
 
 実務指針として引用され続けているのは次の 3 点（[[summaries/2024-building-effective-agents]]）:
 

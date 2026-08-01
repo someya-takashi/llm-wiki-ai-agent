@@ -39,6 +39,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2026-gemma-4]] — Gemma 4（Google DeepMind, 2026）。エッジ〜31B のオープンマルチモーダル系列。encoder-free 12B・KV cache −37.5%・MTP drafter・QAT・thinking トグル。Arena で dense オープン首位。
 - [[summaries/2026-deepseek-v4]] — DeepSeek-V4（2026, プレビュー）。1M コンテキストを日常運用可能に: CSA/HCA（圧縮＋スパース）で KV 10%/FLOPs 27%（対 V3.2）、mHC・Muon・OPD（mixed RL 置換）・DSML・agentic search 実測。Pro-Max はオープン SOTA 再定義。
 - [[summaries/2026-meta-harness]] — Meta-Harness（Stanford/MIT/KRAFTON, 2026）。ハーネス設計を外側ループ探索で自動化。コーディングエージェント proposer＋ファイルシステム全履歴。ACE +7.7pt（トークン 1/4）・未見 5 モデルへ転移 +4.7pt・TerminalBench-2 で人手超え。
+- [[summaries/2025-llm-reasoning-to-agents]] — LLM 推論から自律 AI エージェントへの横断レビュー（2025, arXiv 2504.19678）。推論・評価・フレームワーク・応用・プロトコルの 5 軸で地図化。約 60 ベンチマークを 8 分類・応用 11 領域・プロトコル MCP/A2A/ACP・Agentic RAG・Agent-as-a-Judge・6 つの未解決課題。
 
 ### Articles / Blogs
 
@@ -86,6 +87,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2023-llm-agents-survey]] — LLM エージェント・サーベイ（Xi et al.）の全文翻訳（PDF 原典・86 ページ中本文 45 ページ。画像なし＝ar5iv 変換失敗。分類ツリー図 5 点はネスト箇条書きとしてテキスト転写、脚注 6 件収録）。
 - [[translations/2025-manus-context-engineering]] — Manus「Context Engineering for AI Agents」の全文翻訳（クリップで脱落した一文の冒頭を原ページから復元＝リンク句が frontmatter author 欄に化けていた。図 6 枚収録・prefill 文字列は原文のまま）。
 - [[translations/2024-llm-security-privacy-survey]] — LLM セキュリティ・プライバシー・サーベイ（Das et al.）の全文翻訳（ar5iv クリップ。図 7 枚・Table 1/2・脚注 1 件・数式を収録。分類図と魚骨図は訳注でテキスト補足）。
+- [[translations/2025-llm-reasoning-to-agents]] — 「From LLM Reasoning to Autonomous AI Agents」（Ferrag et al.）の全文翻訳（Abstract〜VI 全章、929 行）。ar5iv クリップ底本。図 6 枚（x1/x3/x4/x5・agentic/RAG_agentic drawio）を `<figure>` 収録、SVG のみの図（2・3・8〜12 等）はテキスト補足。平坦化していた Table V〜XII を markdown 表に再構成。IV-B 応用（11 領域）は各研究を訳出しドメイン別網羅表を併載。
 
 ## Concepts
 
@@ -107,16 +109,17 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[llm-inference-optimization]] — 推論を速く安く捌く側。prefill/decode・TTFT/TPS・KV cache の帯域律速・カーネル融合。
 - [[computer-use-agents]] — スクリーンショットを観測し GUI を直接操作するエージェント（CUA）。行動空間・OSWorld/WebArena・グラウンディング律速・安全性。
 - [[coding-agents]] — コードを書き・実行し・検証するエージェント。ACI・最小ツール構成・長時間ハーネス（initializer/coding）・検証の設計・SWE-bench 系。
+- [[model-context-protocol]] — エージェントを外部ツール・データ・他エージェントに繋ぐ標準プロトコル群。MCP（縦＝ツール接続）／A2A（横＝エージェント間相互運用）／ACP（ローカル協調）の三つ巴とプロトコル層のセキュリティ。
 
 未作成の想定スラグ（CLAUDE.md §1 の命名規約より。作成したら上のリストへ移す）：
-`model-context-protocol` / `web-agents` / `agent-observability` / `parameter-efficient-fine-tuning`
+`web-agents` / `agent-observability` / `parameter-efficient-fine-tuning`
 
 ### 略称リダイレクト
 
 略称に専用ページは作らない。対応する正式名称の概念ページを参照する（CLAUDE.md §1）。
 
 - RAG / DPR / dense retrieval / BM25 → [[retrieval-augmented-generation]]
-- MCP → [[model-context-protocol]]
+- MCP / A2A / ACP / Agent-to-Agent / Agent Communication Protocol / エージェント間プロトコル → [[model-context-protocol]]
 - CoT / CoT-SC / ToT / ReAct → [[reasoning-and-planning]]
 - function calling / tool call / logit masking / response prefill / Toolformer / Gorilla / TALM / 自己教師ありツール学習 → [[tool-use-and-function-calling]]
 - MoA / Mixture-of-Agents / orchestrator-worker / MASFT / Agent Swarm / PARL / エージェント社会 / agent society / Generative Agents / CAMEL / MetaGPT → [[multi-agent-systems]]

@@ -40,7 +40,8 @@ updated: 2026-08-01
 
 - RAG（Retrieval-Augmented Generation, 外部知識を検索してプロンプトに与え、それを根拠に生成させる手法）→ [[retrieval-augmented-generation]]
   - 原典（[[summaries/2020-rag]], 2020）はパラメトリック記憶（重み）と非パラメトリック記憶（文書索引）の end-to-end 結合として RAG を定式化し、幻覚の減少・索引差し替えによる知識更新・retrieval collapse を実証した。「知識はパラメータでなく索引に置く」という設計原則の出発点。
-- MCP（Model Context Protocol, ツールやデータソースをモデルに接続する標準プロトコル）→ `[[model-context-protocol]]`
+- MCP（Model Context Protocol, ツールやデータソースをモデルに接続する標準プロトコル）→ [[model-context-protocol]]
+  - 横断レビュー（[[summaries/2025-llm-reasoning-to-agents]], 2025）は、エージェントの外部接続を担うプロトコル層を **MCP（Anthropic, 縦＝ツール・データ接続）／A2A（Google, 横＝エージェント間相互運用）／ACP（IBM, ローカル協調）** の三つ巴として整理し、標準化と引き換えに生じるプロトコル層のセキュリティ（なりすまし・権限昇格・ツール説明文経由の注入）を課題として挙げた。「どのフレームワークで書くか」（[[agent-frameworks]]）とは独立に「エージェント同士・外部資源とどう繋ぐか」が設計軸として立ち上がった段階。
 
 ### 3. 構成とスケール
 
@@ -103,7 +104,7 @@ updated: 2026-08-01
 | 評価・運用・安全性 | [[summaries/2025-masft]]（トレース分析・LLM-as-a-judge・失敗分類）、[[summaries/2025-multi-agent-research-system]]（小規模評価・単一ジャッジ・終了状態評価・本番運用の信頼性）、[[summaries/2025-cot-faithfulness]]（CoT 忠実性・CoT モニタリングの限界・安全性）、[[summaries/2024-llm-security-privacy-survey]]（セキュリティ・プライバシー攻撃と防御の脅威分類）。ベンチマークは [[summaries/2026-sakana-fugu]]（SWE-Bench Pro / Terminal Bench / GPQA / HLE / τ³ 等）、[[summaries/2022-react]]（HotpotQA / FEVER / ALFWorld / WebShop・HITL 介入）も言及 |
 | LLM 基盤 | [[summaries/2024-deepseekmath]]（GRPO の発明・統一パラダイム・数学コーパス採掘）、[[summaries/2025-deepseek-r1]]（RLVR・GRPO・蒸留・推論の創発）、[[summaries/2025-long-cot-survey]]（Long CoT の体系化・test-time scaling・推論境界）、[[summaries/2026-gpt2-to-kimi3]]（アーキテクチャの系譜・KV cache・推論効率）、[[summaries/2026-llm-optimization-guide]]（本番推論最適化の実務・サービング運用）、[[summaries/2025-kimi-k2]]（エージェント特化の事前学習＋データ合成＋joint RL）、[[summaries/2023-moe-explained]]（MoE の仕組み・歴史・負荷分散）、[[summaries/2026-kimi-k2.5]]（マルチモーダル joint 訓練・zero-vision SFT・トークン効率 RL）、[[summaries/2026-gemma-4]]（エッジ〜31B の効率化設計・encoder-free・QAT・投機的デコード）、[[summaries/2026-deepseek-v4]]（1M コンテキスト効率・CSA/HCA・mHC・OPD・RL/rollout インフラ）。[[summaries/2026-sakana-fugu]] も SFT・進化戦略・GRPO の訓練レシピに言及 |
 
-6 軸すべてに少なくとも 1 件の原典が入った（2026-07-26 時点）。「応用」軸には 2026-07-28 の Kimi K2.5 で初の専用記述（computer use）が入った。以後は各軸の深化（例: 知識の接続における MCP、応用における coding agents の専用原典）を `lint` のデータギャップとして追う。
+6 軸すべてに少なくとも 1 件の原典が入った（2026-07-26 時点）。「応用」軸には 2026-07-28 の Kimi K2.5 で初の専用記述（computer use）が入った。「知識の接続」軸のプロトコル層は 2026-08-01 の横断レビュー（[[summaries/2025-llm-reasoning-to-agents]]）で概念ページ [[model-context-protocol]] を新設し、MCP/A2A/ACP の三つ巴として初めて記述が入った——ただし各プロトコルの一次仕様（MCP spec 等）はまだ ingest しておらず、次に読むべき docs 候補として残る。以後は各軸の深化（プロトコル一次仕様、応用における coding agents の専用原典）を `lint` のデータギャップとして追う。
 
 ## 関連ページ
 
