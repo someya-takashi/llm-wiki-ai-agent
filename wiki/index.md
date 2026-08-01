@@ -20,6 +20,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 - [[summaries/2023-llm-agents-survey]] — Xi et al.（Fudan NLP, 2023, 686 文献）。分野の語彙を定めた古典サーベイ: brain/perception/action の 3 モジュール・応用 3 分類（単一/マルチ/人間協調）・エージェント社会・評価 4 観点・安全 3 論点。
 - [[summaries/2024-llm-security-privacy-survey]] — Das et al.（FIU, 2024）。LLM のセキュリティ攻撃（prompt injection・jailbreak・backdoor・poisoning）とプライバシー攻撃（勾配漏洩・MIA・PII 漏洩）＋防御機構＋応用リスクの脅威分類サーベイ。ジェイルブレイクの 2 失敗モード。
+- [[summaries/2022-instructgpt]] — InstructGPT（Ouyang et al., OpenAI, NeurIPS 2022）。RLHF を汎用の指示追従に初適用した一次資料で ChatGPT の前身。SFT→報酬モデル→PPO の 3 段・1.3B が 175B に勝つ・**アラインメント税**と PPO-ptx・整合コストは事前学習の 1.6%・「誰に整合させているのか」の 4 層分解。バイアスは改善せず、指示されれば GPT-3 より有害になる。
 - [[summaries/2021-switch-transformers]] — Switch Transformers（JMLR 2022）。MoE 実用化の転換点: top-1 ルーティング・selective precision・負荷分散損失・蒸留 30%・初の 1.6T モデル。並列化体系（data/model/expert）の原典。
 - [[summaries/2020-rag]] — RAG（NeurIPS 2020）。パラメトリック/非パラメトリック記憶の end-to-end 結合。幻覚減・索引差し替えによる知識更新・retrieval collapse の初記録。
 - [[summaries/2022-chain-of-thought]] — CoT（NeurIPS 2022）。例示に思考連鎖を入れるだけで推論が創発。「考えてから答える」設計すべての祖形。
@@ -62,6 +63,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 ## Translations
 
 - [[translations/2020-rag]] — RAG 論文の全文翻訳（付録 A〜I 含む。周辺化・DPR の式は LaTeX 維持、生成例は原文のまま収録）。
+- [[translations/2022-instructgpt]] — InstructGPT 論文の翻訳（**本文 §1〜5 のみ**＝ユーザー指示により付録 A〜F は対象外。ar5iv クリップ底本。途切れていた著者リストと欠落していた脚注 8 件を原ページから復元。図 7 枚収録、Figure 8/9 の HTML 対比表を markdown 化。プロンプトとモデル出力は原文のまま）。
 - [[translations/2022-chain-of-thought]] — CoT 論文の全文翻訳（付録の全プロンプト・結果表含む。プロンプトと例は原文のまま収録）。
 - [[translations/2022-react]] — ReAct 論文の全文翻訳（付録・プロンプト含む。プロンプトと軌跡は原文のまま収録）。
 - [[translations/2023-toolformer]] — Toolformer 論文の全文翻訳（ar5iv クリップ。欠落していた脚注 8 件を復元。付録 A〜D のプロンプト・実装詳細を原文のまま収録。図 4 枚・Table 2/9 を markdown 化）。
@@ -109,7 +111,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[retrieval-augmented-generation]] — 検索で外部知識を注入して生成。訓練時組み込み型と推論時注入型の 2 層、hot-swap、collapse。
 - [[agent-memory]] — コンテキストを超えて保持・想起する記憶の設計。MemGPT の階層記憶・Reflexion のエピソード記憶・共有境界。
 - [[context-engineering]] — 限られたウィンドウに何をどう積むか。区画化・圧縮と引き継ぎ・参照渡し・lost in the middle。
-- [[agent-safety-and-guardrails]] — 安全対策の 4 層（行動空間・ガードレール・監視・HITL）。CoT モニタリングの可能性と限界。
+- [[agent-safety-and-guardrails]] — 安全対策の 4 層（行動空間・ガードレール・監視・HITL）。CoT モニタリングの可能性と限界。モデル内在の安全性がどこから来るか（整合の宛先の 4 層分解）。
 - [[test-time-compute]] — 推論時に計算を積んで精度を買う第二のスケーリング軸。垂直/並列の 2 型・推論境界・overthinking。
 - [[transformer-architecture]] — decoder-only の基本構造と attention の系譜（softmax→linear→delta→gated→ハイブリッド）・MoE・AttnRes。
 - [[llm-inference-optimization]] — 推論を速く安く捌く側。prefill/decode・TTFT/TPS・KV cache の帯域律速・カーネル融合。
@@ -141,7 +143,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - SWE-agent / Claude Code / Devin / Cursor / initializer agent / feature list / generator-evaluator / sprint contract / TerminalBench / Terminus / 環境ブートストラップ → [[coding-agents]]
 - compaction / claude-progress / context anxiety / context reset / recitation / 復唱 / KV cache ヒット率 / Manus / restorable compression → [[context-engineering]]
 - Reflexion / Self-Refine / verbal reinforcement → [[self-reflection]]
-- RLHF / RLVR / GRPO / PPO / DPO / RFT / PRM / OPD / On-Policy Distillation / GRM / 報酬モデル / reward model / 選好モデル / preference model / KL ペナルティ / reward hacking / InstructGPT / HHH / hh-rlhf / Iterated Online RLHF / アラインメント / alignment / 事後訓練 / post-training / TRL / TRLX / RL4LMs / ILQL / NLPO / A2C → [[reinforcement-learning-from-human-feedback]]
+- RLHF / RLVR / GRPO / PPO / DPO / RFT / PRM / OPD / On-Policy Distillation / GRM / 報酬モデル / reward model / 選好モデル / preference model / KL ペナルティ / reward hacking / InstructGPT / PPO-ptx / pretraining mix / alignment tax / アラインメント税 / HHH / hh-rlhf / Iterated Online RLHF / アラインメント / alignment / 事後訓練 / post-training / TRL / TRLX / RL4LMs / ILQL / NLPO / A2C → [[reinforcement-learning-from-human-feedback]]
+- 誰に整合させるのか / who are we aligning to / ラベラー / labeler / 選好データの偏り / epistemic humility / 認識的謙虚さ → [[agent-safety-and-guardrails]]（整合の宛先の 4 層分解）と [[reinforcement-learning-from-human-feedback]]（報酬設計側）
 - BLEU / ROUGE / 自動評価指標 → [[agent-evaluation]]（「参照文との照合では品質を測れない」という評価の原点として扱う）
 - PoT / Program-of-Thought / ツール統合推論 → [[reasoning-and-planning]]
 - Maj@K → [[test-time-compute]]
