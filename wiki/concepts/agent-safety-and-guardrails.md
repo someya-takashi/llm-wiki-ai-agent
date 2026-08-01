@@ -11,6 +11,7 @@ related:
   - "[[agent-loop]]"
   - "[[computer-use-agents]]"
 summaries:
+  - "[[summaries/2022-rlhf-illustrated]]"
   - "[[summaries/2025-cot-faithfulness]]"
   - "[[summaries/2022-react]]"
   - "[[summaries/2024-building-effective-agents]]"
@@ -32,7 +33,7 @@ LLM（Large Language Model, 大規模言語モデル）エージェントが**�
 攻撃の全体像は LLM セキュリティ・プライバシーのサーベイ（[[summaries/2024-llm-security-privacy-survey]], 2024）が体系化した。大枠は **セキュリティ攻撃**（システムを誤作動させる）と **プライバシー攻撃**（学習データ・個人情報を漏らす）の 2 系統で、両者は目標を共有しうる（バックドアとポイズニングは共に誤作動誘発、プロンプトインジェクションとジェイルブレイクは共に制約回避・機密奪取）。エージェントの文脈では、下記のうち**プロンプト経由の攻撃**（特に間接インジェクション）と**権限・行動空間の悪用**が中心的脅威になる。
 
 - **prompt injection**（プロンプトインジェクション）: エージェントが読む外部データ（Web ページ・文書・ツール出力）に埋め込まれた指示が、本来の指示を乗っ取る攻撃。検索やブラウジングを行うエージェントの最も現実的な脅威。攻撃の分類は [[summaries/2024-llm-security-privacy-survey]] が詳しい——**goal hijacking**（元の目標を差し替えて特定出力を吐かせる）と **prompt leaking**（システムプロンプト自体を再現させる）、そして**アプリ統合型 LLM が外部の汚染テキストを読む「間接インジェクション」**（HOUYI・P2SQL インジェクション等）。間接インジェクションは、[[computer-use-agents]]（画面全部が入力）・[[retrieval-augmented-generation]]（検索結果をコンテキストへ戻す）・[[tool-use-and-function-calling]]（ツール出力の取り込み）のすべてに刺さる——外部由来のテキストをコンテキストに入れる経路はどれも攻撃面である。
-- **jailbreaking**（ジェイルブレイク）: 安全制約を回避してモデルに禁止内容を生成させる。プロンプトのパターンは pretending（ロールプレイ）・attention shifting（物語生成へ注意そらし）・privilege escalation（制約を破らせる）、代表は DAN（Do Anything Now）。理論的な核は Wei et al. の**2 つの失敗モード**（[[summaries/2024-llm-security-privacy-survey]]）——**competing objectives**（「常に指示に従う」能力と無害性の報酬の衝突。prefix injection・refusal suppression）と **mismatched generalization**（入力が事前学習分布の内側だが安全訓練データの外＝OOD）。どちらも**事後訓練で安全性を付ける（RLHF）ことの構造的な穴**を突いており、入力フィルタ（レッドフラグ語）だけでは巧妙なプロンプトを止められない → [[reinforcement-learning-from-human-feedback]]。
+- **jailbreaking**（ジェイルブレイク）: 安全制約を回避してモデルに禁止内容を生成させる。プロンプトのパターンは pretending（ロールプレイ）・attention shifting（物語生成へ注意そらし）・privilege escalation（制約を破らせる）、代表は DAN（Do Anything Now）。理論的な核は Wei et al. の**2 つの失敗モード**（[[summaries/2024-llm-security-privacy-survey]]）——**competing objectives**（「常に指示に従う」能力と無害性の報酬の衝突。prefix injection・refusal suppression）と **mismatched generalization**（入力が事前学習分布の内側だが安全訓練データの外＝OOD）。どちらも**事後訓練で安全性を付ける（RLHF）ことの構造的な穴**を突いており、入力フィルタ（レッドフラグ語）だけでは巧妙なプロンプトを止められない → [[reinforcement-learning-from-human-feedback]]。この「穴」がどこから来るのかは、RLHF の作り方まで降りると見通しがよい（[[summaries/2022-rlhf-illustrated]]）——安全性は事前学習の目的関数には入っておらず、**事後に、人間の選好を学習した報酬モデル 1 個を通じて**注入される。Anthropic の **HHH 基準**（helpful, honest, and harmless, 有用・誠実・無害）は、まさにこの注入の宛先として定義された整合目標であり、その選好データセット（hh-rlhf）とレッドチーミングの実践（Ganguli et al. 2022 の「有害出力を発見し、測定し、削減する」記録）も同じ系譜から出ている。すなわち **competing objectives は「helpful」と「harmless」という 2 つの報酬を同一のスカラーに畳んだことの帰結**であり、**mismatched generalization は選好データのカバレッジがそのまま安全挙動のカバレッジになることの帰結**である。どちらも報酬設計そのものに由来するので、モデルを賢くしても自動的には消えない。
 - **backdoor / data poisoning**（バックドア・データポイズニング）: 訓練データやプロンプトに毒・隠れトリガーを仕込み、良性入力では正常・トリガー入力で異常動作させる。同サーベイの知見として、**LLM のバックドア化は固定能力の分類器より難しい**（どうプロンプトされてもトリガーで発動しつつ他タスクへの影響を最小化する必要がある）ことと、モデルを外部（信頼できない提供者・汚染データセット）から取り込む供給網が攻撃面になることが重要。
 - **プライバシー攻撃**（学習データ側）: 勾配漏洩（TAG・LAMP——連合学習の共有勾配から訓練データ復元）・メンバーシップ推論（MIA——あるサンプルが訓練データにあったかを判定、shadow training が原型）・**PII 漏洩**（記憶＝memorization による逐語抽出。Carlini et al. の GPT-2 抽出、ProPILE）。エージェントが会話履歴や PII をファイルへ蓄える設計（[[context-engineering]] の外部化・[[agent-memory]]）は、この漏洩面を運用側へも広げる。
 - **権限過多と誤操作**: 必要以上のツール・認証情報を持ったエージェントが、悪意なく破壊的な操作をする。
@@ -114,4 +115,5 @@ CoT より硬い監視面は**行動そのもの**である。ツール呼び出
 - [[computer-use-agents]] — 露出面が最大級の行動空間（画面全部が入力・実マシン全操作が出力）
 - [[summaries/2025-cot-faithfulness]] — 監視（CoT モニタリング）側の根拠原典
 - [[summaries/2024-llm-security-privacy-survey]] — 攻撃側カタログ（prompt injection・jailbreak・backdoor・privacy 攻撃と防御）の根拠原典
+- [[summaries/2022-rlhf-illustrated]] — 安全性を「事後に注入する」側の作り方（HHH 基準・hh-rlhf・報酬モデルと KL ペナルティ）の根拠原典
 - [[summaries/2026-deepseek-v4]] — 本番規模 sandboxing（DSec）の実例

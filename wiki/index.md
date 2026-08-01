@@ -43,6 +43,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ### Articles / Blogs
 
+- [[summaries/2022-rlhf-illustrated]] — Hugging Face（2022-12, Lambert et al.）。RLHF の定番解説。事前学習→報酬モデル→PPO の 3 段パイプライン・なぜ点数でなく順位か（Elo）・KL ペナルティと reward hacking の原初的記述。**3 年半前の記事なので「賞味期限」節で陳腐化を対応づけ済み**。
 - [[summaries/2023-moe-explained]] — Hugging Face（2023）。MoE の定番入門。疎な MoE 層＋ルータ・負荷分散 3 点セット・「メモリ 47B/FLOPs 12B」の分離・FT の落とし穴。
 - [[summaries/2024-building-effective-agents]] — Anthropic（2024, 改訂版）。workflow/agent の区別・5 パターン・3 原則（simplicity/transparency/ACI）。実務指針の事実上の標準。
 - [[summaries/2025-multi-agent-research-system]] — Anthropic（2025）。Research 機能の本番 orchestrator-worker。+90.2%・トークン 15 倍の経済性・プロンプト 8 原則・20 クエリ評価。
@@ -72,6 +73,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2025-long-cot-survey]] — Long CoT サーベイの全文翻訳（図 11 枚・表 7 点収録。分類法ツリーと囲みボックス 10 個をテキスト復元。定義式は LaTeX 維持）。
 - [[translations/2026-gpt2-to-kimi3]] — 「From GPT2 to Kimi3, Explained」の全文翻訳（図 22 枚収録。X の数式連結を復元。コード 12 個は原文のまま収録）。
 - [[translations/2026-llm-optimization-guide]] — Mirantis「LLM Optimization: Techniques and Guide」の全文翻訳（本文に図なし。カバーバナーは chrome として除外）。
+- [[translations/2022-rlhf-illustrated]] — Hugging Face「Illustrating Reinforcement Learning from Human Feedback (RLHF)」の全文翻訳（原ページ照合済み・クリップに欠落なし。図 4 枚収録。ChatGPT 対話のスクリーンショットは原文のままテキストにも起こした。注釈つき文献ガイド「Further reading」は本文の一部として訳出し URL は arXiv 識別子のみ保持。Citation/BibTeX・謝辞・読者コメント欄は除外）。
 - [[translations/2023-moe-explained]] — Hugging Face「Mixture of Experts Explained」の全文翻訳（欠落していた GShard 図を原ページから復元。数式 5 本を正規化。図 12 枚収録）。
 - [[translations/2026-sakana-fugu]] — Sakana Fugu テクニカルレポートの全文翻訳（付録・棋譜含む。プロンプトと棋譜は原文のまま収録）。
 - [[translations/2025-masft]] — MASFT 論文の全文翻訳（付録の失敗事例トレース・介入プロンプト含む。トレースとプロンプトは原文のまま収録）。
@@ -103,7 +105,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[agent-evaluation]] — エージェント評価の方法論。ベンチマーク型／トレース分析型／LLM-as-a-judge の 3 類型と指標の整理。
 - [[agent-frameworks]] — 設計パターン（workflow 5 種＋agent）とフレームワーク観。「まず単純に、複雑さは実証されたときだけ」。
 - [[self-reflection]] — 失敗を言語で振り返り試行間で学ぶ仕組み。Reflexion / Self-Refine と、盲目的リトライ無効・FP 即死などの設計論点。
-- [[reinforcement-learning-from-human-feedback]] — 事後訓練の RL。RLHF（選好報酬）と RLVR（検証可能報酬）の 2 系統、GRPO、蒸留 vs 直接 RL。
+- [[reinforcement-learning-from-human-feedback]] — 事後訓練の RL。**時系列構成**（2022 古典的 RLHF → 2024 GRPO → 2025 RLVR/蒸留 → 2025 K2 joint RL → 2026 K2.5 → 2026 OPD）で「何が何を置き換えたか」を追う。
 - [[retrieval-augmented-generation]] — 検索で外部知識を注入して生成。訓練時組み込み型と推論時注入型の 2 層、hot-swap、collapse。
 - [[agent-memory]] — コンテキストを超えて保持・想起する記憶の設計。MemGPT の階層記憶・Reflexion のエピソード記憶・共有境界。
 - [[context-engineering]] — 限られたウィンドウに何をどう積むか。区画化・圧縮と引き継ぎ・参照渡し・lost in the middle。
@@ -139,7 +141,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - SWE-agent / Claude Code / Devin / Cursor / initializer agent / feature list / generator-evaluator / sprint contract / TerminalBench / Terminus / 環境ブートストラップ → [[coding-agents]]
 - compaction / claude-progress / context anxiety / context reset / recitation / 復唱 / KV cache ヒット率 / Manus / restorable compression → [[context-engineering]]
 - Reflexion / Self-Refine / verbal reinforcement → [[self-reflection]]
-- RLHF / RLVR / GRPO / PPO / DPO / RFT / PRM / OPD / On-Policy Distillation / GRM → [[reinforcement-learning-from-human-feedback]]
+- RLHF / RLVR / GRPO / PPO / DPO / RFT / PRM / OPD / On-Policy Distillation / GRM / 報酬モデル / reward model / 選好モデル / preference model / KL ペナルティ / reward hacking / InstructGPT / HHH / hh-rlhf / Iterated Online RLHF / アラインメント / alignment / 事後訓練 / post-training / TRL / TRLX / RL4LMs / ILQL / NLPO / A2C → [[reinforcement-learning-from-human-feedback]]
+- BLEU / ROUGE / 自動評価指標 → [[agent-evaluation]]（「参照文との照合では品質を測れない」という評価の原点として扱う）
 - PoT / Program-of-Thought / ツール統合推論 → [[reasoning-and-planning]]
 - Maj@K → [[test-time-compute]]
 - MemGPT / A-Mem / agentic memory / Zettelkasten / memory evolution / working context / archival memory / recursive summary → [[agent-memory]]
