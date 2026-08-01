@@ -21,6 +21,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2023-llm-agents-survey]] — Xi et al.（Fudan NLP, 2023, 686 文献）。分野の語彙を定めた古典サーベイ: brain/perception/action の 3 モジュール・応用 3 分類（単一/マルチ/人間協調）・エージェント社会・評価 4 観点・安全 3 論点。
 - [[summaries/2024-llm-security-privacy-survey]] — Das et al.（FIU, 2024）。LLM のセキュリティ攻撃（prompt injection・jailbreak・backdoor・poisoning）とプライバシー攻撃（勾配漏洩・MIA・PII 漏洩）＋防御機構＋応用リスクの脅威分類サーベイ。ジェイルブレイクの 2 失敗モード。
 - [[summaries/2022-instructgpt]] — InstructGPT（Ouyang et al., OpenAI, NeurIPS 2022）。RLHF を汎用の指示追従に初適用した一次資料で ChatGPT の前身。SFT→報酬モデル→PPO の 3 段・1.3B が 175B に勝つ・**アラインメント税**と PPO-ptx・整合コストは事前学習の 1.6%・「誰に整合させているのか」の 4 層分解。バイアスは改善せず、指示されれば GPT-3 より有害になる。
+- [[summaries/2023-dpo]] — DPO（Rafailov et al., Stanford, NeurIPS 2023）。KL 制約付き最適化の解を逆に解いて報酬を方策で表し、Bradley-Terry が差にしか依存しないので分配関数が消える——**報酬モデルの訓練と RL ループを両方排除**して二値交差エントロピー 1 本にする。報酬-KL フロンティアが PPO を（真の報酬を持つ PPO-GT ですら）支配。GPT-4 ジャッジ検証の参照実装も。
 - [[summaries/2021-switch-transformers]] — Switch Transformers（JMLR 2022）。MoE 実用化の転換点: top-1 ルーティング・selective precision・負荷分散損失・蒸留 30%・初の 1.6T モデル。並列化体系（data/model/expert）の原典。
 - [[summaries/2020-rag]] — RAG（NeurIPS 2020）。パラメトリック/非パラメトリック記憶の end-to-end 結合。幻覚減・索引差し替えによる知識更新・retrieval collapse の初記録。
 - [[summaries/2022-chain-of-thought]] — CoT（NeurIPS 2022）。例示に思考連鎖を入れるだけで推論が創発。「考えてから答える」設計すべての祖形。
@@ -63,6 +64,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 ## Translations
 
 - [[translations/2020-rag]] — RAG 論文の全文翻訳（付録 A〜I 含む。周辺化・DPR の式は LaTeX 維持、生成例は原文のまま収録）。
+- [[translations/2023-dpo]] — DPO 論文の全文翻訳（本文 §1〜7 ＋ **付録 A〜D 全訳**。ar5iv クリップ底本で、多パネル図の右側 3 枚 x2/x4/x6 と脚注 6 件を原ページから復元。付録 A の全導出・全証明、付録 B の PyTorch 実装、付録 C の GPT-4 ジャッジのプロンプト全文（S 版・C 版）を収録。プロンプトとモデル出力は原文のまま。References・謝辞・Author Contributions は除外）。
 - [[translations/2022-instructgpt]] — InstructGPT 論文の翻訳（**本文 §1〜5 のみ**＝ユーザー指示により付録 A〜F は対象外。ar5iv クリップ底本。途切れていた著者リストと欠落していた脚注 8 件を原ページから復元。図 7 枚収録、Figure 8/9 の HTML 対比表を markdown 化。プロンプトとモデル出力は原文のまま）。
 - [[translations/2022-chain-of-thought]] — CoT 論文の全文翻訳（付録の全プロンプト・結果表含む。プロンプトと例は原文のまま収録）。
 - [[translations/2022-react]] — ReAct 論文の全文翻訳（付録・プロンプト含む。プロンプトと軌跡は原文のまま収録）。
@@ -107,7 +109,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[agent-evaluation]] — エージェント評価の方法論。ベンチマーク型／トレース分析型／LLM-as-a-judge の 3 類型と指標の整理。
 - [[agent-frameworks]] — 設計パターン（workflow 5 種＋agent）とフレームワーク観。「まず単純に、複雑さは実証されたときだけ」。
 - [[self-reflection]] — 失敗を言語で振り返り試行間で学ぶ仕組み。Reflexion / Self-Refine と、盲目的リトライ無効・FP 即死などの設計論点。
-- [[reinforcement-learning-from-human-feedback]] — 事後訓練の RL。**時系列構成**（2022 古典的 RLHF → 2024 GRPO → 2025 RLVR/蒸留 → 2025 K2 joint RL → 2026 K2.5 → 2026 OPD）で「何が何を置き換えたか」を追う。
+- [[reinforcement-learning-from-human-feedback]] — 事後訓練の RL。**時系列構成**（2022 古典的 RLHF → 2023 DPO → 2024 GRPO → 2025 RLVR/蒸留 → 2025 K2 joint RL → 2026 K2.5 → 2026 OPD）で「何が何を置き換えたか」を追う。
 - [[retrieval-augmented-generation]] — 検索で外部知識を注入して生成。訓練時組み込み型と推論時注入型の 2 層、hot-swap、collapse。
 - [[agent-memory]] — コンテキストを超えて保持・想起する記憶の設計。MemGPT の階層記憶・Reflexion のエピソード記憶・共有境界。
 - [[context-engineering]] — 限られたウィンドウに何をどう積むか。区画化・圧縮と引き継ぎ・参照渡し・lost in the middle。
@@ -143,7 +145,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - SWE-agent / Claude Code / Devin / Cursor / initializer agent / feature list / generator-evaluator / sprint contract / TerminalBench / Terminus / 環境ブートストラップ → [[coding-agents]]
 - compaction / claude-progress / context anxiety / context reset / recitation / 復唱 / KV cache ヒット率 / Manus / restorable compression → [[context-engineering]]
 - Reflexion / Self-Refine / verbal reinforcement → [[self-reflection]]
-- RLHF / RLVR / GRPO / PPO / DPO / RFT / PRM / OPD / On-Policy Distillation / GRM / 報酬モデル / reward model / 選好モデル / preference model / KL ペナルティ / reward hacking / InstructGPT / PPO-ptx / pretraining mix / alignment tax / アラインメント税 / HHH / hh-rlhf / Iterated Online RLHF / アラインメント / alignment / 事後訓練 / post-training / TRL / TRLX / RL4LMs / ILQL / NLPO / A2C → [[reinforcement-learning-from-human-feedback]]
+- RLHF / RLVR / GRPO / PPO / DPO / RFT / PRM / OPD / On-Policy Distillation / GRM / 報酬モデル / reward model / 選好モデル / preference model / KL ペナルティ / reward hacking / InstructGPT / PPO-ptx / pretraining mix / alignment tax / アラインメント税 / Bradley-Terry / Plackett-Luce / 暗黙の報酬 / implicit reward / 分配関数 / partition function / Best of N / unlikelihood / HHH / hh-rlhf / Iterated Online RLHF / アラインメント / alignment / 事後訓練 / post-training / TRL / TRLX / RL4LMs / ILQL / NLPO / A2C → [[reinforcement-learning-from-human-feedback]]
 - 誰に整合させるのか / who are we aligning to / ラベラー / labeler / 選好データの偏り / epistemic humility / 認識的謙虚さ → [[agent-safety-and-guardrails]]（整合の宛先の 4 層分解）と [[reinforcement-learning-from-human-feedback]]（報酬設計側）
 - BLEU / ROUGE / 自動評価指標 → [[agent-evaluation]]（「参照文との照合では品質を測れない」という評価の原点として扱う）
 - PoT / Program-of-Thought / ツール統合推論 → [[reasoning-and-planning]]
