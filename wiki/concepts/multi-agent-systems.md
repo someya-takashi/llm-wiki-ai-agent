@@ -20,6 +20,7 @@ summaries:
   - "[[summaries/2023-llm-agents-survey]]"
   - "[[summaries/2025-llm-reasoning-to-agents]]"
   - "[[summaries/2026-agent-orchestration-guide]]"
+  - "[[summaries/2026-managed-agents]]"
 updated: 2026-08-01
 ---
 
@@ -101,6 +102,12 @@ Kimi K2.5（[[summaries/2026-kimi-k2.5]], 2026）は、(c) の「学習された
 - **段階的な配備**: 稼働中のエージェントを壊さないための **rainbow deployment**（新旧バージョン並走で漸進切り替え）は Anthropic の本番実例（[[summaries/2025-multi-agent-research-system]]）でも採られている。
 
 これらの前提として、全エージェントの行動をトレースし指標をオーケストレーション層で集約する基盤が要る → [[agent-observability]]。権限の最小化と承認ゲートの設計は [[agent-safety-and-guardrails]]。
+
+### many brains, many hands — 実行環境を共有可能にする
+
+上の分類が「**エージェント同士の制御関係**」を切るのに対し、もう 1 つ独立した軸として「**エージェントと実行環境の結びつき**」がある。Managed Agents（[[summaries/2026-managed-agents]], Anthropic, 2026）は、ハーネス（brain）を実行環境（hands）から切り離し、各 hand を `execute(name, input) → string` という単一のツール口として扱う設計を採った。結果として **どの hand もどの brain にも結合しないので、brain 同士が hands を受け渡せる**——ハーネスは自分が繋がった sandbox が「コンテナなのか、電話なのか、ポケモンのエミュレータなのか」を知らない。
+
+ここで示唆的なのは**能力と設計の順序が反転した**経緯である。多数の実行環境を扱い「どこへ仕事を送るか」を決めるのは、単一シェルで動くより難しい認知タスクなので、当初は**モデルにそれができなかったから**単一コンテナに閉じ込めていた。ところがモデルの知能が伸びると、今度は単一コンテナのほうが制約になった（そのコンテナが落ちると brain が手を伸ばしていた全 hand の状態が消える）。**モデル能力の向上がアーキテクチャ上の制約を反転させる**——(c) の学習されたオーケストレータや (e) の PARL が「協調の仕方を学習させる」方向で同じ現象に触れているのと対応する、インフラ側からの観測である。
 
 ## なぜ失敗するか — MASFT
 

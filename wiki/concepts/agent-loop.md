@@ -15,7 +15,8 @@ summaries:
   - "[[summaries/2024-building-effective-agents]]"
   - "[[summaries/2023-reflexion]]"
   - "[[summaries/2023-memgpt]]"
-updated: 2026-07-26
+  - "[[summaries/2026-managed-agents]]"
+updated: 2026-08-01
 ---
 
 # Agent Loop（エージェントループ）
@@ -56,6 +57,8 @@ ReAct 型のループは「ユーザーの課題を受けて回り、答えた�
 ## 位置づけと発展
 
 ReAct のループは「LLM 呼び出し 1 回 = 1 ステップ」の最小構成であり、後のエージェントはこの骨格の上に、ツールの構造化（[[tool-use-and-function-calling]]）、長期記憶（[[agent-memory]]）、コンテキストへの情報の積み方の最適化（[[context-engineering]]）、失敗の振り返り（[[self-reflection]]）、複数エージェントへの分業（[[multi-agent-systems]]）を積み増していった。ループの入れ子構造も生まれた——[[summaries/2023-reflexion]] は、episode 内の観測→思考→行動ループの**外側に「試行（episode）をまたぐ改善ループ」**を重ね、失敗した軌跡の反省文を次の試行のコンテキストに注入することで、重み更新なしの試行間学習を実現した。さらに、ループの各ターンで「**どのモデルがそのステップを担当するか**」自体を学習対象にする段階にも到達している——[[summaries/2026-sakana-fugu]] の Fugu は、ハーネスの相互作用状態からターンごとに担当ワーカーを選び直すオーケストレータで、「GPT が構築し、決定的なデバッグ地点で Opus に交代する」といった役割交代を学習で獲得した。人間がループの途中に介入する点（HITL, Human-in-the-Loop）としては、ReAct が示した「thought を編集して軌道修正する」方式が先駆けである。
+
+**ループを「どこで動かすか」への分解**も、長時間運用が現実になるにつれて設計対象になった。Managed Agents（[[summaries/2026-managed-agents]], Anthropic, 2026）は、ループの構成要素を **session**（起きたことすべての append-only なイベントログ）・**harness**（Claude を呼びツール呼び出しを配線するループ本体）・**sandbox**（行動が実際に実行される環境）の 3 つに切り分け、それぞれを差し替え可能なインターフェースにした。含意は素直で、**ループの状態をループの外に置けば、ループ自体は落ちてよいものになる**——session が外にあるので、ハーネスが死んでも `wake(sessionId)` で新しいものを起こし、`getSession(id)` でイベントログを取り戻して最後のイベントから再開できる。ReAct 以来「1 プロセスの中で回るもの」と暗黙に想定されてきたループが、**永続化された状態＋使い捨ての実行体**へと分解された形である → [[agent-frameworks]] のランタイム分離。
 
 ## 関連ページ
 

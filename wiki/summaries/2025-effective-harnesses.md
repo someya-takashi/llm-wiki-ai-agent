@@ -103,7 +103,7 @@ translation: "[[translations/2025-effective-harnesses]]"
 
 - [[coding-agents]] — 本記事を初出典として新設した概念ページ
 - [[context-engineering]] — compaction の限界とセッション間の状態外部化
-- [[agent-frameworks]] — Anthropic 実務 3 部作の 3 本目（harness の語彙）
+- [[agent-frameworks]] — Anthropic 実務連作（全 5 本）の 3 本目。harness の語彙はここで整理している
 - [[agent-loop]] — セッション内ループの外側の「セッション間ループ」
 - [[agent-evaluation]] — 完成定義の外部化＝終了状態評価の作業管理への埋め込み
 - [[computer-use-agents]] — E2E 検証手段としてのブラウザ操作
