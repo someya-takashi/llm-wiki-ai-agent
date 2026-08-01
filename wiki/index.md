@@ -53,6 +53,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2026-llm-optimization-guide]] — Mirantis（2026, ベンダーブログ）。本番推論最適化の実務ガイド。量子化 −75%・batching で稼働率 40→90%・PagedAttention −55% の定量カタログと運用の型。
 - [[summaries/2025-effective-harnesses]] — Anthropic（2025）。長時間エージェントのハーネス設計。initializer/coding の二部構成・feature list JSON・bearings 手順・E2E 検証。「要約でなく構造化 artifact で継ぐ」。
 - [[summaries/2026-harness-design]] — Anthropic Labs（2026, 前作の続編）。GAN 着想の planner/generator/evaluator・sprint contract・context anxiety と reset・「部品＝モデル能力への仮定」と 1 部品ずつ剥がす縮小の方法論。solo $9 vs ハーネス $200 の実測。
+- [[summaries/2025-effective-context-engineering]] — Anthropic（2025-09）。**コンテキストエンジニアリングを命名・定式化した出典**。注意予算という制約と context rot の機構（n² の対関係・訓練分布の偏り・位置内挿の劣化 →「崖でなく性能勾配」）、指導原理「最小の高信号なトークン集合」、system prompt の適切な高度・ツールの最小集合、just-in-time 取得と段階的開示、長時間タスクの 3 手法（compaction / ノート取り / サブエージェント）と使い分け。**定量的な結果は無く、指針として読む記事**。
 - [[summaries/2025-manus-context-engineering]] — Manus（Yichao 'Peak' Ji, 2025）。本番エージェントのコンテキスト設計 6 原則: KV cache 中心設計（入出力比 100:1・単価 10 倍差）・マスクせよ削除するな・ファイルシステム＝究極のコンテキスト・復唱・誤りを残す・few-shot の轍。
 - [[summaries/2026-managed-agents]] — Anthropic（2026-04, ハーネス連作 5 本目）。エージェントを session（イベントログ）/ harness＝brain / sandbox＝hands の 3 インターフェースに仮想化。pets vs cattle・認証情報の到達不能化（Git 配線・vault＋プロキシ）・session ≠ context window・TTFT p50 −60%/p95 −90%。
 - [[summaries/2026-agent-orchestration-guide]] — Databricks（2026, ベンダーブログ）。エンタープライズ運用の実務チェックリスト。デプロイ形態 6 パターン（中央集権/分散/階層/ハイブリッド/フェデレーション/創発）・単一責務と入出力契約・CI/CD と policy-as-code・暴走コスト上限・承認ゲートと監査証跡。**掲載される 3 つの統計値（35%/30%/75%）はいずれも出典なし**。
@@ -93,6 +94,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2026-harness-design]] — Anthropic「Harness design for long-running application development」の全文翻訳（欠落していた画像 4 枚を原ページの Sanity データから位置特定して復元。QA フィードバック・プラン例は原文のまま収録）。
 - [[translations/2026-meta-harness]] — Meta-Harness 論文の全文翻訳（欠落していた Figure 1 右パネルと Table 2 を ar5iv から復元＝クリップは図に Table 2 のキャプションが誤結合。脚注 2 件復元・SVG フロー図 4 点と要点／ログボックスをテキスト再構成。proposer の推論ログは原文のまま収録）。
 - [[translations/2023-llm-agents-survey]] — LLM エージェント・サーベイ（Xi et al.）の全文翻訳（PDF 原典・86 ページ中本文 45 ページ。画像なし＝ar5iv 変換失敗。分類ツリー図 5 点はネスト箇条書きとしてテキスト転写、脚注 6 件収録）。
+- [[translations/2025-effective-context-engineering]] — Anthropic「Effective context engineering for AI agents」の全文翻訳（原ページと文単位で照合しクリップに欠落なしを確認。空だった著者・公開日を復元、語連結 `needle-in-a-haystackstyle` を補正。図 2 枚収録し、システムプロンプトの 3 段階比較図はプロンプト全文を原文のままテキストにも転記。謝辞と末尾の製品導線 1 行は除外。原典側のリンク切れ＝「Sonnet 4.5 launch」が記事自身を指す点も注記）。
 - [[translations/2025-manus-context-engineering]] — Manus「Context Engineering for AI Agents」の全文翻訳（クリップで脱落した一文の冒頭を原ページから復元＝リンク句が frontmatter author 欄に化けていた。図 6 枚収録・prefill 文字列は原文のまま）。
 - [[translations/2024-llm-security-privacy-survey]] — LLM セキュリティ・プライバシー・サーベイ（Das et al.）の全文翻訳（ar5iv クリップ。図 7 枚・Table 1/2・脚注 1 件・数式を収録。分類図と魚骨図は訳注でテキスト補足）。
 - [[translations/2026-managed-agents]] — Anthropic「Scaling Managed Agents: Decoupling the brain from the hands」の全文翻訳（クリップは良好で図 4 枚とも欠落なし。原典に図キャプションが無いため figcaption は訳注として付した。インターフェース仕様の図は表としても転記。冒頭の製品導線 1 行と Acknowledgements は除外）。
@@ -112,7 +114,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[reinforcement-learning-from-human-feedback]] — 事後訓練の RL。**時系列構成**（2022 古典的 RLHF → 2023 DPO → 2024 GRPO → 2025 RLVR/蒸留 → 2025 K2 joint RL → 2026 K2.5 → 2026 OPD）で「何が何を置き換えたか」を追う。
 - [[retrieval-augmented-generation]] — 検索で外部知識を注入して生成。訓練時組み込み型と推論時注入型の 2 層、hot-swap、collapse。
 - [[agent-memory]] — コンテキストを超えて保持・想起する記憶の設計。MemGPT の階層記憶・Reflexion のエピソード記憶・共有境界。
-- [[context-engineering]] — 限られたウィンドウに何をどう積むか。区画化・圧縮と引き継ぎ・参照渡し・lost in the middle。
+- [[context-engineering]] — 限られたウィンドウに何をどう積むか。注意予算と context rot・各構成要素の絞り方・just-in-time 取得・区画化・圧縮と引き継ぎ・参照渡し・長時間タスクの 3 手法。
 - [[agent-safety-and-guardrails]] — 安全対策の 4 層（行動空間・ガードレール・監視・HITL）。CoT モニタリングの可能性と限界。モデル内在の安全性がどこから来るか（整合の宛先の 4 層分解）。
 - [[test-time-compute]] — 推論時に計算を積んで精度を買う第二のスケーリング軸。垂直/並列の 2 型・推論境界・overthinking。
 - [[transformer-architecture]] — decoder-only の基本構造と attention の系譜（softmax→linear→delta→gated→ハイブリッド）・MoE・AttnRes。
@@ -143,7 +145,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - **meta-harness（語義が 2 つあるので注意 → 両義の対置は [[agent-frameworks]] の「ランタイムの分離」節）**: ①ハーネスを探索で最適化する外側ループ＝Meta-Harness 論文 → [[summaries/2026-meta-harness]] ／ ②多様なハーネスを載せる汎用インターフェース層＝Managed Agents → [[summaries/2026-managed-agents]]
 - session / イベントログ / append-only ログ / sandbox / サンドボックス / brain と hands / pets vs cattle / ランタイム分離 / Managed Agents → [[agent-frameworks]]
 - SWE-agent / Claude Code / Devin / Cursor / initializer agent / feature list / generator-evaluator / sprint contract / TerminalBench / Terminus / 環境ブートストラップ → [[coding-agents]]
-- compaction / claude-progress / context anxiety / context reset / recitation / 復唱 / KV cache ヒット率 / Manus / restorable compression → [[context-engineering]]
+- compaction / claude-progress / context anxiety / context reset / recitation / 復唱 / KV cache ヒット率 / Manus / restorable compression / attention budget / 注意予算 / context rot / context pollution / just-in-time / JIT 取得 / progressive disclosure / 段階的開示 / right altitude / 適切な高度 / structured note-taking / 構造化されたノート取り → [[context-engineering]]
 - Reflexion / Self-Refine / verbal reinforcement → [[self-reflection]]
 - RLHF / RLVR / GRPO / PPO / DPO / RFT / PRM / OPD / On-Policy Distillation / GRM / 報酬モデル / reward model / 選好モデル / preference model / KL ペナルティ / reward hacking / InstructGPT / PPO-ptx / pretraining mix / alignment tax / アラインメント税 / Bradley-Terry / Plackett-Luce / 暗黙の報酬 / implicit reward / 分配関数 / partition function / Best of N / unlikelihood / HHH / hh-rlhf / Iterated Online RLHF / アラインメント / alignment / 事後訓練 / post-training / TRL / TRLX / RL4LMs / ILQL / NLPO / A2C → [[reinforcement-learning-from-human-feedback]]
 - 誰に整合させるのか / who are we aligning to / ラベラー / labeler / 選好データの偏り / epistemic humility / 認識的謙虚さ → [[agent-safety-and-guardrails]]（整合の宛先の 4 層分解）と [[reinforcement-learning-from-human-feedback]]（報酬設計側）

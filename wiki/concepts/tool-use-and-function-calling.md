@@ -9,6 +9,7 @@ related:
   - "[[model-context-protocol]]"
   - "[[retrieval-augmented-generation]]"
 summaries:
+  - "[[summaries/2025-effective-context-engineering]]"
   - "[[summaries/2022-react]]"
   - "[[summaries/2026-sakana-fugu]]"
   - "[[summaries/2024-building-effective-agents]]"
@@ -20,7 +21,7 @@ summaries:
   - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2025-manus-context-engineering]]"
   - "[[summaries/2023-toolformer]]"
-updated: 2026-08-01
+updated: 2026-08-02
 ---
 
 # Tool Use and Function Calling（ツール利用とツール呼び出し）
@@ -64,6 +65,7 @@ LLM（Large Language Model, 大規模言語モデル）が**外部のツール�
 ## 設計上の論点
 
 - **ツールの粒度と数**: ReAct は 3 ツールで足りたが、ツールが増えるほどモデルの選択誤りも増える。ツール説明文の書き方は一種のプロンプト設計である。Manus の実務観察（[[summaries/2025-manus-context-engineering]]）は端的で「**重武装したエージェントはより愚かになる**」——MCP でユーザーが数百の未知ツールを差し込める設計なら特に。
+- **絞り込みの判定基準——人間で試す**: 「ツールを減らせ」は言うのは簡単だが、どこまで減らすかの基準が要る。[[summaries/2025-effective-context-engineering]]（Anthropic, 2025）は最頻の失敗モードを「**機能を広く覆いすぎたツール集合や、どのツールを使うべきかの判断点が曖昧になるようなツール集合**」と特定したうえで、覚えやすい基準を置いた——**人間のエンジニアが、ある状況でどのツールを使うべきかを断言できないなら、AI エージェントにそれ以上を期待することはできない**。ツールセットのレビューにそのまま持ち込める形になっている。同記事はツールを「**エージェントとその情報／行動空間との間の契約**」と位置づけ、よく設計されたコードベースの関数と同様に**自己完結的・エラーに頑健・用途が極めて明確**であるべきとし、返す情報のトークン効率と、促す挙動の効率の**両方**を要求する。実行可能な最小集合に絞ることは、長い相互作用にわたってコンテキストを保守・剪定しやすくすることにもつながる → [[context-engineering]]。
 - **削除するな、マスクせよ**: 増えたツールを RAG 的に動的ロード・アンロードするのは 2 重に危険——ツール定義はコンテキスト前方にあるため変更で以降の KV cache が全滅し、過去の行動が「もう存在しないツール」を参照してスキーマ違反・幻覚を招く（[[summaries/2025-manus-context-engineering]]）。Manus の解は**定義を残したままロジットマスクで選択を制御**すること: response prefill の 3 モード（Auto=`<|im_start|>assistant` / Required=`...<tool_call>` / Specified=関数名の先頭まで prefill）を使い分け、**ツール名の一貫したプレフィックス**（`browser_`・`shell_`）で状態機械からグループ単位の制約を可能にする。ツールの命名は表示名でなく**制約の単位**でもある、という設計知見。K2 の enforcer・DSML と同じ constrained decoding の系譜のうち、「可用性の動的制御」に特化した応用形。
 - **作用先が自分自身のコンテキストであるツール**: ツールは外界に向くとは限らない。[[summaries/2023-memgpt]]（MemGPT, 2023）は、**自分のコンテキストの編集（working context への書き込み）・外部記憶への退避・履歴のページング検索**をすべて function call として実装し、記憶管理をツール利用の一種に還元した。関数実行のランタイムエラーをそのままモデルへフィードバックして適応させる設計や、`request_heartbeat=true` フラグで**関数実行後に続けて推論するかをモデル自身が宣言する** function chaining も、ここで定式化された（現在の「ツール呼び出しが続く限りループする」実装の原型 → [[agent-loop]]）。ReAct の外向きツール（Wikipedia API）と対をなす「内向きのツール」の系譜であり、発展先は [[agent-memory]]。
 - **ACI（Agent-Computer Interface）**: Anthropic の実務指針（[[summaries/2024-building-effective-agents]]）は「ツールの定義と文書に、プロンプト本体と同等のエンジニアリングを注げ」と定式化した。具体策——モデルが「考える」余地のある形式を選ぶ（diff の行数勘定や JSON 内エスケープのような**書式オーバーヘッドを排す**）、モデルが自然に見てきたテキストに近い形式にする、ジュニア開発者向け docstring のつもりで説明を書く、実際の誤用を観察して反復する、Poka-yoke（誤りを構造的に犯しにくくする）する。研究では推論を引き出すために意図的に弱いツールを使った（ReAct）のに対し、本番では誤りを減らすためにツールを磨く、という対照も設計判断の参考になる。
