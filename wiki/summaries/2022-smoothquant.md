@@ -167,3 +167,4 @@ PyTorch で最大 **1.51 倍**、FasterTransformer で最大 **1.56 倍**、メ�
 - [[summaries/2024-flashattention-3]] — 等価変換で数値的性質だけを変える incoherent processing、および FP8 のレイアウト制約という同型の問題
 - [[summaries/2025-llm-quantization-explained]] — 本論文の外れ値分析を二次資料として紹介している記事
 - [[context-engineering]] — 付録 A の「長コンテキスト・バッチ運用では KV cache が支配的」という論点の接続先
+- [[summaries/2022-gptq]] / [[summaries/2023-awq]] — 対になる weight-only の路線。本論文の W8A8 が**演算**の勝ちなのに対し、あちらは**メモリ帯域**の勝ちである（→ [[model-quantization]] の「重みのみか、重みと活性か」）

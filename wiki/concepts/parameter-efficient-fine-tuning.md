@@ -9,6 +9,7 @@ related:
   - "[[transformer-architecture]]"
 summaries:
   - "[[summaries/2023-qlora]]"
+  - "[[summaries/2024-efficientqat]]"
   - "[[summaries/2025-llm-quantization-explained]]"
 updated: 2026-08-02
 ---
@@ -80,6 +81,21 @@ QLoRA 論文 §3 が明記している——「**重みの勾配は、16 ビッ�
 
 [[summaries/2025-llm-quantization-explained]] は QLoRA を「QAT における現在の人気手法」と紹介しているが、これは誤りである。訂正の詳細は [[model-quantization]] にも置いた。
 
+### Q-PEFT の構造的な弱点 — 低ビットで訓練できても低ビットで配れない
+
+QLoRA を実際に出荷しようとすると、訓練メモリの話だけを見ていては気付かない問題に当たる。
+
+[[summaries/2024-efficientqat]] が指摘している——「**これらの手法は LoRA モジュールを量子化された重みへ統合する必要があり、その結果モデルが FP16 形式へ戻ってしまう**」。アダプタは 16 ビットで訓練されており、$\mathbf{W} + s\mathbf{L}_1\mathbf{L}_2$ をマージした結果は 4 ビットの格子には乗らない。したがってメモリの限られたプラットフォームへ展開するには**もう一度 PTQ をかける必要があり、そこで性能が落ちる**。
+
+この問題に取り組んだ先行研究が 2 つある。
+
+- **QA-LoRA** — LoRA モジュールを再設計し、**ゼロ点へ滑らかに統合できる**ようにする。
+- **PEQA** — RTN で低ビット量子化してから**ステップサイズだけをファインチューニング**する。EfficientQAT が「我々のアプローチに最も近い」と認める研究だが、**PTQ 初期化が貧弱**なため 2〜3 ビットでは QLoRA・QA-LoRA に見劣りする。
+
+EfficientQAT の E2E-QP は PEQA と同じ「ステップサイズだけを訓練する」形を取りつつ、**初期化を PTQ から Block-AP（ブロック単位の QAT）に置き換えた**ものと読める。結果、2 ビットの Alpaca 指示チューニングで QA-LoRA を 7B で 5.1%・13B で 4.0%、PEQA を 4.5%・8.7% 上回る。
+
+**実務上の判断**: マージ後も低ビットのまま配る必要があるかどうかで、Q-PEFT と QAT 系のどちらを選ぶかが変わる。**16 ビットで推論するなら QLoRA、4 ビット以下で出荷するなら EfficientQAT 系**、というのがここまでの整理である（→ [[model-quantization]] の「QAT は実用になったのか」）。
+
 ### 量子化とファインチューニングは補完的である
 
 QLoRA が示した最も一般性のある結果は、**「推論のための 4 ビット量子化は性能を落とす」という既知の事実が、その後のアダプタ訓練によって覆る**ことである。GLUE と Super-NaturalInstructions で 16 ビットの完全なファインチューニング・16 ビット LoRA・8 ビット・4 ビットがすべて同等になり、MMLU でも NF4＋二重量子化が BFloat16 に一致する（53.1 vs 53.0）。
@@ -123,3 +139,4 @@ PEFT で何を訓練するかの前に、**何のデータで訓練するか**�
 - [[agent-evaluation]] — 「何を評価しているのか」の問い、および QLoRA が測った LLM-as-a-judge のバイアス
 - [[llm-inference-optimization]] — 訓練でなく推論側のメモリと速度
 - [[summaries/2023-qlora]] — 本ページの主要な根拠
+- [[summaries/2024-efficientqat]] — Q-PEFT の「マージで FP16 へ戻る」問題を指摘し、終始低ビットのまま訓練・出荷する道を示した論文

@@ -150,3 +150,4 @@ Guanaco（OASST1 でファインチューニング）は Vicuna ベンチマー�
 - [[summaries/2022-smoothquant]] — 同時期の対照。あちらは推論の W8A8、こちらはファインチューニング
 - [[reinforcement-learning-from-human-feedback]] — 本論文は RLHF を使わず交差エントロピーのみで訓練している点の接続先
 - [[summaries/2025-llm-quantization-explained]] — 本論文を QAT に分類してしまっている二次資料
+- [[summaries/2024-efficientqat]] — 本論文を含む Q-PEFT を「LoRA をマージすると FP16 へ戻ってしまう」と批判し、終始低ビットのまま訓練・出荷する道を示した後続研究
