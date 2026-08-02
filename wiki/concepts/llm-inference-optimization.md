@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [推論最適化, inference optimization, KV cache, TTFT, TPS, serving, サービング, デコードスループット, FlashAttention, FlashAttention-2, IO-awareness, HBM, SRAM, memory-bound, compute-bound, arithmetic intensity, kernel fusion, カーネル融合, occupancy, 占有率, warp, SM, thread block, MFU, GEMM, split-K, non-matmul FLOPs, Triton]
+aliases: [推論最適化, inference optimization, KV cache, TTFT, TPS, serving, サービング, デコードスループット, FlashAttention, FlashAttention-2, IO-awareness, HBM, SRAM, memory-bound, compute-bound, arithmetic intensity, kernel fusion, カーネル融合, occupancy, 占有率, warp, SM, thread block, MFU, GEMM, split-K, non-matmul FLOPs, Triton, FlashAttention-3, warp-specialization, WGMMA, TMA, warpgroup, pingpong scheduling, FP8, block quantization, incoherent processing, 非干渉化処理]
 tags: [llm-inference-optimization, llm-foundations]
 related:
   - "[[mixture-of-experts]]"
@@ -11,6 +11,7 @@ related:
 summaries:
   - "[[summaries/2022-flashattention]]"
   - "[[summaries/2023-flashattention-2]]"
+  - "[[summaries/2024-flashattention-3]]"
   - "[[summaries/2024-deepseek-v3]]"
   - "[[summaries/2025-deepseek-series]]"
   - "[[summaries/2025-moe-survey]]"
@@ -89,7 +90,31 @@ FlashAttention-2 の対処は 3 つで、いずれも出力を変えない。
 1. **FLOPs は互いに換算できない。** 「1 FLOP は 1 FLOP」という暗黙の前提は、専用行列積ユニットを持つ現代の GPU では成り立たない（16 倍差）。次節の「FLOPs ≠ wall-clock」をもう一段進めた主張で、**FLOPs を数えるならどの種類の FLOP かまで数える**必要がある。
 2. **下流の実装が上流の論文へ還流しうる。** ループ順序の入れ替えと系列長並列は、論文自身が明記するとおり **Phil Tillet の Triton 実装が先**である。初代 FlashAttention は限界として「CUDA を手書きするしかなく、高レベル言語からコンパイルできる仕組みが要る」と書いていたが、**その仕組み（Triton）が実際に作られ、そこでの発見が本家のカーネルへ戻ってきた**。後述「カーネル融合 — 実装成熟度が律速する」の、珍しく綺麗な実例である。
 
-限界として、ブロックサイズ（$\{64,128\}\times\{64,128\}$）は**手動チューニング**であり自動化は今後の課題、H100 では専用機能（TMA, 第 4 世代 Tensor Core）を使わずに 335 TFLOPs/s を出しているだけで本領は未発揮、マルチ GPU の IO は依然として解析外——と著者自身が挙げている。
+限界として、ブロックサイズ（$\{64,128\}\times\{64,128\}$）は**手動チューニング**であり自動化は今後の課題、H100 では専用機能（TMA, 第 4 世代 Tensor Core）を使わずに 335 TFLOPs/s を出しているだけで本領は未発揮、マルチ GPU の IO は依然として解析外——と著者自身が挙げている。この「本領は未発揮」がどれほどだったかは次節が示す（H100 での利用率は **35%** だった）。
+
+### 非同期化と低精度 — 世代が変わると壁も変わる
+
+**A100 で理論ピークの 73% まで詰めたコードは、H100 では 35% しか出ていなかった。** これが **FlashAttention-3**（[[summaries/2024-flashattention-3]], Shah ら 2024）の出発点である。前 2 節と合わせると、同じ問題が**世代ごとに形を変えて戻ってくる**様子が 3 段で読める——(1) メモリ往復 → (2) 占有率と warp 間の分業 → (3) 同期モデルそのものと精度。
+
+Hopper（H100）が持ち込んだのは 2 つの新しい前提である。
+
+- **非同期性**: 行列積は **Tensor Core**（warpgroup 単位の非同期命令 **WGMMA** 経由）、GMEM ⇄ SMEM のデータ転送は **TMA**（Tensor Memory Accelerator）という専用ユニットで、通常の CUDA コアから**分離されて非同期に走る**。同期モデル前提で書かれたカーネルはこの並行性を使い切れない。
+- **低精度**: FP16（2017 Pascal）→ BF16（2020 Ampere）→ **FP8（Hopper）**→ FP4（Blackwell）と、同じ電力・面積で 2 倍・4 倍のスループットを得る手段が世代ごとに増えている。
+
+対処は 3 つ。
+
+- **warp-specialization** — CTA 内の warp を **producer**（TMA でデータを運ぶ。`setmaxnreg` でレジスタを手放す）と **consumer**（WGMMA で計算する。そのレジスタを受け取る）へ役割分担させ、$s$ 段の循環 SMEM バッファで繋ぐ。
+- **softmax を GEMM の陰に隠す** — H100 は FP16 行列積が **989 TFLOPS** なのに指数関数など特殊関数は **3.9 TFLOPS**（**256 分の 1**）。ヘッド次元 128 では行列積の FLOPS が 512 倍あるので、差し引き**指数関数だけで約 50% のサイクルを食いうる**。そこで 2 つの warpgroup が GEMM と softmax を交互に担当する **pingpong スケジューリング**（570 → 620〜640 TFLOPS）と、warpgroup 内で反復をまたぐ **2 段 GEMM-softmax パイプライン**を併用する。
+- **FP8** — レイアウト適合（FP8 WGMMA は k-major しか受け付けない／累算器とオペランドの配置が違う）と精度対策（次節）。
+
+結果は **FP16 で 740 TFLOPs/s（H100 理論ピークの 75%）**、**FP8 で 1.2 PFLOPs/s 近く**、cuDNN のクローズドソース実装を中〜長系列で上回る。アブレーションが示唆的で、warp-specialization だけなら 582、パイプラインだけなら 570 TFLOPs/s、**両方揃って 661** ——2 つは独立に足し合わさるのでなく噛み合って効いている。
+
+**この節の教訓は、前 2 節を貫く読み方の総仕上げにあたる。**
+
+1. **「最適化し切った」は世代の関数である。** 前世代で正しかった設計判断（同期モデル前提・FP16 前提）が、次の世代ではボトルネックそのものになる。性能の数字は必ずデバイス世代とセットで読む。
+2. **低精度化を進めるほど、非行列積演算が相対的に重くなる。** 前節の matmul と non-matmul の 16 倍差（A100）は H100 で **256 倍**に開き、しかも FP8 にすると行列積側だけがさらに倍になる。softmax のような特殊関数の扱いは、今後より重要になる方向にある。
+
+限界も明確である。**FP8 が cuDNN と「competitive」という主張には条件がつき**（ヘッド次元 64 では勝つが、128・256 では因果マスクなしで互角・ありでは負ける）、**FP8 版には persistent kernel と負荷分散が入っていない**。精度検証は合成データの RMSE のみで、**実際の訓練・推論での品質は測っていない**。推論向けの最適化は限界節の筆頭に「今後の課題」として置かれている。3 段パイプラインはレジスタ圧のため 2 段版より遅く、著者らは「コンパイラがなぜこう並べ替えるのか明らかでない」と正直に書いている——**高レベルの設計意図とコンパイラの挙動の間には依然ギャップがある**。
 
 ### チャンク化とハードウェア整合 — FLOPs ≠ wall-clock
 
@@ -150,6 +175,20 @@ decode が 1 トークンずつ逐次的でメモリ帯域律速なら、**下�
 - **細粒度量子化**: テンソル単位のスケーリングは活性の外れ値に脆いので、活性は **1×128 のタイル単位**、重みは **128×128 のブロック単位**でスケールする。小さなグループ内で実質的に指数ビットを共有できるため、E4M3（仮数部を優先）を全テンソルで使える。スケールはその場で計算する**オンライン量子化**（履歴からの遅延量子化でなく）。
 - **ハードウェアの限界を実測で暴いた**: H800 の Tensor Core の FP8 GEMM は**仮数部の積の上位 14 ビットしか使わない**——$K=4096$ で最大約 2% の相対誤差になる。対処は $N_C=128$ 要素ごとに **CUDA Core へ昇格させて FP32 累積**すること。同レポートは「32 個の FP8 積を正確に FP32 累積するには最低 34 ビット必要」としてハードウェアベンダーへの提言に繋げている。
 - **否定的結果**も公開されている: **活性の勾配をブロック単位で量子化すると 16B モデルが約 300B トークンで発散する**。Dgrad は精度に極めて敏感で、活性の勾配はトークン間で高度に不均衡（トークン相関の外れ値）だから、というのが著者らの推測。「重みと同じ粒度で活性の勾配を量子化してはいけない」という具体的な線引き。
+
+**外れ値への、2 つの異なる答え方**。低精度で困るのは常に**外れ値**——他より桁違いに大きい少数の値がスケール係数を支配し、残りの値の分解能を潰す——だが、その潰し方には別々の路線がある。
+
+| | DeepSeek-V3（[[summaries/2024-deepseek-v3]]） | FlashAttention-3（[[summaries/2024-flashattention-3]]） |
+|---|---|---|
+| 適用層 | **訓練**（671B MoE を FP8 で通す） | **推論・訓練カーネル**（attention 単体） |
+| 主な手段 | **スケールの粒度を細かくする**（活性 1×128 タイル、重み 128×128 ブロック） | 同様のブロック量子化 ＋ **分布そのものをならす** |
+| 固有の手 | ハードウェア誤差の実測と CUDA Core への昇格累積 | **非干渉化処理（incoherent processing）** |
+
+FlashAttention-3 の**非干渉化処理**が面白いのは、精度を上げるのに**出力を一切変えない**点である。$\mathbf{Q}$ と $\mathbf{K}$ の両方に同じランダム直交行列 $\mathbf{M}$ を掛けてから量子化すると、$\mathbf{M}\mathbf{M}^{\top}=I$ より $(\mathbf{Q}\mathbf{M})(\mathbf{K}\mathbf{M})^{\top}=\mathbf{Q}\mathbf{K}^{\top}$ なので attention の出力は恒等である。一方で $\mathbf{Q}\mathbf{M}$ の各要素は元の要素のランダムな和になるため、**外れ値が広く薄くならされる**。$\mathbf{M}$ を $\pm1$ のランダム対角行列と Hadamard 行列の積に取れば $O(d\log d)$ で掛けられ、直前の rotary embedding（メモリ帯域律速）へ融合すれば追加コストもない。量子化の研究（QuIP / QuIP#）からの借用である。
+
+FP8 の RMSE は per-tensor ベースライン比 **2.6 分の 1**（2.4e-2 → 9.1e-3）。ただしアブレーションを見ると**効いているのはほぼ非干渉化処理だけ**で、ブロック量子化を外しても 9.3e-3 とほぼ変わらないのに、非干渉化処理を外すとベースラインと同じ 2.4e-2 に戻る。論文は 2 つを並列に提示するが、この設定での寄与は非対称である。**量子化を検討するときは、スケールの粒度を細かくする方向だけでなく、分布そのものをならす方向も選択肢に入れる**——これが持ち帰るべき一般則になる。
+
+なお両者とも**低精度が実際の品質に与える影響は測り切れていない**。DeepSeek-V3 は BF16 比の相対 loss 誤差 0.25% 未満という実訓練の数字を持つが、FlashAttention-3 の 2.6 倍は**合成分布での RMSE** であって、著者ら自身が「大規模訓練における低精度 attention の影響を理解すること」を今後の課題に挙げている。
 
 訓練側の通信最適化も同じレポートにある。**DualPipe** は順伝播・逆伝播チャンクの対の内側で計算と通信を重ねる双方向パイプラインで、チャンクを attention / all-to-all dispatch / MLP / all-to-all combine に分け、逆伝播をさらに「入力に対する」「重みに対する」へ割る。通信カーネルは MoE のゲーティングとネットワークトポロジーと協調設計され、**NVLink（160 GB/s）が IB（50 GB/s）の約 3.2 倍**であることから各トークンを最大 4 ノードに制限して IB→NVLink の 2 段転送を重ねる。結果として**132 SM 中わずか 20 SM で IB と NVLink の帯域を使い切る**。ただし同レポート自身が「通信に SM を取られること自体が非効率」として、通信タスクを SM からオフロードする補助プロセッサをベンダーに要望している。
 

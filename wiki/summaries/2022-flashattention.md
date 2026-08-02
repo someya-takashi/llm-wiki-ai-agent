@@ -138,6 +138,7 @@ GPT-2 medium（系列長 1024、ヘッド次元 64、16 ヘッド、バッチ 64
 ## 関連ページ
 
 - [[summaries/2023-flashattention-2]] — 直接の続編。IO を直した後に残る壁（占有率と warp 間の分業）を扱い、さらに 2 倍を得た
+- [[summaries/2024-flashattention-3]] — 三部作の完結編。Hopper の非同期実行と FP8 を前提に設計し直した
 - [[llm-inference-optimization]] — IO-awareness を最適化の第一原理として扱う。本論文が主要な根拠
 - [[transformer-architecture]] — attention の系譜の中で、本論文は「近似も圧縮もせず、メモリアクセスだけを変える」直交した軸にあたる
 - [[context-engineering]] — 長いコンテキストが経済的に成立する前提を与えた
