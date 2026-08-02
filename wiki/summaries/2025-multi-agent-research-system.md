@@ -127,6 +127,8 @@ Claude の Research 機能——リードエージェントが並列サブエー
 
 ## 関連ページ
 
+- [[summaries/2026-ai-scientist]] — 「知識の集約」に対する「知識の生成」側のリサーチエージェント（→ [[research-agents]]）
+
 - [[multi-agent-systems]] — orchestrator-worker の本番実例としてこの記事を詳述
 - [[agent-evaluation]] — 20 クエリから始める評価・単一ジャッジ・終了状態評価の根拠
 - [[tool-use-and-function-calling]] — ツール説明の品質と自己改善エージェント

@@ -12,10 +12,11 @@ related:
   - "[[agent-evaluation]]"
   - "[[agent-safety-and-guardrails]]"
 summaries:
+  - "[[summaries/2026-ai-scientist]]"
   - "[[summaries/2023-llm-agents-survey]]"
   - "[[summaries/2022-react]]"
   - "[[summaries/2024-building-effective-agents]]"
-updated: 2026-08-01
+updated: 2026-08-02
 ---
 
 # LLM Agents（LLM ベースエージェント）— 総論
@@ -42,7 +43,7 @@ updated: 2026-08-01
 
 ## 応用の 3 形態
 
-1. **単一エージェント** — タスク指向（Web・生活タスク）・イノベーション指向（科学探究）・ライフサイクル指向（オープンワールドでの生涯学習。Voyager のスキルライブラリが代表）。現在の主戦場は [[coding-agents]]（実行フィードバックが速く機械可読）と [[computer-use-agents]]（GUI 直接操作）、agentic search（[[retrieval-augmented-generation]]）。
+1. **単一エージェント** — タスク指向（Web・生活タスク）・**イノベーション指向（科学探究）→ [[research-agents]]**・ライフサイクル指向（オープンワールドでの生涯学習。Voyager のスキルライブラリが代表）。現在の主戦場は [[coding-agents]]（実行フィードバックが速く機械可読）と [[computer-use-agents]]（GUI 直接操作）、agentic search（[[retrieval-augmented-generation]]）。
 2. **マルチエージェント** — 協調的相互作用（無秩序＝自由発言と多数決／秩序＝役割対・SOP）と敵対的相互作用（討論）。幻覚の相互増幅・誤った合意への収束という 2023 年時点の警告は、後の失敗分類（[[summaries/2025-masft]]）と本番運用の経済学（[[summaries/2025-multi-agent-research-system]]）で実証・条件づけられた → [[multi-agent-systems]]。
 3. **人間–エージェント** — **instructor-executor パラダイム**（人間が指示とフィードバックを与える。現在の実務の大半）と **equal partnership パラダイム**（共感的コミュニケータ・対等な参加者）。人間関与の根拠は解釈可能性と制御可能性の保証 → HITL の実装は [[agent-safety-and-guardrails]]。
 
@@ -57,6 +58,8 @@ updated: 2026-08-01
 実務側の標準語彙は [[summaries/2024-building-effective-agents]]（workflow と agent の区別・「まず最も単純な解から」）が与え、設計パターンとフレームワーク・ハーネスの層は [[agent-frameworks]] が扱う。長時間・本番運用の実践知（構造化 artifact による引き継ぎ・generator/evaluator 分離・ハーネスの縮小と自動探索）は [[coding-agents]] と [[summaries/2025-effective-harnesses]] 以降の系譜を参照。
 
 ## 関連ページ
+
+- [[research-agents]] — 調査・研究そのものを担うエージェント（知識の集約 ⇄ 知識の生成）
 
 - [[agent-loop]] — 実行ループとしての見方（本ページの 3 モジュールと表裏）
 - [[reasoning-and-planning]] / [[self-reflection]] / [[agent-memory]] / [[context-engineering]] — brain の各論

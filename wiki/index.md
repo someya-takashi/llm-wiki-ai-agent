@@ -23,6 +23,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2022-instructgpt]] — InstructGPT（Ouyang et al., OpenAI, NeurIPS 2022）。RLHF を汎用の指示追従に初適用した一次資料で ChatGPT の前身。SFT→報酬モデル→PPO の 3 段・1.3B が 175B に勝つ・**アラインメント税**と PPO-ptx・整合コストは事前学習の 1.6%・「誰に整合させているのか」の 4 層分解。バイアスは改善せず、指示されれば GPT-3 より有害になる。
 - [[summaries/2023-dpo]] — DPO（Rafailov et al., Stanford, NeurIPS 2023）。KL 制約付き最適化の解を逆に解いて報酬を方策で表し、Bradley-Terry が差にしか依存しないので分配関数が消える——**報酬モデルの訓練と RL ループを両方排除**して二値交差エントロピー 1 本にする。報酬-KL フロンティアが PPO を（真の報酬を持つ PPO-GT ですら）支配。GPT-4 ジャッジ検証の参照実装も。
 - [[summaries/2024-deepseek-v3]] — DeepSeek-V3（DeepSeek-AI, arXiv:2412.19437, 2024-12）。671B 総/37B 活性の MoE を **278.8 万 H800 GPU 時間（$5.576M）・loss spike ゼロ**で訓練。**補助損失を使わない負荷分散**（バイアス項をルーティングにのみ使う。ただし本質は「均衡の粒度を系列→バッチへ緩めること」で、バッチ単位補助損失も同等）・MLA・MTP・**極大規模での FP8 訓練の初の検証**・DualPipe・冗長エキスパート。R1 の Base であり、同時に R1 から推論を蒸留している。
+- [[summaries/2026-ai-scientist]] — **The AI Scientist**（Yamada, Lange, C. Lu, C. Lu ほか / Sakana AI・UBC・Vector・Oxford, arXiv:2606.15497, 2026-06）。着想 → 文献調査 → 実験の設計と実行 → 作図 → 分析 → 論文執筆 → 査読までを人間の介入なしに通し、**生成論文 3 本のうち 1 本が ICLR 2025 ICBINB ワークショップの査読を通った**（6.33、上位 45%。査読後に全件取り下げ）。4 段階の実験管理と明示的な停止条件、**replication / aggregation という「統計を取るための型」を持つ探索木**、VLM による図の批評。**Automated Reviewer** は制度の accept/reject を正解に、カットオフ前後で汚染を検査し、自明ベースライン（Always Reject は精度 0.65 だが F1 0.00）を併記する。ただし読み方に条件が 3 つ——**採択率 70% のワークショップ・24 本中 1 本という人手の選別漏斗・著者ら自身の自動査読者は既定プロンプトで 3 本とも不採択**。
 - [[summaries/2025-moe-survey]] — MoE 包括サーベイ（Mu & Lin, arXiv:2503.07137, 2025-03）。基本設計・学習パラダイム別アルゴリズム・理論・応用の 4 部。**wiki に無かった 2 領域**を持ち込む: ゲーティングの設計空間（コサイン・Soft MoE・指数型分布族）とルーティング水準、継続学習/メタ学習/マルチタスク/RL での MoE、そして理論（普遍近似・MLE 収束と Voronoi 損失・2 層 CNN 単一エキスパートの 87.5% 上限）。独自実験はなく、システム記述は DeepSeek-V3 で止まる。
 - [[summaries/2021-switch-transformers]] — Switch Transformers（JMLR 2022）。MoE 実用化の転換点: top-1 ルーティング・selective precision・負荷分散損失・蒸留 30%・初の 1.6T モデル。並列化体系（data/model/expert）の原典。
 - [[summaries/2024-graphrag]] — GraphRAG（Edge et al., Microsoft Research, arXiv:2404.16130, 2024-04）。**「検索では原理的に答えられない質問がある」**という診断——コーパス全体に向けたグローバルな質問は検索タスクでなく **QFS**（Query-Focused Summarization, クエリ焦点型要約）——から、検索でなく**索引の作り方**を変える。LLM にエンティティ知識グラフを作らせ、Leiden でコミュニティ検出して階層分割（MECE なので全体をカバーする）、各コミュニティ要約を事前生成し、質問時は全件に並列に答えさせて畳む（map-reduce）。素朴な RAG に網羅性 72〜83% で勝つが、**グラフなしの原文 map-reduce も競争力があり**、グラフの真価は品質でなくトークン単価（ルート水準は 9〜43 倍安い）。評価設計も見どころで、**対立する対照指標（直接性）を混ぜて判定系の妥当性を検査**する。
@@ -95,6 +96,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2026-gemma-4]] — Gemma 4 テクニカルレポートの全文翻訳（PDF 原典。表 12 点＋Algorithm 1 を転記、図 2 枚はユーザー提供。制御トークン書式・会話例は原文のまま収録）。
 - [[translations/2026-deepseek-v4]] — DeepSeek-V4 テクニカルレポートの全文翻訳（欠落していた SVG 図 11 枚を ar5iv から復元。プロンプトボックス 2 点は SVG からテキスト化。脚注 4 件復元・HTML 表 8 個を正規化）。
 - [[translations/2024-deepseek-v3]] — DeepSeek-V3 テクニカルレポートの翻訳（本文 §1〜6 ＋ 付録 B/C。ar5iv クリップ底本で、欠落していた脚注 4 件と Figure 11 の総キャプション、§3.2.2 で途中で切れていた一文を原ページから復元。図 15 枚収録、HTML 表 5 個を markdown 化。Table 6 のみ分量の都合で要点訳。Appendix A の貢献者一覧は謝辞相当として除外）。
+- [[translations/2026-ai-scientist]] — The AI Scientist 論文の全文翻訳（本文 §1〜5・Methods・Nature 定型節・付録 A〜D の全体。**圧縮なし**）。**ar5iv 上でインライン SVG として描画されていた 96 個のテキスト箱**（システムプロンプト 20 個・生成 JSON・生成コード）を文字起こしして収録——プロンプトと系の生成物は英語原文のまま。**生成コードのスクリーンショット 12 枚は画像＋訳注での文字起こしを併載**。クリップから欠落していた多パネル図の 2 枚目 2 枚を ar5iv から復元。付録 D の生成論文本文は原典が `\includepdf` で差し込む形のため ar5iv 側に存在しない旨を明記。
 - [[translations/2025-moe-survey]] — MoE 包括サーベイの全文翻訳（本文 §I〜VII 全訳）。**ar5iv でも画像化されていない Figure 1（TikZ forest の分類ツリー）を LaTeX マークアップからネスト箇条書きに再構成**。本文図 2 枚を収録。原典に表・脚注は 1 つも存在しないことを ar5iv 照合で確認。
 - [[translations/2021-switch-transformers]] — Switch Transformers 論文の全文翻訳（多パネル図の欠落 4 枚と Mesh TF 擬似コード 3 本・脚注 11 件を ar5iv から復元。付録 A〜F 含む）。
 - [[translations/2024-deepseekmath]] — DeepSeekMath 論文の全文翻訳（欠落していた貢献箇条書き・脚注 7 件を ar5iv から復元。ar5iv 自体で平文化していた表 6 個をセル順序から再構成。付録 A.1 の全導出含む）。
@@ -120,6 +122,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[agent-frameworks]] — 設計パターン（workflow 5 種＋agent）とフレームワーク観。「まず単純に、複雑さは実証されたときだけ」。
 - [[self-reflection]] — 失敗を言語で振り返り試行間で学ぶ仕組み。Reflexion / Self-Refine と、盲目的リトライ無効・FP 即死などの設計論点。
 - [[reinforcement-learning-from-human-feedback]] — 事後訓練の RL。**時系列構成**（2022 古典的 RLHF → 2023 DPO → 2024 GRPO → 2025 RLVR/蒸留 → 2025 K2 joint RL → 2026 K2.5 → 2026 OPD）で「何が何を置き換えたか」を追う。
+- [[research-agents]] — 調査・研究そのものを担うエージェント。**知識の集約（Deep Research 型）⇄ 知識の生成（AI Scientist 型）**の対比を骨格に、段階つき実験管理・統計を取るための探索ノード型・「良い研究か」を査読という制度を借りて測る評価の難所まで。
 - [[retrieval-augmented-generation]] — 検索で外部知識を注入して生成。訓練時組み込み型と推論時注入型の 2 層、hot-swap、collapse。ローカル／グローバルな質問の分類と GraphRAG。
 - [[agent-memory]] — コンテキストを超えて保持・想起する記憶の設計。MemGPT の階層記憶・Reflexion のエピソード記憶・共有境界。
 - [[context-engineering]] — 限られたウィンドウに何をどう積むか。注意予算と context rot・各構成要素の絞り方・just-in-time 取得・区画化・圧縮と引き継ぎ・参照渡し・長時間タスクの 3 手法。
@@ -175,6 +178,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - Arena / Chatbot Arena / Elo → [[agent-evaluation]]
 - DSML → [[tool-use-and-function-calling]]
 - agentic search → [[retrieval-augmented-generation]]
+- AI Scientist / Deep Research / co-scientist / AI for science / 科学の自動化 / automated scientific discovery / sensemaking / センスメイキング / Automated Reviewer / 自動査読 → [[research-agents]]
 - Interleaved Thinking / Quick Instruction → [[context-engineering]]
 - context sharding / Discard-all / Hide-Tool-Result → [[context-engineering]]
 - Toggle / length-overfitting → [[test-time-compute]]

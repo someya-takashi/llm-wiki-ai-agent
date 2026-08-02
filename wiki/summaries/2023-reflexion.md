@@ -95,6 +95,8 @@ ReAct・SayCan・Toolformer などで「LLM ＋ツール＋ループ」のエー
 
 ## 関連ページ
 
+- [[summaries/2026-ai-scientist]] — 自己評価の偽陽性／偽陰性という論点が、生成論文の自動査読で再び現れる
+
 - [[self-reflection]] — 本原典が主要根拠となる概念ページ
 - [[summaries/2022-react]] — Actor として使用。反復ループ・幻覚への直接の後続回答
 - [[summaries/2022-chain-of-thought]] — もう一方の Actor。創発性の同型パターン

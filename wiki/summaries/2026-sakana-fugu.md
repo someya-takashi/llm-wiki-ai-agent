@@ -119,6 +119,8 @@ translation: "[[translations/2026-sakana-fugu]]"
 
 ## 関連ページ
 
+- [[summaries/2026-ai-scientist]] — 同じ Sakana AI の、科学研究そのものを端から端まで自動化する系
+
 - [[multi-agent-systems]] — 本原典が主要根拠となる概念ページ
 - [[agent-loop]] — ターンごとのワーカー選択は agent loop の「担当」まで学習対象にした発展形
 - [[tool-use-and-function-calling]] — マルチエージェント下の function call loop（発行元追跡・共有メモリ）
