@@ -48,6 +48,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 ### Articles / Blogs
 
 - [[summaries/2022-rlhf-illustrated]] — Hugging Face（2022-12, Lambert et al.）。RLHF の定番解説。事前学習→報酬モデル→PPO の 3 段パイプライン・なぜ点数でなく順位か（Elo）・KL ペナルティと reward hacking の原初的記述。**3 年半前の記事なので「賞味期限」節で陳腐化を対応づけ済み**。
+- [[summaries/2025-deepseek-series]] — Shayan Mohanty / martinfowler.com（2025-02 初出・2025-06 改訂）。DeepSeek 4 本（LLM / V2 / V3 / R1）を **HPC co-design（アーキテクチャと計算基盤の一体設計）** という一本の弧で読む二次解説。wiki にとっての価値は前半 2 本——**DeepSeek-LLM の scaling law**（規模をパラメータ数でなく**非埋め込み FLOPs/token** で測ると $C = M \times D$ に揃う／データ品質が最適比率を動かす）と **DeepSeek-V2**（MLA・DeepSeekMoE・device-limited routing・3 層の均衡損失の初出）——を埋めること。ただし **V3 の「洗練された MLA」3 点は原典に存在しない**ので、要約の「原典との照合」節を必ず併読すること。
 - [[summaries/2023-moe-explained]] — Hugging Face（2023）。MoE の定番入門。疎な MoE 層＋ルータ・負荷分散 3 点セット・「メモリ 47B/FLOPs 12B」の分離・FT の落とし穴。
 - [[summaries/2024-building-effective-agents]] — Anthropic（2024, 改訂版）。workflow/agent の区別・5 パターン・3 原則（simplicity/transparency/ACI）。実務指針の事実上の標準。
 - [[summaries/2025-multi-agent-research-system]] — Anthropic（2025）。Research 機能の本番 orchestrator-worker。+90.2%・トークン 15 倍の経済性・プロンプト 8 原則・20 クエリ評価。
@@ -81,6 +82,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2026-gpt2-to-kimi3]] — 「From GPT2 to Kimi3, Explained」の全文翻訳（図 22 枚収録。X の数式連結を復元。コード 12 個は原文のまま収録）。
 - [[translations/2026-llm-optimization-guide]] — Mirantis「LLM Optimization: Techniques and Guide」の全文翻訳（本文に図なし。カバーバナーは chrome として除外）。
 - [[translations/2022-rlhf-illustrated]] — Hugging Face「Illustrating Reinforcement Learning from Human Feedback (RLHF)」の全文翻訳（原ページ照合済み・クリップに欠落なし。図 4 枚収録。ChatGPT 対話のスクリーンショットは原文のままテキストにも起こした。注釈つき文献ガイド「Further reading」は本文の一部として訳出し URL は arXiv 識別子のみ保持。Citation/BibTeX・謝辞・読者コメント欄は除外）。
+- [[translations/2025-deepseek-series]] — martinfowler.com「The DeepSeek Series: A Technical Overview」の全文翻訳（クリップに欠落なし。原ページのポップアップ脚注が平坦化されて二重出現していた 15 個の脚注を `[^1]`〜`[^15]` に統合し、本文に裸の数字として残っていたマーカーを正しい参照位置へ戻した。「Connecting the Arcs」の 1・3・5 と飛んだ番号を正規化。改訂履歴は実質的な情報として訳出）。
 - [[translations/2023-moe-explained]] — Hugging Face「Mixture of Experts Explained」の全文翻訳（欠落していた GShard 図を原ページから復元。数式 5 本を正規化。図 12 枚収録）。
 - [[translations/2026-sakana-fugu]] — Sakana Fugu テクニカルレポートの全文翻訳（付録・棋譜含む。プロンプトと棋譜は原文のまま収録）。
 - [[translations/2025-masft]] — MASFT 論文の全文翻訳（付録の失敗事例トレース・介入プロンプト含む。トレースとプロンプトは原文のまま収録）。
@@ -162,11 +164,12 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - PEFT / LoRA / SFT → [[parameter-efficient-fine-tuning]]
 - HITL / CoT モニタリング / CoT faithfulness / prompt injection / sandboxing / safety case / jailbreak / DAN / backdoor attack / data poisoning / membership inference / MIA / PII leakage / gradient leakage / SmoothLLM / goal hijacking / competing objectives → [[agent-safety-and-guardrails]]
 - Long CoT / test-time scaling / overthinking / reasoning boundary / Best-of-N / budget forcing → [[test-time-compute]]
-- MLA / Multi-head Latent Attention → [[transformer-architecture]]
+- MLA / Multi-head Latent Attention / scaling law / スケーリング則 / Chinchilla / 非埋め込み FLOPs/token → [[transformer-architecture]]
+- HPC co-design / HPC 協調設計 / PTX / warp 特化 / SM / Streaming Multiprocessor → [[llm-inference-optimization]]
 - FP8 / 低精度訓練 / 細粒度量子化 / DualPipe / all-to-all / expert parallelism / EP / IB / NVLink → [[llm-inference-optimization]]
 - KV cache / TTFT / TPS / prefill / decode / FlashAttention / PagedAttention / quantization / continuous batching / speculative decoding / MTP / QAT → [[llm-inference-optimization]]
 - MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / MoonViT / NaViT / early fusion / DEP / encoder-free / p-RoPE / per-layer embeddings / CSA / HCA / mHC / Hyper-Connections / Muon / attention sink → [[transformer-architecture]]
-- MoE / Mixture of Experts / 専門家混合 / Mixtral / Switch Transformers / GShard / GLaM / ゲーティング関数 / gating function / router / ルータ / expert capacity / 負荷分散 / load balancing / token dropping / Soft MoE / コサインルータ / Top-P ルーティング / 共有エキスパート / shared expert / スパース性スケーリング則 / MMoE / MoA / 条件付き計算 / conditional computation / auxiliary-loss-free / 補助損失なし負荷分散 / バイアス項 / node-limited routing / ノード制限ルーティング / redundant experts / 冗長エキスパート / DeepSeekMoE → [[mixture-of-experts]]
+- MoE / Mixture of Experts / 専門家混合 / Mixtral / Switch Transformers / GShard / GLaM / ゲーティング関数 / gating function / router / ルータ / expert capacity / 負荷分散 / load balancing / token dropping / Soft MoE / コサインルータ / Top-P ルーティング / 共有エキスパート / shared expert / スパース性スケーリング則 / MMoE / MoA / 条件付き計算 / conditional computation / auxiliary-loss-free / 補助損失なし負荷分散 / バイアス項 / node-limited routing / ノード制限ルーティング / redundant experts / 冗長エキスパート / DeepSeekMoE / device-limited routing / デバイス制限ルーティング / 共有エキスパート / shared expert → [[mixture-of-experts]]
 - Arena / Chatbot Arena / Elo → [[agent-evaluation]]
 - DSML → [[tool-use-and-function-calling]]
 - agentic search → [[retrieval-augmented-generation]]

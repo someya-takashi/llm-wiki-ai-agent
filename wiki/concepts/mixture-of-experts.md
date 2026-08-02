@@ -8,6 +8,7 @@ related:
   - "[[reinforcement-learning-from-human-feedback]]"
   - "[[multi-agent-systems]]"
 summaries:
+  - "[[summaries/2025-deepseek-series]]"
   - "[[summaries/2025-moe-survey]]"
   - "[[summaries/2024-deepseek-v3]]"
   - "[[summaries/2021-switch-transformers]]"
@@ -33,6 +34,8 @@ updated: 2026-08-02
 系譜は古く、1991 年の Adaptive Mixture of Local Experts（エキスパート＋ゲートの原型）→ Shazeer 2017 のスパース化（Noisy Top-k Gating, 137B LSTM）→ GShard（transformer への適用・expert capacity）→ Switch Transformers（**top-1 で十分**という簡素化・1.6T/2048 エキスパート・事前学習 4 倍速）→ Mixtral 8x7B（オープン MoE の実用化）と発展した（[[summaries/2023-moe-explained]] が定番の入門整理）。
 
 実用化を決めた転換点が **Switch Transformers**（[[summaries/2021-switch-transformers]], 2021）で、その貢献は機構の追加でなく**削除**にある。「ルータの学習には k≥2 のエキスパート比較が要る」という通念（Shazeer 2017）に反して **top-1** で品質を保てることを実証し（ゲート値を出力に掛ければ微分可能性は残る）、補助損失も単一の負荷分散損失 $\alpha N\sum_i f_i P_i$（$\alpha=10^{-2}$）へ簡素化した。安定化の実装レシピ——**selective precision**（ルータ関数の内部のみ float32。dispatch/combine は bfloat16 へ戻すので通信は軽いまま）・**0.1x の小初期化**（実行間分散 0.68→0.01）・**expert dropout**（微調整時にエキスパート層のみ 0.4）——はこの論文が確立したもので、同一計算資源で T5-Base 比 7 倍の事前学習高速化と、初の 1.6T モデル（Switch-C。訓練不安定ゼロ。むしろ FLOPs が 10 倍の Switch-XXL の方が不安定＝**不安定性はパラメータ数でなく FLOPs/トークンに相関**という観察も）に到達した。否定的結果の公開も価値が高い: attention への Switch 適用は bfloat16 で発散、あふれトークンを第 2 候補へ回す No-Token-Left-Behind は**効かない**（学習されたトークン・エキスパートの関連を崩すと逆効果）——「単純化が勝つ」という本論文の主題の裏づけである。
+
+もうひとつの分岐が **DeepSeekMoE**（DeepSeek-V2, 2024-06。→ [[summaries/2025-deepseek-series]]）で、こちらは削除でなく**分割**によって進んだ。特徴は 2 つ。**(1) 細粒度エキスパート ＋ 共有エキスパート**——エキスパートを従来より細かく割ったうえで、**共有エキスパート**（全トークンが必ず通る。普遍的なパターンを担当）と**ルーティングされるエキスパート**（ゲートが動的に選ぶ。特化した部分問題を担当）に役割を分ける。どのトークンにも必要な共通処理を全エキスパートが重複して学習してしまう無駄を、共有側に括り出す設計である。**(2) device-limited routing（デバイス制限ルーティング）**——トークンごとにまず親和性の高い上位 $M$ 個のデバイス（GPU）を選び、**その内側でだけ**上位 $K_r$ 個のエキスパートを選ぶ。「どのエキスパートにも飛べる」という自由度を、ハードウェアのトポロジーに合わせて意図的に削る。V3 の node-limited routing（$M=4$ ノード）の直接の前身であり、**ルーティングの自由度は品質でなく通信予算が決める変数である**という立場の初出にあたる。
 
 ## 基本の設計変数
 
@@ -70,6 +73,8 @@ wiki で長らく softmax top-k だけを扱ってきたが、[[summaries/2025-m
 MoE 訓練の主要な失敗モードが **モデル崩壊（ルーティング崩壊）**——少数のエキスパートに入力が集中し、他はほとんど使われなくなる。放置するとルータは人気エキスパートへ自己強化的に収束するため、何らかの形で均衡を促す必要がある。
 
 **古典的な解が「損失で押さえる」3 点セット**である: **auxiliary loss**（均等な重要度。Shazeer の Importance/Load 損失は変動係数の 2 乗、Switch はそれを $\alpha N\sum_i f_i Q_i$ へ簡素化）・**router z-loss**（ゲートの大きなロジットへのペナルティ）・**expert capacity**（あふれの制御。不足すれば token dropping、過剰なら資源の浪費）。**ルータは指数関数を含むため高精度必須**（エキスパートは bfloat16 でも、ルーティングは full precision＝selective precision）。
+
+**「均衡」は単一の要求ではない**。DeepSeekMoE（V2）はこれを 3 層に分けて別々の損失を当てた: $L_{ExpBal}$（エキスパート水準——各エキスパートへのトークン数を揃え、崩壊を防ぐ）、$L_{DevBal}$（デバイス水準——GPU ごとの作業負荷を揃える）、$L_{CommBal}$（通信——各デバイスへ入る／出るトークン量を揃える）。エキスパート単位で均衡していても、たまたま同一 GPU に人気エキスパートが集まれば device 側は偏るし、device 側が均衡していても入出の非対称は通信を詰まらせる。**計算・配置・通信は独立に偏りうる**ので、それぞれに要求を立てる必要がある——という分解である（→ [[summaries/2025-deepseek-series]]）。
 
 **しかし「損失で押さえる」には副作用がある**。DeepSeek-V3（[[summaries/2024-deepseek-v3]], 2024）が正面から扱ったのがこの点で、**補助損失が大きすぎるとモデル性能そのものを損なう**。V3 の解は損失を使わずに済ませる:
 

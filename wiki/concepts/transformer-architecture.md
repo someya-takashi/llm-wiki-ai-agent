@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [トランスフォーマー, decoder-only, attention, linear attention, DeltaNet, Mamba, MLA]
+aliases: [トランスフォーマー, decoder-only, attention, linear attention, DeltaNet, Mamba, MLA, scaling law, スケーリング則, Chinchilla, 非埋め込み FLOPs]
 tags: [transformer-architecture, llm-foundations]
 related:
   - "[[mixture-of-experts]]"
@@ -11,6 +11,7 @@ related:
   - "[[reinforcement-learning-from-human-feedback]]"
 summaries:
   - "[[summaries/2024-deepseek-v3]]"
+  - "[[summaries/2025-deepseek-series]]"
   - "[[summaries/2025-moe-survey]]"
   - "[[summaries/2026-gpt2-to-kimi3]]"
   - "[[summaries/2025-deepseek-r1]]"
@@ -33,6 +34,20 @@ GPT-2 以来の標準形は **decoder-only**（デコーダのみ）構成であ
 
 自己回帰生成では、過去トークンの key/value を **KV cache** に保存して再計算を避ける。この cache は系列長 O(N) で成長し、長コンテキストではメモリ帯域のボトルネックになる——以降のアーキテクチャ発展の大半は、この「**推論時の記憶をどう持つか**」への応答である → [[llm-inference-optimization]]。
 
+## 規模をどう測るか — scaling law
+
+骨格が変わらないまま 22,580 倍になったのなら、次の問いは「**固定された計算予算のもとで、モデルをどれだけ大きくし、データをどれだけ食わせるか**」になる。これに答えようとするのが **scaling law**（スケーリング則, モデル規模・データ量・計算量と最終的な損失の間に成り立つ経験的な冪乗則）である。困ったことに初期の結論は割れていた——OpenAI の GPT-3 系の見積もりと DeepMind の **Chinchilla**（2022, 「モデルは小さく、データを多く」）が、同じ予算に対して異なる最適点を出した。
+
+DeepSeek-LLM（2024-01, [[summaries/2025-deepseek-series]]）の指摘が有用である。**食い違いの一部は、「規模」の測り方に由来する**。従来は規模を**パラメータ数 $N$** で測っていたが、代わりに**非埋め込み FLOPs/token $M$**——トークン 1 個を処理するのに、埋め込み層を除いた層が消費する演算量——で測ると、計算予算 $C$ はデータ量 $D$ との積として素直に書ける:
+
+$$C = M \times D$$
+
+**なぜこれで揃うのか**。埋め込み層はパラメータ数としては大きいが、トークンあたりの計算にはほとんど寄与しない（テーブルのルックアップだから）。パラメータ数を規模の指標にすると、**語彙サイズや埋め込み設計の違いがそのまま「規模」の違いに化けて**、異なる構成のモデルを同じ曲線に乗せられなくなる。計算量そのもので測ればその歪みが消える。「何を規模と呼ぶか」という測定量の設計が結論を左右した例であり、ベンチマークの設計（→ [[agent-evaluation]]）と同じ種類の問題が、法則の側にも現れている。
+
+もうひとつが**データ品質が最適比率を動かす**という発見である。同じトークン数でも、重複とスパムだらけのコーパスではパラメータを増やしても学ぶものがなく早々に収穫逓減にぶつかる。コード・数学・多言語対話が濃く入ったコーパスなら 1 トークンあたりの情報が濃いので、パラメータを増やす「余裕がある」。**scaling law は普遍定数ではなくデータに依存する**——つまりデータを綺麗にすることは、モデルを一段大きくする許可証でもある。この含意は事前学習に留まらず、後段のデータ設計（[[summaries/2024-deepseekmath]] の数学コーパス構築、[[reinforcement-learning-from-human-feedback]] の合成データ）にも通じる。
+
+なお **MoE のスパース性を含んだスケーリング則**（総パラメータと活性パラメータを別々の軸として扱う）は [[mixture-of-experts]] 側に置いた。
+
 ## attention の系譜 — 固定容量メモリと追い出しポリシー
 
 [[summaries/2026-gpt2-to-kimi3]] の整理に従うと、attention 変種の系譜は「固定容量の連想メモリには追い出しポリシーが要る」という一本の線で読める:
@@ -48,7 +63,7 @@ GPT-2 以来の標準形は **decoder-only**（デコーダのみ）構成であ
 
 この系譜は [[agent-memory]] と美しく同型である——追記だけの記憶が干渉し（A-Mem 以前の生ログ蓄積）、選択的上書き（A-Mem の memory evolution）や退避・要約（MemGPT）が要る、という問題を、アーキテクチャは**重み・状態の内部で**解いている。
 
-**MLA — 追い出さずに圧縮する**。attention 側で KV cache を縮める代表例が **Multi-head Latent Attention**（[[summaries/2024-deepseek-v3]], 2024）である。key と value を**低ランクの潜在ベクトル $\mathbf{c}_t^{KV}$ へ結合圧縮**し、生成時にキャッシュするのは**その潜在ベクトルと、RoPE を担う分離された key の 2 つだけ**にする（V3 ではヘッド 128 × ヘッド次元 128 に対し KV 圧縮次元 512）。標準的な MHA に匹敵する性能を保ちながらキャッシュを大幅に削減し、query 側も低ランク圧縮して訓練時の活性化メモリを減らす。上の系譜が「固定容量に何を残すか（追い出しポリシー）」の線だとすれば、MLA は**そもそも 1 トークンあたりの占有量を下げる**線であり、両者は独立に効く。後継の DeepSeek-V4（[[summaries/2026-deepseek-v4]]）はこれを CSA/HCA——圧縮に加えて**スパース選択**——へ発展させた。
+**MLA — 追い出さずに圧縮する**。attention 側で KV cache を縮める代表例が **Multi-head Latent Attention** である。**初出は DeepSeek-V2**（2024-06, → [[summaries/2025-deepseek-series]]）で、そこでの効果は **KV cache 93.3% 削減・最大生成スループット 5.76 倍・訓練コスト 42.5% 削減**（密な DeepSeek 67B 比）。V3（[[summaries/2024-deepseek-v3]]）はこれを設計変更なしにそのまま引き継いでいる。key と value を**低ランクの潜在ベクトル $\mathbf{c}_t^{KV}$ へ結合圧縮**し、生成時にキャッシュするのは**その潜在ベクトルと、RoPE を担う分離された key の 2 つだけ**にする（V3 ではヘッド 128 × ヘッド次元 128 に対し KV 圧縮次元 512）。標準的な MHA に匹敵する性能を保ちながらキャッシュを大幅に削減し、query 側も低ランク圧縮して訓練時の活性化メモリを減らす。上の系譜が「固定容量に何を残すか（追い出しポリシー）」の線だとすれば、MLA は**そもそも 1 トークンあたりの占有量を下げる**線であり、両者は独立に効く。後継の DeepSeek-V4（[[summaries/2026-deepseek-v4]]）はこれを CSA/HCA——圧縮に加えて**スパース選択**——へ発展させた。
 
 ## MoE — 条件付き容量
 

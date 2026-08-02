@@ -118,6 +118,8 @@ RL 後のモデルは Top1・多数決（Maj@K）では明確に良くなるの�
 
 ## 関連ページ
 
+- [[summaries/2025-deepseek-series]] — GRPO を含む DeepSeek 4 本の二次解説。本論文の GRPO が R1 でどう使われるかの見通しが得られる
+
 - [[reinforcement-learning-from-human-feedback]] — GRPO の一次資料・統一パラダイム・「RL は分布の尖鋭化」
 - [[test-time-compute]] — Pass@K 不変の含意（並列スケーリングの上限は RL では動かない）
 - [[reasoning-and-planning]] — コード訓練→数学推論の転移・PoT

@@ -150,6 +150,8 @@ MoE の負荷が偏るとルーティング崩壊を招き、エキスパート�
 
 ## 関連ページ
 
+- [[summaries/2025-deepseek-series]] — 本レポートを含む DeepSeek 4 本の二次解説。V2 由来の MLA/DeepSeekMoE の前史が補える一方、V3 の MLA について原典にない記述があるので照合節を参照
+
 - [[mixture-of-experts]] — 本ページの主な受け皿。補助損失を使わない負荷分散・ノード制限ルーティング・エキスパート専門化の実測
 - [[transformer-architecture]] — MLA（KV を潜在ベクトルへ圧縮する attention）
 - [[llm-inference-optimization]] — FP8 訓練・DualPipe・prefill/decode 分離・冗長エキスパート・ハードウェア提言

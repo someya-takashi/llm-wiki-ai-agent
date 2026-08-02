@@ -103,6 +103,8 @@ R1 が生成した 80 万サンプルで Qwen/Llama の 1.5B〜70B を **SFT だ
 
 ## 関連ページ
 
+- [[summaries/2025-deepseek-series]] — R1 までの 4 本を「HPC 協調設計 → 創発的推論」の一本の弧として読む二次解説
+
 - [[summaries/2024-deepseek-v3]] — 本モデルのベースである DeepSeek-V3-Base の一次資料。逆に V3 の事後訓練は R1 から推論を蒸留しており、相互参照の関係にある
 
 - [[reinforcement-learning-from-human-feedback]] — 本原典が主要根拠となる概念ページ（RLHF/RLVR/GRPO）

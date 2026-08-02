@@ -11,6 +11,7 @@ related:
   - "[[agent-safety-and-guardrails]]"
 summaries:
   - "[[summaries/2022-instructgpt]]"
+  - "[[summaries/2025-deepseek-series]]"
   - "[[summaries/2024-deepseek-v3]]"
   - "[[summaries/2022-rlhf-illustrated]]"
   - "[[summaries/2023-dpo]]"
@@ -137,6 +138,8 @@ $$\mathcal{L}_{\text{DPO}} = -\mathbb{E}_{(x,y_w,y_l)\sim\mathcal{D}}\left[\log\
 
 原典が自ら残した未解決も重要で、**報酬の過剰最適化が DPO の設定でどう現れるかは分かっていない**。明示的な報酬モデルを消しても、暗黙の報酬に対するハックの問題が消えたわけではない。
 
+**採用の実例**として、DeepSeek-LLM（2024-01, [[summaries/2025-deepseek-series]]）が SFT の後段に DPO を使っている。のちに GRPO を自作し RLVR に載せることになる同じチームが、その前段では**まず RL ループを持たない選好学習を選んだ**という順序は押さえておく価値がある——次節の GRPO は「PPO の重さを削る」方向の解であり、DPO は「RL ループごと消す」方向の解で、両者は同じ不満（PPO の 4 モデル構成）から出た**別の枝**である。DeepSeek 系はこの分岐を、汎用の整合には DPO 系、検証可能な推論には GRPO 系、と用途で使い分ける形で通過していった。
+
 ## 2024 — critic を捨てる: GRPO
 
 **Group Relative Policy Optimization**。一次資料は DeepSeekMath（[[summaries/2024-deepseekmath]], 2024）で、R1 の 1 年前に数学特化 7B のために発明された。動機は前節の PPO の構造的な重さにある: PPO は policy／value（critic）／reward／reference の 4 モデル構成で、**critic は方策と同サイズの別モデル**になりがちな上、LLM では報酬が最終トークンにしか付かないため「トークンごとの価値」を学習させること自体が難しい。GRPO は critic を丸ごと排し、**同じ質問に対する G 個（原典では 64）のサンプルの報酬から、グループ平均との偏差 ÷ 標準偏差で advantage を計算**する: $\hat{A}_i=(r_i-\text{mean}(\mathbf{r}))/\text{std}(\mathbf{r})$。「同一問題内の相対比較」という形は、比較データで訓練される報酬モデルの性質——つまり 2022 年に確立された「絶対スコアより相対比較」の原則——とも整合する。KL 正則化は報酬に混ぜず損失側に不偏推定量で加える（KL 制約という発想自体は残り、掛ける場所が変わった）。outcome／process supervision・iterative（報酬モデルもリプレイ付きで更新）の 3 変種も原典が定式化済みで、最後のものは古典的 RLHF の Iterated Online RLHF の後継にあたる。
@@ -228,5 +231,6 @@ R1 の「発見は RL・転写は蒸留」の分業を、**単一モデルの訓
 - [[summaries/2022-instructgpt]] — 古典的 RLHF の一次資料（InstructGPT）。アラインメント税と「誰に整合させているのか」の出所
 - [[summaries/2022-rlhf-illustrated]] — 同じパイプラインの一般向け解説と、陳腐化の対応表
 - [[summaries/2023-dpo]] — 報酬モデルと RL ループを消す変数変換。同値クラスと定理 1、PPO の分散の診断
+- [[summaries/2025-deepseek-series]] — DeepSeek 4 本（LLM/V2/V3/R1）の二次解説。DeepSeek-LLM の DPO 採用と、R1 の 4 段階パイプラインの平易な整理
 - [[summaries/2024-deepseek-v3]] — GRPO の本番適用・ルール／モデルベース RM の分業・R1 からの逆向きの蒸留・自己報酬
 - [[summaries/2024-deepseekmath]] / [[summaries/2025-deepseek-r1]] — GRPO・RLVR の根拠原典
