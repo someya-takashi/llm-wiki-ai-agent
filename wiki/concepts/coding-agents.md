@@ -10,6 +10,7 @@ related:
   - "[[agent-frameworks]]"
   - "[[computer-use-agents]]"
 summaries:
+  - "[[summaries/2023-swe-bench]]"
   - "[[summaries/2024-swe-agent]]"
   - "[[summaries/2025-effective-harnesses]]"
   - "[[summaries/2026-harness-design]]"
@@ -92,6 +93,16 @@ initializer/coding ハーネスの続編（[[summaries/2026-harness-design]], 20
 2. **自己検証の偽陽性は致命傷**: [[summaries/2023-reflexion]] の実測どおり、誤った実装を通してしまうテスト（偽陽性）は「確信を持った誤り」を生む。feature list の self-verify（自分で passing にする）も同じ構造を持ち、検証手段が弱いドメインでは機能しにくい。評価側の対応物は [[agent-evaluation]] の終了状態評価。
 
 ## 評価
+
+**この領域の主戦場が SWE-bench**（[[summaries/2023-swe-bench]], Jimenez ら, ICLR 2024）である。実際の GitHub イシューと、それを解決したマージ済み PR の対から **2,294 件**（12 の Python リポジトリ）を自動収集し、**リポジトリ自身の単体テストで実行ベースに採点する**。詳しい設計は [[agent-evaluation]] に置いた。
+
+**出発点の水準を押さえておく価値がある。** 2023 年当時、**編集すべきファイルを教える「オラクル」設定でさえ Claude 2 が 4.8%、GPT-4 が 1.7%**、普通に BM25 で検索させると 1.96% / 0.00% だった。翌年の [[summaries/2024-swe-agent]] が 12.47% へ、その後さらに大きく伸びる。**この領域の進歩の速さを測る基準線**として使える。
+
+当時の失敗の質も記録されている——**モデルは gold より短く単純な編集を書き**（19.6 行 対 44.1 行）、**ほぼ単一ファイルしか触らない**（1.0 対 1.7 ファイル）。**パッチ形式で出させるほうがファイル全体を書き直させるより成績が良い**（Claude 2: 4.8% 対 2.2%）一方で、**整形式のパッチを出すこと自体に苦労する**（GPT-4 はオラクル設定で適用成功 150/472、うち 68.7% が自動修復を要した）。ファインチューニングした SWE-Llama は適用率が高く修復率が低く、**書式の遵守は微調整で改善する種類の問題**であることを示した。
+
+興味深いのは、**成績が同程度でも解けている問題が重ならない**ことである——オラクル設定で Claude 2 は 110 件、SWE-Llama 13b は 91 件を解くが、**Claude 2 は SWE-Llama が解いた問題の 42% しか解けていない**。単一のスカラーがモデルの能力を代表しない。
+
+
 
 標準は **SWE-bench 系**（実 GitHub イシューの解決率。Verified / Pro / Multilingual）・Terminal Bench（端末操作）・LiveCodeBench（競技・汚染対策つき）など → 詳細は [[agent-evaluation]]。実務上の注意として、同じモデルでもハーネスでスコアが大きく動く（ハーネス差・step 上限・コンテキスト管理の開示が比較の前提）ことと、フロンティアの到達点（2026 年時点で SWE-bench Verified 80 前後 → [[summaries/2026-deepseek-v4]] 表6）に対し、**長時間の自律構築タスクには標準ベンチマークがまだ無い**（Anthropic の記事も定量評価なし）ことが挙げられる。
 

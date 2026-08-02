@@ -95,6 +95,8 @@ ReAct・SayCan・Toolformer などで「LLM ＋ツール＋ループ」のエー
 
 ## 関連ページ
 
+- [[summaries/2023-swe-bench]] — 汚染対策の別方向（カットオフ後の問題だけで組むのでなく、作成年で層別して差を見る）
+
 - [[summaries/2026-ai-scientist]] — 自己評価の偽陽性／偽陰性という論点が、生成論文の自動査読で再び現れる
 
 - [[self-reflection]] — 本原典が主要根拠となる概念ページ

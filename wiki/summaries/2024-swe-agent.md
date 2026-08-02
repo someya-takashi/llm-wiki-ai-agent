@@ -157,6 +157,8 @@ Table 3 のアブレーション（SWE-bench Lite, GPT-4 Turbo, 既定 18.0%）�
 
 ## 関連ページ
 
+- [[summaries/2023-swe-bench]] — SWE-bench の一次資料。同じグループが 7 か月前に作ったベンチマークで、その論文が「エージェントベースのアプローチに期待している」と書いた宿題に本論文が答えている
+
 - [[coding-agents]] — 本ページの主な接続先。ACI はここの中心概念
 - [[tool-use-and-function-calling]] — ツールを「人間向け」でなく「エージェント向け」に設計し直すという論点
 - [[agent-evaluation]] — SWE-bench とその指標
