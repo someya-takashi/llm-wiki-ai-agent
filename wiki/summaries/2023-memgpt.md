@@ -117,6 +117,8 @@ LLM（Large Language Model, 大規模言語モデル）のコンテキストウ�
 
 ## 関連ページ
 
+- [[summaries/2023-lost-in-the-middle]] — 本論文が設計動機として引く現象の一次資料
+
 - [[summaries/2024-graphrag]] — 索引を事前に階層要約しておく別解。MemGPT が読み出し側の反復で top-K の上限を破るのに対し、こちらは索引側を作り直す
 
 - [[agent-memory]] — 本論文が代表手法として詳述される概念ページ

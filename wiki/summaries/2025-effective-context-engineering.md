@@ -144,6 +144,8 @@ needle-in-a-haystack（干し草の山から針を探す）型のベンチマー
 
 ## 関連ページ
 
+- [[summaries/2023-lost-in-the-middle]] — context rot として定式化された現象の一次資料（2023, 位置の U 字と reader の飽和）
+
 - [[context-engineering]] — 本ページの主な受け皿。この記事が同ページの主題を命名した出典にあたる
 - [[retrieval-augmented-generation]] — 埋め込みによる推論前検索から just-in-time の実行時取得へ、という取得戦略の転換
 - [[agent-memory]] — 構造化されたノート取りとメモリツール（ウィンドウ外への永続化）

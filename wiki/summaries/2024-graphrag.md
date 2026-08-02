@@ -147,6 +147,8 @@ RAG の標準形は「クエリを埋め込み、意味的に近いテキスト�
 
 ## 関連ページ
 
+- [[summaries/2023-lost-in-the-middle]] — 8k が 64k に勝った理由として本論文が引く一次資料
+
 - [[retrieval-augmented-generation]] — 本ページの主な接続先。GraphRAG は代表手法としてここに記述
 - [[summaries/2020-rag]] — RAG 命名の原典。「知識はパラメータでなく索引に置く」原則の出どころ
 - [[context-engineering]] — lost in the middle、コンテキスト予算の配分、8k が 64k に勝った実測
