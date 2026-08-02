@@ -215,5 +215,6 @@ SGLang のインタプリタの設計が、この層で最も転用しやすい�
 - [[reasoning-and-planning]] — 本ページが対象とするプロンプト技法（CoT・ToT・self-consistency・skeleton-of-thought）
 - [[context-engineering]] — 定数を前・可変を後ろというプロンプト設計の規律
 - [[llm-agents]] — 「LLM のプログラム的利用」というパラダイム転換の受け皿
-- [[summaries/2023-sglang]] — 本ページの唯一の一次資料
+- [[summaries/2023-sglang]] — 本ページの主要な一次資料
+- [[summaries/2023-nemo-guardrails]] — 対話フローの DSL（Colang）と、**強いモデルほど登録済みの表現に合わせず精度が落ちる**という構造化出力側の実例（完全一致 0.38 → 類似度マッチ 0.73）
 - [[summaries/2025-understanding-llm-serving]] — ツールスタックの一覧（Ray Serve・BentoML など、より運用寄りの層）

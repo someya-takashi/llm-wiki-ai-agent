@@ -248,3 +248,5 @@ Meta が Meta の PromptGuard を、Meta が選んだ競合と、Meta が選ん�
 - [[summaries/2024-llm-security-privacy-survey]] — 攻撃と防御のカタログ。本論文はその「防御」側の実装例
 - [[summaries/2026-managed-agents]] — 認証情報への到達可能性を断つ設計。本論文の手前に置く層
 - [[summaries/2024-building-effective-agents]] — 自律性とガードレールをセットで設計する指針
+- [[summaries/2023-llama-guard]] — PromptGuard の直系の祖先。タクソノミーを入力にする発想と、「ガードレール自身が攻撃されうる」という 2023 年時点の指摘
+- [[summaries/2023-nemo-guardrails]] — 統一ポリシーエンジン側の祖先（プログラマブルなレール）

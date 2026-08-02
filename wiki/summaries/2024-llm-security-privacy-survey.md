@@ -109,3 +109,4 @@ LLM（Large Language Model, 大規模言語モデル）への攻撃を **セキ�
 - [[summaries/2023-llm-agents-survey]] — エージェント側の安全性の概念的整理（§6.3）
 - [[summaries/2025-cot-faithfulness]] — 監視（CoT モニタリング）側から見た安全化の限界
 - [[summaries/2025-llamafirewall]] — 本サーベイが列挙した防御手法を、実際に 1 つの系へ組み上げて本番投入し測定した側の一次資料
+- [[summaries/2023-llama-guard]] / [[summaries/2023-nemo-guardrails]] — 同時期の防御の実装 2 本（判定器としてのガードレール / プログラムとしてのガードレール）
