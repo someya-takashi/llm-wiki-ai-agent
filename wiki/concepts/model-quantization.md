@@ -4,6 +4,7 @@ aliases: [量子化, quantization, model quantization, PTQ, QAT, 訓練後量子
 tags: [model-quantization, llm-inference-optimization, llm-foundations]
 related:
   - "[[low-precision-training]]"
+  - "[[llm-serving-systems]]"
   - "[[parameter-efficient-fine-tuning]]"
   - "[[llm-inference-optimization]]"
   - "[[transformer-architecture]]"
@@ -95,6 +96,8 @@ $$q = round\left(\frac{x}{s} + z\right),\qquad x_{dequantized} = s \cdot (q - z)
 | 難しさ | 重みの分布は平坦なので比較的易しい | **活性の外れ値**が敵（→ 前節） |
 
 AWQ が weight-only を選ぶ理由も明快で、「ハードウェアの障壁を下げる（必要メモリが小さくなる）だけでなく、**トークン生成も高速化する（メモリ律速のワークロードを緩和する）**」と書いている。**エージェントのように 1 リクエストあたりの生成トークンが長く、バッチが大きくならない用途では weight-only の側に理がある。** 逆に大量の同時リクエストを捌くサービングでは W8A8 の演算の勝ちが効いてくる。
+
+> **この区別は Roofline モデルで一枚の図になる。** [[summaries/2025-llm-serving-techniques]] が引く Atom 論文の図が、**weight-activation は低ビット計算で達成可能な FLOPS の上限そのものを上げる**（compute-bound でも効く）のに対し、**weight-only は演算密度を上げるだけ**（memory-bound でしか効かない）ことを視覚的に示している。「ローカル LLM なら weight-only、サービングなら weight-activation」という線引きがそこから直接読める（→ [[llm-serving-systems]]）。
 
 なお 4 ビットで一番速い手法は「一番精度が良い手法」とは限らない。EfficientQAT の Figure 2(a) は、**ベクトル量子化（AQLM, QuIP#）が 2 ビットで最高精度を出すのに、ハードウェア上のオーバーヘッドで推論をむしろ遅くしうる**ことを示している（→ [[summaries/2024-efficientqat]]）。一様量子化が生き残っているのは精度ではなく実装可能性の理由である。
 

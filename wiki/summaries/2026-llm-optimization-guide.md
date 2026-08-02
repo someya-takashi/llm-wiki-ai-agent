@@ -97,3 +97,5 @@ LLM 利用がパイロットから本格運用へ移ると、コストとレイ�
 - [[context-engineering]] — コンテキスト上限・キャッシュ退避と積載設計の接続
 - [[multi-agent-systems]] — トークン経済（15 倍）の分母を下げる側の技術
 - [[summaries/2025-multi-agent-research-system]] — 並列エージェントのコストがこの層に依存する実例
+- [[llm-serving-systems]] — 本記事が数値で示す機構（continuous batching・PagedAttention）の**論理側**。なぜ効くのかは Roofline モデルで説明される
+- [[summaries/2025-llm-serving-techniques]] — 同じ機構を技術の地図として体系化した記事。本記事の定量値とちょうど補完関係にある

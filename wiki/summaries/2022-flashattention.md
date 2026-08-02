@@ -146,3 +146,4 @@ GPT-2 medium（系列長 1024、ヘッド次元 64、16 ヘッド、バッチ 64
 - [[summaries/2026-gpt2-to-kimi3]] — 「O(N²) の枠づけには惑わされた……それは Flash Attention が解決したこと」と著者が書いた箇所の一次資料
 - [[summaries/2026-llm-optimization-guide]] — 本論文を「効率的 attention: 長系列で 2〜4 倍（出力は不変）」として二次引用している
 - [[summaries/2024-deepseek-v3]] — FP8 訓練・DualPipe と同じ「アルゴリズムとハードウェアを一緒に設計する」路線の後継
+- [[llm-serving-systems]] — 本論文を「トランスフォーマにおける最も重要なカーネル融合」として位置づけ、FlashInfer 等のサービング側の実装へつなぐページ

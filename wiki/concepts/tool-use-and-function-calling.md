@@ -4,6 +4,7 @@ aliases: [tool use, function calling, ツール利用, ツール呼び出し, To
 tags: [tool-use-and-function-calling, llm-agents]
 related:
   - "[[agent-loop]]"
+  - "[[llm-serving-systems]]"
   - "[[reasoning-and-planning]]"
   - "[[multi-agent-systems]]"
   - "[[model-context-protocol]]"

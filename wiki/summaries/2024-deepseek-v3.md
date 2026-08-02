@@ -166,3 +166,4 @@ MoE の負荷が偏るとルーティング崩壊を招き、エキスパート�
 - [[summaries/2026-deepseek-v4]] — 後継。MLA → CSA/HCA、mixed RL → OPD
 - [[summaries/2024-deepseekmath]] — GRPO の一次資料
 - [[summaries/2025-moe-survey]] / [[summaries/2021-switch-transformers]] — MoE の設計空間と、補助損失で押さえる側の原典
+- [[llm-serving-systems]] — 本モデルの**推論インフラ**（prefill DP32/EP32 と decode DP144/EP144 の分離、EPLB による階層的ロードバランシング）をサービング設計の実例として扱うページ
