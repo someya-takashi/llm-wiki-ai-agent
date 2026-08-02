@@ -91,6 +91,7 @@ LLM 利用がパイロットから本格運用へ移ると、コストとレイ�
 
 - [[llm-inference-optimization]] — 本記事が実務側の根拠を与える概念ページ
 - [[summaries/2022-flashattention]] — 本記事が「効率的 attention: 2〜4 倍（出力は不変）」として引く Dao ら 2022 の原典
+- [[summaries/2023-flashattention-2]] — その続編。MFU（モデル FLOPs 利用率）という本記事と同じ実務指標で 72% を報告している
 - [[transformer-architecture]] — 2 相構造・KV cache のアーキテクチャ的背景（[[summaries/2026-gpt2-to-kimi3]]）
 - [[context-engineering]] — コンテキスト上限・キャッシュ退避と積載設計の接続
 - [[multi-agent-systems]] — トークン経済（15 倍）の分母を下げる側の技術

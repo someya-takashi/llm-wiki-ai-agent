@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [推論最適化, inference optimization, KV cache, TTFT, TPS, serving, サービング, デコードスループット, FlashAttention, IO-awareness, HBM, SRAM, memory-bound, compute-bound, arithmetic intensity, kernel fusion, カーネル融合]
+aliases: [推論最適化, inference optimization, KV cache, TTFT, TPS, serving, サービング, デコードスループット, FlashAttention, FlashAttention-2, IO-awareness, HBM, SRAM, memory-bound, compute-bound, arithmetic intensity, kernel fusion, カーネル融合, occupancy, 占有率, warp, SM, thread block, MFU, GEMM, split-K, non-matmul FLOPs, Triton]
 tags: [llm-inference-optimization, llm-foundations]
 related:
   - "[[mixture-of-experts]]"
@@ -10,6 +10,7 @@ related:
   - "[[multi-agent-systems]]"
 summaries:
   - "[[summaries/2022-flashattention]]"
+  - "[[summaries/2023-flashattention-2]]"
   - "[[summaries/2024-deepseek-v3]]"
   - "[[summaries/2025-deepseek-series]]"
   - "[[summaries/2025-moe-survey]]"
@@ -65,7 +66,30 @@ GPU のメモリは階層をなす。A100 では **HBM**（High Bandwidth Memory
 
 副次的な効果として、この仕事は**長いコンテキストを経済的に成立させた**。GPT-2 をコンテキスト長 4K で訓練しても、Megatron-LM の 1K 訓練より 30% 速く、かつパープレキシティが 0.7 良い。長い窓が「高価な贅沢」から「安い性能向上」に変わった転換点である（ただし窓を**使いこなせる**かは別問題で、そこは [[summaries/2023-lost-in-the-middle]] の領分）。
 
-なお、2022 年時点の倍率そのものは陳腐化する。SRAM 容量と HBM 帯域幅の比は世代で変わり（本論文自身、SRAM の小さい T4 では高速化が小さいと報告している）、後継の FlashAttention-2（2023）は**同じ IO 計算量のまま** work partitioning の改善だけで約 2 倍を追加した。**同じ漸近オーダーの中に 2 倍が残っていた**という事実自体、「オーダーも FLOPs も wall-clock の代理指標としては粗い」という本論文の教訓の再演になっている。持ち帰るべきは倍率ではなく原理のほうである。
+なお、2022 年時点の倍率そのものは陳腐化する。SRAM 容量と HBM 帯域幅の比は世代で変わり（本論文自身、SRAM の小さい T4 では高速化が小さいと報告している）、後継の FlashAttention-2 は**同じ IO 計算量のまま** work partitioning の改善だけで約 2 倍を追加した（次節）。持ち帰るべきは倍率ではなく原理のほうである。
+
+### 占有率と仕事の割り振り — IO を直した後に残る壁
+
+**IO を直しても、まだ理論ピークの 25〜40% しか出ていなかった。** これが **FlashAttention-2**（[[summaries/2023-flashattention-2]], Dao 2023）の出発点である。同じ A100 上で最適化された **GEMM**（GEneral Matrix Multiply, 汎用行列積ルーチン）が理論ピークの 80〜90% を出すのに対し、FlashAttention は forward で 30〜50%、backward では 25〜35% だった。
+
+**前作の「最適性」と矛盾しない点が重要である。** 前節の下界（命題 3）は「**HBM アクセス回数**の漸近オーダー」についての主張であって、定数倍にも、**演算ユニットをどれだけ遊ばせずに回せているか**にも触れていない。メモリ往復を直すと、次は演算器が空いていることが律速になる。**最適性の主張を読むときは、何について最適なのかを必ず確認する**——これは本ページ全体に効く読み方である。
+
+なぜ演算器が空くのか。GPU の実行モデルは 3 段になっている: **スレッドブロック**（**SM** = Streaming Multiprocessor（GPU の演算ユニットの単位。A100 に 108 個）に割り当てられるスレッドの束）→ **warp**（その中の 32 スレッドの班。warp 内は高速な shuffle 命令で通信できるが、**warp どうしは共有メモリ経由でしか通信できない**）→ スレッド。GPU 資源がどれだけ使われているかの割合を **occupancy（占有率）** と呼ぶ。初代 FlashAttention は **batch × ヘッド数**でしか並列化していなかったので、長いコンテキスト（＝メモリの都合でバッチが小さい）ではこの積が 108 を下回り、**SM が遊んでいた**。
+
+FlashAttention-2 の対処は 3 つで、いずれも出力を変えない。
+
+- **non-matmul FLOPs を減らす。** A100 の理論ピークは FP16/BF16 の行列積で **312 TFLOPs/s**、non-matmul の FP32 で **19.5 TFLOPs/s**——つまり **non-matmul の 1 FLOP は matmul の 1 FLOP より 16 倍高い**。そこで online softmax の毎ブロックのスケーリングをやめて**最後に 1 回だけ**割り、backward 用の統計量を最大値 $m$ と指数和 $\ell$ の 2 本から **logsumexp $L=m+\log\ell$ の 1 本**に減らす。どちらも恒等変形である。
+- **系列長方向にも並列化する。** forward の外側ループ（行ブロック）は完全に独立なのでそのまま別スレッドブロックへ撒け、backward は $\mathbf{dQ}$ の更新だけ **atomic add**（複数スレッドが競合せず加算できる不可分操作）で処理する。これで小バッチ時の occupancy が上がる。
+- **warp 間の "split-K" をやめる。** 初代は $\mathbf{K},\mathbf{V}$ を 4 warp に割り $\mathbf{Q}$ を共有していたため、各 warp が部分和しか持てず**共有メモリへ書き出し → 同期 → 集約**の往復が要った。これを裏返して $\mathbf{Q}$ を割り $\mathbf{K},\mathbf{V}$ を共有すると、各 warp が自分の担当行を最後まで自力で計算でき、**warp 間通信が消える**。
+
+結果は attention 単体で FlashAttention 比 1.7〜3.0 倍、**230 TFLOPs/s（A100 理論ピークの 73%）**。エンドツーエンドでは A100 あたり **225 TFLOPs/s、MFU**（Model FLOPs Utilization, モデルの理論必要 FLOPs ÷ デバイスのピーク FLOPs）**72%**。最も示唆的なのはコンテキスト長を伸ばしたときの挙動で、GPT3-2.7B は FlashAttention なしだと 2k → 8k で 149 → 80 TFLOPs/s とほぼ半減するのに、FlashAttention-2 では **205 → 225 とむしろ上がる**。前作が「長い窓を現実的にした」なら、本作は**長い窓のペナルティを消した**。因果マスク下では列インデックスが全て行インデックスより大きいブロック（長系列でおよそ半分）を計算ごとスキップでき、これだけで 1.7〜1.8 倍になる。
+
+**この節の一般的な教訓は 2 つある。**
+
+1. **FLOPs は互いに換算できない。** 「1 FLOP は 1 FLOP」という暗黙の前提は、専用行列積ユニットを持つ現代の GPU では成り立たない（16 倍差）。次節の「FLOPs ≠ wall-clock」をもう一段進めた主張で、**FLOPs を数えるならどの種類の FLOP かまで数える**必要がある。
+2. **下流の実装が上流の論文へ還流しうる。** ループ順序の入れ替えと系列長並列は、論文自身が明記するとおり **Phil Tillet の Triton 実装が先**である。初代 FlashAttention は限界として「CUDA を手書きするしかなく、高レベル言語からコンパイルできる仕組みが要る」と書いていたが、**その仕組み（Triton）が実際に作られ、そこでの発見が本家のカーネルへ戻ってきた**。後述「カーネル融合 — 実装成熟度が律速する」の、珍しく綺麗な実例である。
+
+限界として、ブロックサイズ（$\{64,128\}\times\{64,128\}$）は**手動チューニング**であり自動化は今後の課題、H100 では専用機能（TMA, 第 4 世代 Tensor Core）を使わずに 335 TFLOPs/s を出しているだけで本領は未発揮、マルチ GPU の IO は依然として解析外——と著者自身が挙げている。
 
 ### チャンク化とハードウェア整合 — FLOPs ≠ wall-clock
 
@@ -73,7 +97,7 @@ DeltaNet 系のチャンク並列化では、チャンクサイズ **C=1 が FLO
 
 ### カーネル融合 — 実装成熟度が律速する
 
-Kimi K3 の SiTU 活性化は、**融合カーネル（fused kernel, 複数の演算を 1 つの GPU カーネルにまとめてメモリ往復を省く実装）なしでは元のパスの約 3 倍遅い**。新しいアーキテクチャ要素の速度は、数学ではなくカーネル実装の成熟度で決まることが多い——FlashAttention（[[summaries/2022-flashattention]]）が softmax attention の寿命を延ばしたのも同じ構図である。逆に言えば、**ある手法が遅いとき、その数学が悪いのか、まだ誰も良いカーネルを書いていないだけなのかを区別する**必要がある。FlashAttention の登場は、素の softmax attention に「誰も良いカーネルを書いていなかった」ぶんの余地が大量に残っていたことを示した。なお FlashAttention 自身の限界も同じ層にあり、**新しい attention 変種ごとに CUDA を手書きする必要がある**（GPU アーキテクチャ間の移植性も保証されない）と著者らは述べている。後の Triton や `torch.compile` の普及は、まさにこの穴を埋める動きだった。
+Kimi K3 の SiTU 活性化は、**融合カーネル（fused kernel, 複数の演算を 1 つの GPU カーネルにまとめてメモリ往復を省く実装）なしでは元のパスの約 3 倍遅い**。新しいアーキテクチャ要素の速度は、数学ではなくカーネル実装の成熟度で決まることが多い——FlashAttention（[[summaries/2022-flashattention]]）が softmax attention の寿命を延ばしたのも同じ構図である。逆に言えば、**ある手法が遅いとき、その数学が悪いのか、まだ誰も良いカーネルを書いていないだけなのかを区別する**必要がある。FlashAttention の登場は、素の softmax attention に「誰も良いカーネルを書いていなかった」ぶんの余地が大量に残っていたことを示した。なお FlashAttention 自身の限界も同じ層にあり、**新しい attention 変種ごとに CUDA を手書きする必要がある**（GPU アーキテクチャ間の移植性も保証されない）と著者らは述べている。後の Triton や `torch.compile` の普及は、まさにこの穴を埋める動きだった——そして上の「占有率と仕事の割り振り」節で見たとおり、Triton 側での発見（ループ順序の入れ替えと系列長並列）は FlashAttention-2 として本家のカーネルへ還流している。
 
 ### 100 万トークンの経済 — 圧縮 KV・オンディスク再利用・決定論
 
