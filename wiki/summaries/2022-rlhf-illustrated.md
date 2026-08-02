@@ -167,7 +167,8 @@ $$r = r_{\theta} - \lambda r_{\text{KL}}$$
 
 - [[reinforcement-learning-from-human-feedback]] — 本ページの主な受け皿。古典的 RLHF から GRPO・RLVR・OPD までの系譜
 - [[agent-evaluation]] — 「自動指標では測れない → 人間の選好 → LLM-as-a-judge」の系譜の起点
-- [[agent-safety-and-guardrails]] — HHH 基準・hh-rlhf・レッドチーミングの出所と、RLHF による整合の構造的な穴
+- [[agent-safety-and-guardrails]] — HHH 基準・レッドチーミングの出所と、RLHF による整合の構造的な穴
+- [[summaries/2022-anthropic-hh]] — 本記事が文献ガイドで挙げる **hh-rlhf の一次資料そのもの**（2026-08-03 に取り込み済み）
 - [[summaries/2024-deepseekmath]] — PPO の critic を排した GRPO（本記事が予告した「他のアルゴリズム」の実体）
 - [[summaries/2025-deepseek-r1]] — 報酬の出どころを人間から検証器へ移した RLVR
 - [[summaries/2025-kimi-k2]] — 検証可能報酬と自己批評ルーブリックの joint RL（選好モデルの現代形）

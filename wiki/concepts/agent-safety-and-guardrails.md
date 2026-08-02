@@ -3,6 +3,7 @@ type: concept
 aliases: [エージェントの安全性, ガードレール, CoT monitoring, CoT モニタリング, prompt injection, HITL, sandboxing]
 tags: [agent-safety-and-guardrails, llm-agents, alignment]
 related:
+  - "[[llm-red-teaming]]"
   - "[[tool-use-and-function-calling]]"
   - "[[reasoning-and-planning]]"
   - "[[reinforcement-learning-from-human-feedback]]"
@@ -27,6 +28,7 @@ summaries:
   - "[[summaries/2025-llamafirewall]]"
   - "[[summaries/2023-llama-guard]]"
   - "[[summaries/2023-nemo-guardrails]]"
+  - "[[summaries/2022-anthropic-hh]]"
 updated: 2026-08-03
 ---
 
@@ -34,19 +36,19 @@ updated: 2026-08-03
 
 LLM（Large Language Model, 大規模言語モデル）エージェントが**意図しない・望ましくない行動をとるリスクを抑える**ための設計と運用の総称。単発の文章生成と違い、エージェントはツールを通じて**外部世界に副作用を及ぼす**（ファイルを書き、コードを実行し、メールを送る）ため、誤りや悪意の帰結が「変な文章」では済まない。安全対策は大きく、(1) **行動空間と権限の設計**（そもそも危険なことをできなくする）、(2) **入出力のガードレール**（危険な入力・出力を検査して止める）、(3) **監視**（挙動を観察して異常を検出する）、(4) **人間の介入**（HITL, Human-in-the-Loop）の 4 層に整理できる。これと直交する第二の軸が、**制約が訓練時に焼き込まれたものか（embedded）、実行時に書かれたものか（programmable）** である（§「もう一つの軸」）。
 
-## 脅威モデルの俯瞰
+## 脅威モデル — どこを攻撃されるか
 
-攻撃の全体像は LLM セキュリティ・プライバシーのサーベイ（[[summaries/2024-llm-security-privacy-survey]], 2024）が体系化した。大枠は **セキュリティ攻撃**（システムを誤作動させる）と **プライバシー攻撃**（学習データ・個人情報を漏らす）の 2 系統で、両者は目標を共有しうる（バックドアとポイズニングは共に誤作動誘発、プロンプトインジェクションとジェイルブレイクは共に制約回避・機密奪取）。エージェントの文脈では、下記のうち**プロンプト経由の攻撃**（特に間接インジェクション）と**権限・行動空間の悪用**が中心的脅威になる。
+**攻撃側の全体像（脅威の分類・ジェイルブレイクとプロンプトインジェクションの機構・レッドチーミングとその自動化）は 2026-08-03 に [[llm-red-teaming]] へ切り出した。** 本ページは**防御側**——何を、どこで、どう止めるか——に集中する。ここでは以下の議論に必要な最小限だけを置く。
 
-- **prompt injection**（プロンプトインジェクション）: エージェントが読む外部データ（Web ページ・文書・ツール出力）に埋め込まれた指示が、本来の指示を乗っ取る攻撃。検索やブラウジングを行うエージェントの最も現実的な脅威。攻撃の分類は [[summaries/2024-llm-security-privacy-survey]] が詳しい——**goal hijacking**（元の目標を差し替えて特定出力を吐かせる）と **prompt leaking**（システムプロンプト自体を再現させる）、そして**アプリ統合型 LLM が外部の汚染テキストを読む「間接インジェクション」**（HOUYI・P2SQL インジェクション等）。間接インジェクションは、[[computer-use-agents]]（画面全部が入力）・[[retrieval-augmented-generation]]（検索結果をコンテキストへ戻す）・[[tool-use-and-function-calling]]（ツール出力の取り込み）のすべてに刺さる——外部由来のテキストをコンテキストに入れる経路はどれも攻撃面である。
-- **jailbreaking**（ジェイルブレイク）: 安全制約を回避してモデルに禁止内容を生成させる。プロンプトのパターンは pretending（ロールプレイ）・attention shifting（物語生成へ注意そらし）・privilege escalation（制約を破らせる）、代表は DAN（Do Anything Now）。理論的な核は Wei et al. の**2 つの失敗モード**（[[summaries/2024-llm-security-privacy-survey]]）——**competing objectives**（「常に指示に従う」能力と無害性の報酬の衝突。prefix injection・refusal suppression）と **mismatched generalization**（入力が事前学習分布の内側だが安全訓練データの外＝OOD）。どちらも**事後訓練で安全性を付ける（RLHF）ことの構造的な穴**を突いており、入力フィルタ（レッドフラグ語）だけでは巧妙なプロンプトを止められない → [[reinforcement-learning-from-human-feedback]]。この 2 つがなぜ生じるのかは報酬の作り方まで降りると見通しがよく、しかも一次資料に自己申告がある——次節「整合はどこから来るのか」で扱う。どちらも報酬設計そのものに由来するので、モデルを賢くしても自動的には消えない。
-- **backdoor / data poisoning**（バックドア・データポイズニング）: 訓練データやプロンプトに毒・隠れトリガーを仕込み、良性入力では正常・トリガー入力で異常動作させる。同サーベイの知見として、**LLM のバックドア化は固定能力の分類器より難しい**（どうプロンプトされてもトリガーで発動しつつ他タスクへの影響を最小化する必要がある）ことと、モデルを外部（信頼できない提供者・汚染データセット）から取り込む供給網が攻撃面になることが重要。
-- **プライバシー攻撃**（学習データ側）: 勾配漏洩（TAG・LAMP——連合学習の共有勾配から訓練データ復元）・メンバーシップ推論（MIA——あるサンプルが訓練データにあったかを判定、shadow training が原型）・**PII 漏洩**（記憶＝memorization による逐語抽出。Carlini et al. の GPT-2 抽出、ProPILE）。エージェントが会話履歴や PII をファイルへ蓄える設計（[[context-engineering]] の外部化・[[agent-memory]]）は、この漏洩面を運用側へも広げる。
-- **権限過多と誤操作**: 必要以上のツール・認証情報を持ったエージェントが、悪意なく破壊的な操作をする。
-- **ミスアラインメント（misalignment）**: モデル自身が訓練の副作用として意図に反した目標や挙動を獲得する。reward hacking（報酬の抜け穴を突く学習 → [[reinforcement-learning-from-human-feedback]]）はその訓練時の代表例で、alignment faking（アラインメント偽装）・sandbagging（実力隠し）といった、ほとんど推論を要さず単一の forward pass で実行できてしまう挙動も報告されている（[[summaries/2025-cot-faithfulness]] の背景文献）。
-- **暴走・逸脱**: 明確な悪意がなくても、ループが止まらない・過剰にリソースを消費する・タスクから脱線する（[[summaries/2025-multi-agent-research-system]] は「エージェントが制御不能に陥るのを防ぐ明示的なガードレール」を本番運用の必須要素として挙げた）。
+エージェント固有の脅威は 3 つに束ねられる。
 
-この脅威認識の原点は 2023 年サーベイ（[[summaries/2023-llm-agents-survey]] §6.3）にある。核心の指摘は「**敵対的攻撃の影響は、LLM ではテキストの誤りに留まるが、行動空間を持つエージェントでは真に破壊的な行動になりうる**」——perception への攻撃（画像・音声の敵対的入力）と action への攻撃（ツール指示の悪意ある改変）まで含め、モジュールごとの攻撃面を最初に整理した。同節は信頼性（キャリブレーション問題・バイアス・幻覚）と、悪用（世論操作・サイバー攻撃・違法合成——化学エージェントが敵対的プロンプトで危険物合成に誘導されうるという実験の警告つき）・失業・人類の福祉への脅威という社会的リスクの三層も提示しており、対策として敵対的訓練・過程監督・HITL を挙げた。以後の研究はこの見取り図の各項を実測で埋めてきた（CoT モニタリングの限界・本番 sandboxing 等、下記）。
+- **外部由来の乗っ取り** — **prompt injection**（プロンプトインジェクション, エージェントが読む外部データに埋め込まれた指示が本来の指示を乗っ取る攻撃）と **jailbreak**（ジェイルブレイク, 安全制約を回避させる攻撃）。**外部由来のテキストをコンテキストに入れる経路はすべて攻撃面**であり、[[computer-use-agents]]（画面全部が入力）・[[retrieval-augmented-generation]]（検索結果）・[[tool-use-and-function-calling]]（ツール出力）のいずれにも刺さる。
+- **権限過多と誤操作** — 必要以上のツール・認証情報を持ったエージェントが、悪意なく破壊的な操作をする。
+- **モデル内在の逸脱** — reward hacking（報酬の抜け穴を突く学習 → [[reinforcement-learning-from-human-feedback]]）・alignment faking（アラインメント偽装）・sandbagging（実力隠し）、そして**暴走**（ループが止まらない・リソースを食い潰す・タスクから脱線する）。
+
+この認識の原点は 2023 年サーベイ（[[summaries/2023-llm-agents-survey]] §6.3）の一文である——「**敵対的攻撃の影響は、LLM ではテキストの誤りに留まるが、行動空間を持つエージェントでは真に破壊的な行動になりうる**」。**脅威の分類が変わったのではなく、帰結の大きさが変わった**というのが、この領域が独立した主題になった理由である。
+
+攻撃の分類・具体的な攻撃手法・レッドチーミングのデータをどう作るか・攻撃の自動化については [[llm-red-teaming]] を参照。
 
 ## 整合はどこから来るのか — 誰の選好が埋め込まれているか
 
@@ -260,6 +262,7 @@ CoT より硬い監視面は**行動そのもの**である。ツール呼び出
 
 ## 関連ページ
 
+- [[llm-red-teaming]] — 攻撃側。脅威の分類・ジェイルブレイクの 2 失敗モード・攻撃の自動化・レッドチーミングのデータが訓練へ戻る経路
 - [[tool-use-and-function-calling]] — 行動空間・権限設計の側
 - [[reasoning-and-planning]] — 監視対象としての CoT の系譜
 - [[reinforcement-learning-from-human-feedback]] — reward hacking と訓練時の対策
@@ -271,7 +274,8 @@ CoT より硬い監視面は**行動そのもの**である。ツール呼び出
 - [[summaries/2023-llama-guard]] — 層 (2a)（検査器としてのガードレール）の起点。タクソノミーを入力にする発想、判定器の適合率/再現率の実測、そして「ガードレール自身が攻撃されうる」という最初の指摘
 - [[summaries/2023-nemo-guardrails]] — 層 (2b)（プログラムとしてのガードレール）の起点。**embedded / programmable という軸**の出典でもある
 - [[summaries/2025-cot-faithfulness]] — 監視（CoT モニタリング）側の根拠原典
-- [[summaries/2024-llm-security-privacy-survey]] — 攻撃側カタログ（prompt injection・jailbreak・backdoor・privacy 攻撃と防御）の根拠原典
+- [[summaries/2024-llm-security-privacy-survey]] — 攻撃側カタログの根拠原典（詳細は [[llm-red-teaming]] へ移した）
+- [[summaries/2022-anthropic-hh]] — 過剰拒否の機構（hostage negotiator 問題）と、embedded rails がどう作られるかの一次資料
 - [[summaries/2022-instructgpt]] — 「整合はどこから来るのか」節の一次資料。誰の選好に整合させたかの 4 層分解、helpful を優先した報酬設計の自己申告、指示されれば有害になるという最大の限界
 - [[summaries/2022-rlhf-illustrated]] — 安全性を「事後に注入する」側の作り方（HHH 基準・hh-rlhf・報酬モデルと KL ペナルティ）の一般向け解説
 - [[summaries/2026-deepseek-v4]] — 本番規模 sandboxing（DSec）の実例

@@ -3,6 +3,7 @@ type: concept
 aliases: [自己反省, 自己内省, verbal reinforcement, Reflexion, Self-Refine, self-correction]
 tags: [self-reflection, llm-agents, reasoning-and-planning]
 related:
+  - "[[llm-red-teaming]]"
   - "[[reasoning-and-planning]]"
   - "[[agent-loop]]"
   - "[[agent-memory]]"
@@ -66,3 +67,4 @@ Long CoT サーベイ（[[summaries/2025-long-cot-survey]], 2025）は、自己�
 - [[agent-memory]] — 反省文の保存・取捨選択が次の課題
 - [[agent-evaluation]] — 評価信号の設計・FP/FN 非対称
 - [[summaries/2023-reflexion]] — 本ページの主要な根拠原典
+- [[llm-red-teaming]] — 同じ構造が攻撃側にも現れる。[[summaries/2023-pair]] のアブレーションでは、攻撃例を消しても 72%→70% しか落ちないのに、**「前回なぜ失敗したか」を書かせる欄を消すと 72%→56%** に落ちた——探索を駆動しているのは例示でなく自己反省である

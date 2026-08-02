@@ -250,3 +250,4 @@ Meta が Meta の PromptGuard を、Meta が選んだ競合と、Meta が選ん�
 - [[summaries/2024-building-effective-agents]] — 自律性とガードレールをセットで設計する指針
 - [[summaries/2023-llama-guard]] — PromptGuard の直系の祖先。タクソノミーを入力にする発想と、「ガードレール自身が攻撃されうる」という 2023 年時点の指摘
 - [[summaries/2023-nemo-guardrails]] — 統一ポリシーエンジン側の祖先（プログラマブルなレール）
+- [[llm-red-teaming]] — 攻撃側。本論文が守ろうとしている攻撃がどう自動化されるか（[[summaries/2023-pair]]）

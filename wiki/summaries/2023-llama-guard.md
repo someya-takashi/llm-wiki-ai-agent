@@ -205,4 +205,6 @@ ToxicChat へさらにファインチューニングすると、**Llama Guard �
 - [[summaries/2023-nemo-guardrails]] — 同時期の対極の答え（ガードレール＝プログラム）
 - [[summaries/2024-llm-security-privacy-survey]] — 攻撃と防御のカタログ
 - [[summaries/2022-instructgpt]] / [[summaries/2022-rlhf-illustrated]] — 安全性を訓練時に注入する側（embedded rails）
-- [[reinforcement-learning-from-human-feedback]] — hh-rlhf・レッドチーミングの系譜
+- [[reinforcement-learning-from-human-feedback]] — レッドチーミングの系譜
+- [[summaries/2022-anthropic-hh]] — **本論文のプロンプトの出所（hh-rlhf）の一次資料**
+- [[llm-red-teaming]] — 攻撃側。本論文 §6 が指摘した「ガードレール自身がインジェクションされうる」問題の系譜

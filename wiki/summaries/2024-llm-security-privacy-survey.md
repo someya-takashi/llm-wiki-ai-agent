@@ -102,7 +102,8 @@ LLM（Large Language Model, 大規模言語モデル）への攻撃を **セキ�
 
 ## 関連ページ
 
-- [[agent-safety-and-guardrails]] — 本サーベイを攻撃側カタログの主要根拠とする安全性の総論
+- [[llm-red-teaming]] — 本サーベイを攻撃側カタログの主要根拠とする、攻撃側の概念ページ
+- [[agent-safety-and-guardrails]] — 防御側の総論
 - [[reinforcement-learning-from-human-feedback]] — ジェイルブレイクの 2 失敗モードが突く安全訓練の限界
 - [[tool-use-and-function-calling]] / [[computer-use-agents]] / [[retrieval-augmented-generation]] — 間接インジェクションの攻撃面
 - [[agent-memory]] / [[context-engineering]] — 記憶・外部化が広げる PII 漏洩面

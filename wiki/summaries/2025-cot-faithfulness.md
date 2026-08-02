@@ -91,6 +91,7 @@ translation: "[[translations/2025-cot-faithfulness]]"
 ## 関連ページ
 
 - [[agent-safety-and-guardrails]] — CoT モニタリングを含む監視・防御の概念ページ（本論文が主根拠）
+- [[llm-red-teaming]] — 「隠す動機があるか」で監視の有効性が変わるという論点の攻撃側
 - [[summaries/2025-llamafirewall]] — 同じ CoT を読んで高い検出率を主張する対の資料。**衝突ではなく脅威モデルの違い**（隠す動機があるモデル vs 乗っ取られたことを知らないエージェント）として、概念ページの層 (3) に整理した
 - [[reasoning-and-planning]] — CoT の系譜。本論文は「書かれた思考」の信頼性への反証的補足
 - [[reinforcement-learning-from-human-feedback]] — reward hacking と outcome-based RL の訓練側の文脈

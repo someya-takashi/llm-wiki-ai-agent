@@ -13,6 +13,7 @@ summaries:
   - "[[summaries/2023-qlora]]"
   - "[[summaries/2023-swe-bench]]"
   - "[[summaries/2025-llamafirewall]]"
+  - "[[summaries/2023-pair]]"
   - "[[summaries/2024-swe-agent]]"
   - "[[summaries/2026-ai-scientist]]"
   - "[[summaries/2022-rlhf-illustrated]]"
@@ -185,6 +186,7 @@ judge を**開発ループの品質関門**として使う実務の記録が Ant
 - [[coding-agents]] — SWE-bench 系評価の主戦場
 - [[computer-use-agents]] — OSWorld / WebArena 系評価の対象領域
 - [[agent-safety-and-guardrails]] — 防御そのものの設計側。本ページは「その防御をどう測るか」（AgentDojo・ASR と utility の対）
+- [[llm-red-teaming]] — 攻撃側。ASR の定義（何をもって成功とするか）と判定器の検証は攻撃の測定でも同じ問題になる
 - [[reinforcement-learning-from-human-feedback]] — 人間の選好を「測る」から「報酬にする」へ。Elo・ペアワイズ比較・アノテータ不一致という道具立ての出所
 - [[summaries/2025-masft]] / [[summaries/2026-sakana-fugu]] / [[summaries/2025-multi-agent-research-system]] — 本ページの根拠原典
 - [[summaries/2022-rlhf-illustrated]] — 「自動指標では品質を測れない」という評価の原点

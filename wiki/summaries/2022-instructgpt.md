@@ -196,6 +196,8 @@ FLAN・T0（公開 NLP タスクを指示形式にした大規模データ集）
 - [[summaries/2024-deepseekmath]] — PPO の critic を排して GRPO へ
 - [[summaries/2025-deepseek-r1]] — 人間の選好を検証可能報酬に置き換える
 - [[summaries/2025-kimi-k2]] — 選好報酬の現代形（自己批評ルーブリック）と、真逆のルーブリックが生む真逆の副作用
+- [[summaries/2022-anthropic-hh]] — 同時期の対をなす原典。無害性の訓練を含み、緊張を明示的に扱う。SFT 段階を持たず純粋 RL。アラインメント税がモデルサイズで符号を変えることも示す
 - [[summaries/2024-llm-security-privacy-survey]] — competing objectives としての一般化
+- [[llm-red-teaming]] — 本論文の報酬設計が生む穴（有用性優先）が、攻撃側からどう突かれるか
 - [[summaries/2026-harness-design]] — 「採点基準の文言が出力を方向づける」の再発見
 - [[summaries/2022-react]] — 指示追従訓練済みモデルがエージェントとして強い、という下流の観察

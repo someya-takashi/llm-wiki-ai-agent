@@ -89,6 +89,7 @@ function calling が「**どう宣言するか**」の話なのに対し、そ�
 ## 関連ページ
 
 - [[coding-agents]] — ACI の具体的な設計と、そのアブレーション
+- [[llm-red-teaming]] — ツール出力を経路にした間接プロンプトインジェクションの機構と、攻撃の自動化
 - [[agent-safety-and-guardrails]] — ツール出力は攻撃者が書き込める入力である。その検査層（[[summaries/2025-llamafirewall]] の PromptGuard / AlignmentCheck）と、**行動そのものを制約する側**（[[summaries/2023-nemo-guardrails]] の topical rails は実質的に「取らせない対話の形」を先に決める設計である）
 
 - [[agent-loop]] — ツール呼び出しが埋め込まれる実行ループ

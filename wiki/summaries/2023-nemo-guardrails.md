@@ -204,4 +204,6 @@ translation: "[[translations/2023-nemo-guardrails]]"
 - [[summaries/2023-llama-guard]] — 同時期の対極の答え（ガードレール＝モデル）
 - [[summaries/2025-llamafirewall]] — 2 年後に両路線を統合した系
 - [[summaries/2024-llm-security-privacy-survey]] — 攻撃と防御のカタログ
+- [[summaries/2022-anthropic-hh]] — **本論文のモデレーション評価データ（Anthropic Red-Teaming / Helpful）の一次資料**
+- [[llm-red-teaming]] — 攻撃側
 - [[summaries/2022-instructgpt]] / [[summaries/2022-rlhf-illustrated]] — embedded rails の作り方
