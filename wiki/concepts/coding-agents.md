@@ -6,6 +6,7 @@ related:
   - "[[agent-loop]]"
   - "[[tool-use-and-function-calling]]"
   - "[[agent-evaluation]]"
+  - "[[agent-safety-and-guardrails]]"
   - "[[context-engineering]]"
   - "[[agent-frameworks]]"
   - "[[computer-use-agents]]"
@@ -15,7 +16,8 @@ summaries:
   - "[[summaries/2025-effective-harnesses]]"
   - "[[summaries/2026-harness-design]]"
   - "[[summaries/2026-meta-harness]]"
-updated: 2026-08-02
+  - "[[summaries/2025-llamafirewall]]"
+updated: 2026-08-03
 ---
 
 # Coding Agents（コーディングエージェント）
@@ -112,6 +114,8 @@ initializer/coding ハーネスの続編（[[summaries/2026-harness-design]], 20
 - **エージェントの書きやすさに環境を寄せる**: init.sh・機能リスト・進捗ログは「エージェントのための開発者体験（DX）」であり、人間の新人オンボーディングと同じ投資が効く。モデル訓練側でも同じ力学が働く——[[summaries/2025-kimi-k2]] のツール利用データ合成や [[summaries/2026-deepseek-v4]] の R&D 実タスク評価は、エージェントが働く環境・課題の整備がモデル性能と同じくらい結果を左右することを示す。
 - **セッションの型化**: 「状況把握 → 健全性確認 → 1 単位 → クリーン終了」はコーディング以外の長時間タスク（研究・分析）にも流用可能な汎用テンプレート。
 - **安全性**: コード実行はサンドボックス内で（→ [[agent-safety-and-guardrails]] の DSec が本番規模の実例）。リポジトリ書き込み・デプロイ権限は最小化し、不可逆操作（force push・本番反映）は人間の承認を挟む。
+- **生成コードの静的解析をループに組み込む**: 上のリンタ・ガードレールの発想は、**セキュリティ**にもそのまま延長できる。**CodeShield**（[[summaries/2025-llamafirewall]], Meta）は Semgrep と正規表現のルールで 50 超の **CWE**（Common Weakness Enumeration, 脆弱性の型を番号で分類した業界標準）を検査し、危険なパッチを差し戻してエージェントに書き直させる——リンタが構文の門番なら、こちらは**脆弱性の門番**である。レイテンシ設計も参考になり、**60ms の軽い層で入力の約 90% を捌き、疑わしいものだけを 300ms の本格解析へ回す**二層構成でエンドツーエンド 70ms 未満に収めている。エージェントのループに毎回挟むガードレールは、この程度まで安くないと成立しない。ただし**再現率は 79%**（適合率 96%）——**危険なコードの 5 本に 1 本は通る**ので、単独の関門にはできない。
+- **脅威は「攻撃」だけではない**: LlamaFirewall のシナリオ 2 が良い例で、エージェントが高評価の投稿から**文字列連結の SQL**（インジェクション脆弱性の典型）を学んで真似るのは、悪意ある攻撃者が存在しない失敗である。**コーディングエージェントの脅威モデルには、汚染された学習・参照ソースからの「善意の脆弱性伝播」を含める**必要がある。
 
 ## 関連ページ
 
@@ -121,5 +125,7 @@ initializer/coding ハーネスの続編（[[summaries/2026-harness-design]], 20
 - [[context-engineering]] — セッション間の状態外部化
 - [[agent-frameworks]] — ハーネスという設計層
 - [[computer-use-agents]] — E2E 検証手段としてのブラウザ操作
+- [[agent-safety-and-guardrails]] — サンドボックス・生成コードの静的解析・権限設計
 - [[summaries/2025-effective-harnesses]] — 本ページの主要な根拠原典（長時間ハーネス）
 - [[summaries/2026-harness-design]] — 続編（3 エージェント構成・ハーネス縮小の方法論）
+- [[summaries/2025-llamafirewall]] — CodeShield（生成コードの静的解析ガードレール）の一次資料

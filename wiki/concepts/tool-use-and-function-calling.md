@@ -89,6 +89,7 @@ function calling が「**どう宣言するか**」の話なのに対し、そ�
 ## 関連ページ
 
 - [[coding-agents]] — ACI の具体的な設計と、そのアブレーション
+- [[agent-safety-and-guardrails]] — ツール出力は攻撃者が書き込める入力である。その検査層（[[summaries/2025-llamafirewall]] の PromptGuard / AlignmentCheck）
 
 - [[agent-loop]] — ツール呼び出しが埋め込まれる実行ループ
 - [[reasoning-and-planning]] — どのツールをいつ呼ぶかを決める推論
