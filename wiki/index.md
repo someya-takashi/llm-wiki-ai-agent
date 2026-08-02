@@ -25,6 +25,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2024-deepseek-v3]] — DeepSeek-V3（DeepSeek-AI, arXiv:2412.19437, 2024-12）。671B 総/37B 活性の MoE を **278.8 万 H800 GPU 時間（$5.576M）・loss spike ゼロ**で訓練。**補助損失を使わない負荷分散**（バイアス項をルーティングにのみ使う。ただし本質は「均衡の粒度を系列→バッチへ緩めること」で、バッチ単位補助損失も同等）・MLA・MTP・**極大規模での FP8 訓練の初の検証**・DualPipe・冗長エキスパート。R1 の Base であり、同時に R1 から推論を蒸留している。
 - [[summaries/2025-moe-survey]] — MoE 包括サーベイ（Mu & Lin, arXiv:2503.07137, 2025-03）。基本設計・学習パラダイム別アルゴリズム・理論・応用の 4 部。**wiki に無かった 2 領域**を持ち込む: ゲーティングの設計空間（コサイン・Soft MoE・指数型分布族）とルーティング水準、継続学習/メタ学習/マルチタスク/RL での MoE、そして理論（普遍近似・MLE 収束と Voronoi 損失・2 層 CNN 単一エキスパートの 87.5% 上限）。独自実験はなく、システム記述は DeepSeek-V3 で止まる。
 - [[summaries/2021-switch-transformers]] — Switch Transformers（JMLR 2022）。MoE 実用化の転換点: top-1 ルーティング・selective precision・負荷分散損失・蒸留 30%・初の 1.6T モデル。並列化体系（data/model/expert）の原典。
+- [[summaries/2024-graphrag]] — GraphRAG（Edge et al., Microsoft Research, arXiv:2404.16130, 2024-04）。**「検索では原理的に答えられない質問がある」**という診断——コーパス全体に向けたグローバルな質問は検索タスクでなく **QFS**（Query-Focused Summarization, クエリ焦点型要約）——から、検索でなく**索引の作り方**を変える。LLM にエンティティ知識グラフを作らせ、Leiden でコミュニティ検出して階層分割（MECE なので全体をカバーする）、各コミュニティ要約を事前生成し、質問時は全件に並列に答えさせて畳む（map-reduce）。素朴な RAG に網羅性 72〜83% で勝つが、**グラフなしの原文 map-reduce も競争力があり**、グラフの真価は品質でなくトークン単価（ルート水準は 9〜43 倍安い）。評価設計も見どころで、**対立する対照指標（直接性）を混ぜて判定系の妥当性を検査**する。
 - [[summaries/2020-rag]] — RAG（NeurIPS 2020）。パラメトリック/非パラメトリック記憶の end-to-end 結合。幻覚減・索引差し替えによる知識更新・retrieval collapse の初記録。
 - [[summaries/2022-chain-of-thought]] — CoT（NeurIPS 2022）。例示に思考連鎖を入れるだけで推論が創発。「考えてから答える」設計すべての祖形。
 - [[summaries/2022-react]] — ReAct（ICLR 2023）。思考と行動を交互に生成させ、外部接地で幻覚を抑えつつ行動を推論で導くパラダイム。agent loop の原型。
@@ -83,6 +84,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2026-llm-optimization-guide]] — Mirantis「LLM Optimization: Techniques and Guide」の全文翻訳（本文に図なし。カバーバナーは chrome として除外）。
 - [[translations/2022-rlhf-illustrated]] — Hugging Face「Illustrating Reinforcement Learning from Human Feedback (RLHF)」の全文翻訳（原ページ照合済み・クリップに欠落なし。図 4 枚収録。ChatGPT 対話のスクリーンショットは原文のままテキストにも起こした。注釈つき文献ガイド「Further reading」は本文の一部として訳出し URL は arXiv 識別子のみ保持。Citation/BibTeX・謝辞・読者コメント欄は除外）。
 - [[translations/2025-deepseek-series]] — martinfowler.com「The DeepSeek Series: A Technical Overview」の全文翻訳（クリップに欠落なし。原ページのポップアップ脚注が平坦化されて二重出現していた 15 個の脚注を `[^1]`〜`[^15]` に統合し、本文に裸の数字として残っていたマーカーを正しい参照位置へ戻した。「Connecting the Arcs」の 1・3・5 と飛んだ番号を正規化。改訂履歴は実質的な情報として訳出）。
+- [[translations/2024-graphrag]] — GraphRAG 論文の全文翻訳（本文 §1〜6。原典に付録なし）。クリップから欠落していた Figure 3 (b) `Level1Multihop.jpg` を ar5iv から復元。Figure 1・2・4 は TikZ 由来の**インライン SVG** だったため 10 個を抽出して `.svg` で保存し、加えて **Figure 4 の 6×6 勝率行列 8 パネルを markdown 表に書き起こした**（条件の並びは本文の記述 8 件と照合し、対称セルの和が 100 になることで検証）。
 - [[translations/2023-moe-explained]] — Hugging Face「Mixture of Experts Explained」の全文翻訳（欠落していた GShard 図を原ページから復元。数式 5 本を正規化。図 12 枚収録）。
 - [[translations/2026-sakana-fugu]] — Sakana Fugu テクニカルレポートの全文翻訳（付録・棋譜含む。プロンプトと棋譜は原文のまま収録）。
 - [[translations/2025-masft]] — MASFT 論文の全文翻訳（付録の失敗事例トレース・介入プロンプト含む。トレースとプロンプトは原文のまま収録）。
@@ -118,7 +120,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[agent-frameworks]] — 設計パターン（workflow 5 種＋agent）とフレームワーク観。「まず単純に、複雑さは実証されたときだけ」。
 - [[self-reflection]] — 失敗を言語で振り返り試行間で学ぶ仕組み。Reflexion / Self-Refine と、盲目的リトライ無効・FP 即死などの設計論点。
 - [[reinforcement-learning-from-human-feedback]] — 事後訓練の RL。**時系列構成**（2022 古典的 RLHF → 2023 DPO → 2024 GRPO → 2025 RLVR/蒸留 → 2025 K2 joint RL → 2026 K2.5 → 2026 OPD）で「何が何を置き換えたか」を追う。
-- [[retrieval-augmented-generation]] — 検索で外部知識を注入して生成。訓練時組み込み型と推論時注入型の 2 層、hot-swap、collapse。
+- [[retrieval-augmented-generation]] — 検索で外部知識を注入して生成。訓練時組み込み型と推論時注入型の 2 層、hot-swap、collapse。ローカル／グローバルな質問の分類と GraphRAG。
 - [[agent-memory]] — コンテキストを超えて保持・想起する記憶の設計。MemGPT の階層記憶・Reflexion のエピソード記憶・共有境界。
 - [[context-engineering]] — 限られたウィンドウに何をどう積むか。注意予算と context rot・各構成要素の絞り方・just-in-time 取得・区画化・圧縮と引き継ぎ・参照渡し・長時間タスクの 3 手法。
 - [[agent-safety-and-guardrails]] — 安全対策の 4 層（行動空間・ガードレール・監視・HITL）。CoT モニタリングの可能性と限界。モデル内在の安全性がどこから来るか（整合の宛先の 4 層分解）。
@@ -138,7 +140,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 略称に専用ページは作らない。対応する正式名称の概念ページを参照する（CLAUDE.md §1）。
 
-- RAG / DPR / dense retrieval / BM25 → [[retrieval-augmented-generation]]
+- RAG / DPR / dense retrieval / BM25 / GraphRAG / Graph RAG / QFS / query-focused summarization / クエリ焦点型要約 / sensemaking / センスメイキング / コミュニティ検出 / community detection / Leiden / 知識グラフ / knowledge graph → [[retrieval-augmented-generation]]
 - MCP / A2A / ACP / Agent-to-Agent / Agent Communication Protocol / エージェント間プロトコル → [[model-context-protocol]]
 - CoT / CoT-SC / ToT / ReAct → [[reasoning-and-planning]]
 - function calling / tool call / logit masking / response prefill / Toolformer / Gorilla / TALM / 自己教師ありツール学習 → [[tool-use-and-function-calling]]
