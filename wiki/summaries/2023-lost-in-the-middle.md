@@ -131,3 +131,4 @@ translation: "[[translations/2023-lost-in-the-middle]]"
 - [[summaries/2025-effective-context-engineering]] — context rot として定式化した Anthropic の記事
 - [[summaries/2024-swe-agent]] — ファイルビューアの窓サイズに両側の最適点がある
 - [[summaries/2025-manus-context-engineering]] — 計画を末尾に書き直し続ける実務的対処
+- [[summaries/2022-flashattention]] — 長い窓を経済的に成立させた側。本ページは「載せられること」と「使いこなせること」の差を示す対の論文

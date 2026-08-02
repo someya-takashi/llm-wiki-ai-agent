@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [トランスフォーマー, decoder-only, attention, linear attention, DeltaNet, Mamba, MLA, scaling law, スケーリング則, Chinchilla, 非埋め込み FLOPs]
+aliases: [トランスフォーマー, decoder-only, attention, linear attention, DeltaNet, Mamba, MLA, scaling law, スケーリング則, Chinchilla, 非埋め込み FLOPs, exact attention, 厳密 attention, 近似 attention, FlashAttention]
 tags: [transformer-architecture, llm-foundations]
 related:
   - "[[mixture-of-experts]]"
@@ -10,6 +10,7 @@ related:
   - "[[test-time-compute]]"
   - "[[reinforcement-learning-from-human-feedback]]"
 summaries:
+  - "[[summaries/2022-flashattention]]"
   - "[[summaries/2024-deepseek-v3]]"
   - "[[summaries/2025-deepseek-series]]"
   - "[[summaries/2025-moe-survey]]"
@@ -60,6 +61,14 @@ $$C = M \times D$$
 - **ハイブリッド**（Kimi Linear / K3）: 固定状態の再帰系（KDA）と完全 softmax 検索（**MLA** = Multi-head Latent Attention, 潜在圧縮つきの完全 attention）を**層単位でインターリーブ**する（K3 は KDA 3 : MLA 1）。固定状態は必然的に情報を捨てるため、周期的な完全検索で取りこぼしを回収する分業である。
 - **間引きと共有**（Gemma 系）: 状態を固定サイズに畳む代わりに、**softmax attention のまま KV cache を削る**別路線もある。Gemma 4（[[summaries/2026-gemma-4]]）は (1) local:global 比 5:1（大半の層を sliding window ローカル attention にし、全系列を見るグローバル層を間引く）、(2) グローバル層で **values = keys**（key を value として再利用し保存テンソルを半減）、(3) **p-RoPE**（位置回転を次元の一部 p=0.25 のみに適用）の 3 点でグローバル KV cache を実質 37.5% 削減した。完全検索の表現力を保ったままメモリを削る、エッジ・オンデバイス志向の解である。E2B/E4B の **per-layer embeddings**（層ごとの埋め込みを外部化し、総 5B/8B のうち実効 2.3B/4.5B だけを実効計算に使う）も同系の「容量と実効コストの分離」にあたる。
 - **圧縮してから選ぶ**（DeepSeek-V4）: 第三の路線が **KV の学習圧縮＋スパース選択**の二段構えである（[[summaries/2026-deepseek-v4]], 2026）。**CSA**（Compressed Sparse Attention）は KV を m=4 トークンごとに 1 エントリへ学習された重み付き和で圧縮した上で、軽量な **Lightning Indexer** が各クエリに top-k（512〜1024）個の圧縮エントリだけを選ぶ。**HCA**（Heavily Compressed Attention）は m′=128 の激圧縮＋密 attention で、両者を層で交互配置する。圧縮では拾えない局所依存は直近 128 トークンの sliding window ブランチが補い、attention sink（合計 attention を 1 未満に調整できる学習ロジット）・部分 RoPE・QKV の RMSNorm を併用する。結果は劇的で、**1M コンテキストの KV cache は一般的な BF16 GQA8 構成の約 2%**、推論 FLOPs は前世代 V3.2 の 27%——linear 化が「状態を固定サイズに畳む」なら、この路線は「**可変長のまま解像度を落とし、読む場所を選ぶ**」ことで 100 万トークンを実用化した。1.6T/284B の 2 サイズで実証されている。
+
+**直交する第四の軸 — 数学を変えずにメモリアクセスだけを変える（FlashAttention）**。ここまでの系譜——linear attention・DeltaNet・KDA・MLA・CSA/HCA・Gemma の間引きと共有——は、書き方は違えど**すべて「attention が計算する内容そのものを変える」**路線である。近似する、圧縮する、選ぶ、間引く。品質と引き換えにコストを下げる。
+
+**FlashAttention**（[[summaries/2022-flashattention]], Dao ら 2022）はこの軸の外にある。出力は素の softmax attention と**ビット単位で同一**であり、変えたのは GPU のメモリ階層をどう使うかだけである。$N\times N$ の attention 行列を HBM（大容量・低速メモリ）へ書き出す代わりに、入力を SRAM（オンチップの小容量・超高速メモリ）に載るブロックへ切り、softmax を行最大値と指数和の 2 統計量だけ持ち回って漸進的に確定させ（tiling）、逆伝播用の中間行列は保存せず SRAM 上で作り直す（recomputation）。結果として **FLOPs は 13% 増えるのに実行時間は 5.7 倍速い**（詳細は [[llm-inference-optimization]]）。
+
+この対比は系譜全体の読み方に効く。**この論文は、系譜の 2020〜2022 年前半にあたる近似 attention 群（Reformer・Linformer・Performer・Longformer・BigBird）が普及しなかった理由を説明してしまった**——それらは FLOPs を線形まで落としたが、HBM 往復を減らさなかったので wall-clock が縮まなかった。つまり**「2 乗のコストが重い」という前提のもとに設計された手法の一群が、前提のほうを直されたことで存在意義を問い直された**わけである。素の softmax attention の寿命が 2022 年以降も延び続けたのは、直接にはこの仕事のおかげである。
+
+だからこの系譜を読むときは、**アーキテクチャ上の勝敗とカーネル実装の成熟度を分けて見る**必要がある。ある変種が遅いのは数学が悪いからか、まだ誰も良いカーネルを書いていないからか。逆に、後発の圧縮・スパース路線（MLA、CSA/HCA）が意味を持つのは、**FlashAttention が済ませた IO の改善の上でもなお KV cache の O(N) 成長が残る**、100 万トークン級の領域である。両者は競合ではなく積み上がる。
 
 この系譜は [[agent-memory]] と美しく同型である——追記だけの記憶が干渉し（A-Mem 以前の生ログ蓄積）、選択的上書き（A-Mem の memory evolution）や退避・要約（MemGPT）が要る、という問題を、アーキテクチャは**重み・状態の内部で**解いている。
 

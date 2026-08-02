@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [推論最適化, inference optimization, KV cache, TTFT, TPS, serving, サービング, デコードスループット]
+aliases: [推論最適化, inference optimization, KV cache, TTFT, TPS, serving, サービング, デコードスループット, FlashAttention, IO-awareness, HBM, SRAM, memory-bound, compute-bound, arithmetic intensity, kernel fusion, カーネル融合]
 tags: [llm-inference-optimization, llm-foundations]
 related:
   - "[[mixture-of-experts]]"
@@ -9,6 +9,7 @@ related:
   - "[[context-engineering]]"
   - "[[multi-agent-systems]]"
 summaries:
+  - "[[summaries/2022-flashattention]]"
   - "[[summaries/2024-deepseek-v3]]"
   - "[[summaries/2025-deepseek-series]]"
   - "[[summaries/2025-moe-survey]]"
@@ -39,13 +40,40 @@ LLM（Large Language Model, 大規模言語モデル）の**推論を速く・�
 
 linear attention 系（→ [[transformer-architecture]] の系譜）は、KV cache の O(N) 成長そのものを、固定 D×D 状態への畳み込みで解消する。デコードコストは系列長によらず O(1) になり、Kimi Linear は full attention 比**最大 6 倍のデコードスループット**を主張する（自己申告の管理下比較）。代償は完全検索の放棄で、実運用のモデル（Kimi K3）は固定状態層と完全 attention 層のハイブリッドでバランスを取る。
 
+### IO-awareness — 律速はどこにあるか（FlashAttention）
+
+最適化の出発点を「演算量」に置くと、しばしば的を外す。**FlashAttention**（[[summaries/2022-flashattention]], Dao ら 2022）はこの点を最も明快な形で示した論文であり、本ページの多くの記述の原理的な根拠にあたる。
+
+GPU のメモリは階層をなす。A100 では **HBM**（High Bandwidth Memory, 基板上の大容量メモリ）が 40〜80 GB / 1.5〜2.0 TB/s、**SRAM**（オンチップの小容量・超高速メモリ）が SM あたり 192 KB / 約 19 TB/s。SRAM は 1 桁速いが容量は 5 桁小さい。そして**計算速度の伸びがメモリ速度の伸びを上回り続けた**結果、多くの演算は演算器が空くのを待っているのではなく**データが届くのを待っている**。この状態を **memory-bound（メモリ律速）**、対義語を **compute-bound（計算律速）**と呼び、両者を分ける指標が **arithmetic intensity（演算強度, メモリアクセス 1 バイトあたりの演算数）**である。softmax・正規化・活性化・dropout といった要素ごとの演算と縮約は、ほぼすべてメモリ律速側に落ちる。
+
+標準的な attention 実装は、$N\times N$ の中間行列 $\mathbf{S}$・$\mathbf{P}$ を **HBM へ 3 往復させている**。FlashAttention はここを、(1) **tiling**（入力を SRAM に載るブロックへ切り、softmax を行最大値 $m$ と指数和 $\ell$ の 2 統計量だけ持ち回って漸進的に確定させる）と (2) **recomputation**（backward 用に attention 行列を保存せず、$\mathbf{O}$ と $(m,\ell)$ から SRAM 上で作り直す）によって、単一の CUDA カーネルへ融合した。出力は**厳密に同一**——近似ではなく計算順序の変更である。
+
+結果は最適化の教科書に載せるべき形をしている（GPT-2 medium、系列長 1024、A100）:
+
+| | 標準 attention | FlashAttention |
+|---|---|---|
+| GFLOPs | 66.6 | **75.2**（+13%） |
+| HBM 読み書き (GB) | 40.3 | **4.4**（9.2 分の 1） |
+| 実行時間 (ms) | 41.7 | **7.3**（5.7 倍速） |
+
+**演算を 13% 増やして 5.7 倍速くなった。** したがって律速していたのは演算ではない。IO 計算量でも裏づけられ、標準の $\Theta(Nd+N^2)$ に対し FlashAttention は $\Theta(N^2d^2M^{-1})$（$M$ は SRAM サイズ）。さらに**すべての $M$ に対してこれを漸近的に上回る厳密 attention アルゴリズムは存在しない**という下界まで示されている（命題 3）。
+
+ここから 2 つの実務的な教訓が出る。
+
+- **再計算はメモリ節約の手段とは限らない。** 勾配チェックポインティング（中間値を捨てて逆伝播時に作り直す技法）は従来「速度をメモリと引き換えにするもの」だったが、IO を勘定に入れると符号が反転する。**キャッシュか再計算かは、保存コストではなく往復コストで決める**。同じ判断は [[context-engineering]] の「参照渡し」——コンテキストに実体を入れず必要時に取りに行く——にも現れる。
+- **近似は IO を直してから効かせる。** 2020〜2022 年の近似 attention（Reformer・Linformer・Performer・Longformer・BigBird）が普及しなかったのは、FLOPs を線形まで落としても HBM 往復を減らさなかったからである。実際 FlashAttention のブロックスパース版は、IO を直した上で疎化することで既知のすべての近似手法を上回った。
+
+副次的な効果として、この仕事は**長いコンテキストを経済的に成立させた**。GPT-2 をコンテキスト長 4K で訓練しても、Megatron-LM の 1K 訓練より 30% 速く、かつパープレキシティが 0.7 良い。長い窓が「高価な贅沢」から「安い性能向上」に変わった転換点である（ただし窓を**使いこなせる**かは別問題で、そこは [[summaries/2023-lost-in-the-middle]] の領分）。
+
+なお、2022 年時点の倍率そのものは陳腐化する。SRAM 容量と HBM 帯域幅の比は世代で変わり（本論文自身、SRAM の小さい T4 では高速化が小さいと報告している）、後継の FlashAttention-2（2023）は**同じ IO 計算量のまま** work partitioning の改善だけで約 2 倍を追加した。**同じ漸近オーダーの中に 2 倍が残っていた**という事実自体、「オーダーも FLOPs も wall-clock の代理指標としては粗い」という本論文の教訓の再演になっている。持ち帰るべきは倍率ではなく原理のほうである。
+
 ### チャンク化とハードウェア整合 — FLOPs ≠ wall-clock
 
-DeltaNet 系のチャンク並列化では、チャンクサイズ **C=1 が FLOPs 最小だが、実効速度では C=64/128 が速い**——GPU のテンソルコア（行列積ユニット）に仕事が乗る粒度だからである（[[summaries/2026-gpt2-to-kimi3]]）。「演算数の削減」と「wall-clock の短縮」は別の目的関数であり、ハードウェアへの写像を考えない FLOPs 比較は実務では当てにならない。
+DeltaNet 系のチャンク並列化では、チャンクサイズ **C=1 が FLOPs 最小だが、実効速度では C=64/128 が速い**——GPU のテンソルコア（行列積ユニット）に仕事が乗る粒度だからである（[[summaries/2026-gpt2-to-kimi3]]）。「演算数の削減」と「wall-clock の短縮」は別の目的関数であり、ハードウェアへの写像を考えない FLOPs 比較は実務では当てにならない。上の FlashAttention の 66.6 → 75.2 GFLOPs で 5.7 倍速という数字が、この原則の最も引用しやすい実例である。
 
 ### カーネル融合 — 実装成熟度が律速する
 
-Kimi K3 の SiTU 活性化は、**融合カーネル（fused kernel, 複数の演算を 1 つの GPU カーネルにまとめてメモリ往復を省く実装）なしでは元のパスの約 3 倍遅い**。新しいアーキテクチャ要素の速度は、数学ではなくカーネル実装の成熟度で決まることが多い——FlashAttention（softmax attention を N×N 行列を実体化せずに計算するカーネル。概説）が softmax attention の寿命を延ばしたのも同じ構図である。
+Kimi K3 の SiTU 活性化は、**融合カーネル（fused kernel, 複数の演算を 1 つの GPU カーネルにまとめてメモリ往復を省く実装）なしでは元のパスの約 3 倍遅い**。新しいアーキテクチャ要素の速度は、数学ではなくカーネル実装の成熟度で決まることが多い——FlashAttention（[[summaries/2022-flashattention]]）が softmax attention の寿命を延ばしたのも同じ構図である。逆に言えば、**ある手法が遅いとき、その数学が悪いのか、まだ誰も良いカーネルを書いていないだけなのかを区別する**必要がある。FlashAttention の登場は、素の softmax attention に「誰も良いカーネルを書いていなかった」ぶんの余地が大量に残っていたことを示した。なお FlashAttention 自身の限界も同じ層にあり、**新しい attention 変種ごとに CUDA を手書きする必要がある**（GPU アーキテクチャ間の移植性も保証されない）と著者らは述べている。後の Triton や `torch.compile` の普及は、まさにこの穴を埋める動きだった。
 
 ### 100 万トークンの経済 — 圧縮 KV・オンディスク再利用・決定論
 

@@ -95,6 +95,7 @@ GPT-2（2019, 124M）から Kimi K3（2026, 2.8T——**22,580 倍**）までの
 
 - [[transformer-architecture]] — 本記事が主根拠となる概念ページ（attention の系譜・MoE・残差）
 - [[llm-inference-optimization]] — KV cache・メモリ帯域・カーネル融合の側
+- [[summaries/2022-flashattention]] — 本記事の「O(N²) の枠づけには惑わされた」という自己訂正の一次資料
 - [[agent-memory]] — 「固定容量メモリ＋選択的上書き・減衰」の同型問題を外側で解く系譜
 - [[context-engineering]] — 有限ウィンドウという制約の物理的根拠
 - [[summaries/2025-long-cot-survey]] — 推論時のトークン量を増やす側（本記事はそれを速く捌く側の基盤）
