@@ -5,6 +5,7 @@ tags: [transformer-architecture, llm-foundations]
 related:
   - "[[mixture-of-experts]]"
   - "[[llm-inference-optimization]]"
+  - "[[model-quantization]]"
   - "[[agent-memory]]"
   - "[[context-engineering]]"
   - "[[test-time-compute]]"

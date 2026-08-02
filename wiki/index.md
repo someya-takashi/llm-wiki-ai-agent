@@ -55,6 +55,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ### Articles / Blogs
 
+- [[summaries/2025-llm-quantization-guide]] — **LLM Quantization Explained: A Complete Guide**（Abhinaykrishna / Medium, 2025-03）。量子化の**手法カタログ**。量子化できる対象を 3 つ（重み・活性・**KV cache**）に整理し、較正データセットは「統計を集めるだけで重みを更新しない」と明示、そのうえで bitsandbytes（LLM.int8 / NF4 ＋ 二重量子化で重みあたり 0.5→0.127 ビット、65B で 3GB 節約）・GPTQ（層ごとに MSE 最小化・128 列の lazy batch updating）・GGUF（k-Quant・CPU・llama.cpp）・AWQ（約 1% の salient weights をチャネルごとスケーリングで保護）をユースケース別に並べる。最も価値があるのは末尾で、**「量子化は必ずしもレイテンシを下げない」**——逆量子化のオーバーヘッド・ハードウェア支援の欠如・未最適化の推論エンジン・小さなモデル、の 4 状況を挙げる。ただし査読なしの個人ブログで**技術的誤りが 4 点**あり（INT4 例で 5.62→0.562 のすり替え、非対称レンジに zero_point=0 を置いて 3.8 が 3.03 に化ける、存在しない「NF8」、LLM.int8 の特徴づけの混同）、訂正は [[model-quantization]] に集約した。
+- [[summaries/2025-llm-quantization-explained]] — **LLM Quantization Explained**（joydeep bhattacharjee / Medium, 2025-04）。同じ題材を**原理と実装**から扱ったもう 1 本。丸め（RTN）の誤差を torch で実測し、**BF16 は「精度が高い」形式でなく「範囲が広い」形式**であること（指数部が FP32 と同じ 8 ビット・仮数部は 7 ビットなので、同じ丸めでは FP16 より誤差が大きい）を 1000 テンソルで示す。affine 量子化の式（s と z、ゼロ点は浮動小数点のゼロを整数で正確に表すために置く）、SmoothQuant による活性の外れ値分析（**外れ値は大半の値の約 100 倍・固定チャネルに持続的に現れ、per-tensor では非外れ値チャネルに 2〜3 段階しか残らない**）、ブロック／動的量子化、**偽量子化と STE** による QAT、QLoRA の NF4・二重量子化・4bit を uint8 へパックする実装までを動くコードで降りる。**optimum-quanto で量子化してメモリが 4714→5716 MB と増えた失敗をそのまま載せている**のが誠実。ただし **QLoRA を QAT に分類しているのは誤り**（実際は PTQ ＋ PEFT）で、訂正は [[model-quantization]] にある。
 - [[summaries/2022-rlhf-illustrated]] — Hugging Face（2022-12, Lambert et al.）。RLHF の定番解説。事前学習→報酬モデル→PPO の 3 段パイプライン・なぜ点数でなく順位か（Elo）・KL ペナルティと reward hacking の原初的記述。**3 年半前の記事なので「賞味期限」節で陳腐化を対応づけ済み**。
 - [[summaries/2025-deepseek-series]] — Shayan Mohanty / martinfowler.com（2025-02 初出・2025-06 改訂）。DeepSeek 4 本（LLM / V2 / V3 / R1）を **HPC co-design（アーキテクチャと計算基盤の一体設計）** という一本の弧で読む二次解説。wiki にとっての価値は前半 2 本——**DeepSeek-LLM の scaling law**（規模をパラメータ数でなく**非埋め込み FLOPs/token** で測ると $C = M \times D$ に揃う／データ品質が最適比率を動かす）と **DeepSeek-V2**（MLA・DeepSeekMoE・device-limited routing・3 層の均衡損失の初出）——を埋めること。ただし **V3 の「洗練された MLA」3 点は原典に存在しない**ので、要約の「原典との照合」節を必ず併読すること。
 - [[summaries/2023-moe-explained]] — Hugging Face（2023）。MoE の定番入門。疎な MoE 層＋ルータ・負荷分散 3 点セット・「メモリ 47B/FLOPs 12B」の分離・FT の落とし穴。
@@ -75,6 +77,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ## Translations
 
+- [[translations/2025-llm-quantization-guide]] — 「LLM Quantization Explained: A Complete Guide」の全文翻訳（画像 4 枚収録）。**クリップは健全**（切断・欠落なし）。図 4 の手法比較表は中身が文字だけの表なので、画像に加えて **markdown の表としても転記**した。拍手・共有の誘導は本文でない定型要素として除外。原文の誤りは訳注では触れず、要約と概念ページ側で指摘している。
+- [[translations/2025-llm-quantization-explained]] — 「LLM Quantization Explained」の全文翻訳（画像 17 枚収録）。**クリップは健全**。埋め込み画像 20 枚のうち **3 枚を chrome として除外**（冒頭の装飾タイトルカード、末尾の著者プロフィール／宣伝 2 枚）。線形量子化の式の図は中身が数式だけの箱なので、**数式を本文へも起こした**。References（リンク集）は既定どおり除外し、主要な一次資料（LLM.int8・SmoothQuant・QLoRA・STE）は要約側で言及した。
 - [[translations/2020-rag]] — RAG 論文の全文翻訳（付録 A〜I 含む。周辺化・DPR の式は LaTeX 維持、生成例は原文のまま収録）。
 - [[translations/2023-dpo]] — DPO 論文の全文翻訳（本文 §1〜7 ＋ **付録 A〜D 全訳**。ar5iv クリップ底本で、多パネル図の右側 3 枚 x2/x4/x6 と脚注 6 件を原ページから復元。付録 A の全導出・全証明、付録 B の PyTorch 実装、付録 C の GPT-4 ジャッジのプロンプト全文（S 版・C 版）を収録。プロンプトとモデル出力は原文のまま。References・謝辞・Author Contributions は除外）。
 - [[translations/2022-instructgpt]] — InstructGPT 論文の翻訳（**本文 §1〜5 のみ**＝ユーザー指示により付録 A〜F は対象外。ar5iv クリップ底本。途切れていた著者リストと欠落していた脚注 8 件を原ページから復元。図 7 枚収録、Figure 8/9 の HTML 対比表を markdown 化。プロンプトとモデル出力は原文のまま）。
@@ -125,6 +129,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ## Concepts
 
+- [[model-quantization]] — モデルの量子化。**推論サービングだけの道具ではない**（訓練・ファインチューニング・エッジ配布・カーネル実装にまたがる）ため [[llm-inference-optimization]] から切り出した。基礎（BF16 は範囲・FP16 は精度、affine 量子化の s と z）、量子化する 3 対象（重み・活性・KV cache）、**外れ値への 4 系統の対処**（分けて保持／粒度を細かく／重要な重みを守る／分布そのものをならす）、PTQ と QAT（偽量子化と STE）、代表手法（GPTQ・AWQ・GGUF・bitsandbytes・NF4・二重量子化）、**QLoRA は QAT ではなく PTQ ＋ PEFT** という分類の訂正、そして「量子化＝高速化ではない」。
 - [[llm-agents]] — 総論ハブ。エージェントの定義と系譜・brain/perception/action・応用 3 形態・エージェント社会。各論ページへの入口。
 - [[reasoning-and-planning]] — LLM に思考過程・計画を明示的に生成させる手法群。CoT・CoT-SC・ReAct・ToT を扱う。
 - [[agent-loop]] — 観測→思考→行動の実行ループ。定式化、thought の密度、停止条件、典型的失敗モード。
@@ -189,6 +194,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - FlashAttention-2 / occupancy / 占有率 / warp / thread block / スレッドブロック / SM / split-K / non-matmul FLOPs / matmul FLOPs / GEMM / MFU / Model FLOPs Utilization / atomic add / register spilling / レジスタスピル / Triton / TMA / logsumexp → [[llm-inference-optimization]]
 - FlashAttention-3 / 非同期化 / asynchrony / warp-specialization / WGMMA / TMA / Tensor Memory Accelerator / warpgroup / CTA / pingpong scheduling / SMEM / GMEM / RMEM / setmaxnreg / LDSM / STSM / SASS / k-major / wave quantization → [[llm-inference-optimization]]
 - FP8 / e4m3 / block quantization / ブロック量子化 / incoherent processing / 非干渉化処理 / Hadamard 行列 / 外れ値 / outlier features / per-tensor スケーリング → [[llm-inference-optimization]]
+- 量子化 / quantization / PTQ / QAT / 訓練後量子化 / 量子化を意識した訓練 / GPTQ / AWQ / GGUF / GGML / k-Quant / llama.cpp / bitsandbytes / LLM.int8 / NF4 / NormalFloat / QLoRA / double quantization / 二重量子化 / STE / straight-through estimator / 偽量子化 / fake-quantization / calibration dataset / 較正データセット / SmoothQuant / RTN / absmax / affine quantization / アフィン量子化 / ゼロ点 / zero-point / スケール係数 / 動的量子化 / 静的量子化 / per-channel / INT8 / INT4 / BF16 / bfloat16 → [[model-quantization]]
 - MQA / Multi-Query Attention / GQA / Grouped-Query Attention → [[transformer-architecture]]
 - exact attention / 厳密 attention / 近似 attention / approximate attention / block-sparse / ブロックスパース / Linformer / Performer / Reformer / Longformer / BigBird → [[transformer-architecture]]
 - MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / MoonViT / NaViT / early fusion / DEP / encoder-free / p-RoPE / per-layer embeddings / CSA / HCA / mHC / Hyper-Connections / Muon / attention sink → [[transformer-architecture]]

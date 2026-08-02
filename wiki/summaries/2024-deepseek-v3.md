@@ -155,6 +155,7 @@ MoE の負荷が偏るとルーティング崩壊を招き、エキスパート�
 - [[mixture-of-experts]] — 本ページの主な受け皿。補助損失を使わない負荷分散・ノード制限ルーティング・エキスパート専門化の実測
 - [[transformer-architecture]] — MLA（KV を潜在ベクトルへ圧縮する attention）
 - [[llm-inference-optimization]] — FP8 訓練・DualPipe・prefill/decode 分離・冗長エキスパート・ハードウェア提言
+- [[model-quantization]] — 本レポートの細粒度量子化を、外れ値への 4 系統の対処の一つとして位置づけるページ
 - [[summaries/2024-flashattention-3]] — 同じ 2024 年に FP8 の外れ値問題へ別の答えを出した仕事。本レポートが**スケールの粒度を細かくする**（活性 1×128 タイル・重み 128×128 ブロック）のに対し、あちらは加えて**直交回転で分布そのものをならす**（incoherent processing）。適用層も訓練 vs attention カーネルで対照的
 - [[reinforcement-learning-from-human-feedback]] — GRPO・ルール／モデルベース RM・R1 からの蒸留・自己報酬
 - [[summaries/2025-deepseek-r1]] — 本モデルの Base の上に作られた推論モデル（そして V3 の事後訓練が蒸留元にした相手）

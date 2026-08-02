@@ -3,12 +3,15 @@ type: concept
 aliases: [推論最適化, inference optimization, KV cache, TTFT, TPS, serving, サービング, デコードスループット, FlashAttention, FlashAttention-2, IO-awareness, HBM, SRAM, memory-bound, compute-bound, arithmetic intensity, kernel fusion, カーネル融合, occupancy, 占有率, warp, SM, thread block, MFU, GEMM, split-K, non-matmul FLOPs, Triton, FlashAttention-3, warp-specialization, WGMMA, TMA, warpgroup, pingpong scheduling, FP8, block quantization, incoherent processing, 非干渉化処理]
 tags: [llm-inference-optimization, llm-foundations]
 related:
+  - "[[model-quantization]]"
   - "[[mixture-of-experts]]"
   - "[[transformer-architecture]]"
   - "[[test-time-compute]]"
   - "[[context-engineering]]"
   - "[[multi-agent-systems]]"
 summaries:
+  - "[[summaries/2025-llm-quantization-guide]]"
+  - "[[summaries/2025-llm-quantization-explained]]"
   - "[[summaries/2022-flashattention]]"
   - "[[summaries/2023-flashattention-2]]"
   - "[[summaries/2024-flashattention-3]]"
@@ -142,9 +145,13 @@ decode が 1 トークンずつ逐次的でメモリ帯域律速なら、**下�
 
 ### オンデバイス推論 — QAT とエンコーダの軽量化
 
+（QAT の仕組み——偽量子化と STE——は [[model-quantization]] を参照。）
+
 エッジ・モバイルでは総パラメータの VRAM どころか**ディスクとコンパイルオーバーヘッド**まで制約になる。Gemma 4 の実践（[[summaries/2026-gemma-4]]）は事後量子化でなく **QAT**（Quantization-Aware Training, 訓練中に量子化誤差を織り込む——事後量子化より低ビットでの品質維持に強い）で int2/int4 混合の mobile quantization と Q4_0 を提供し、E2B は bf16 4.6GB → **0.8GB**（＋32k コンテキストの int8 KV cache 0.05GB）。モダリティのエンコーダも対象で、音声エンコーダはディスク 390MB→**87MB（−78%）**、画像エンコーダは W8A8 でメモリ半減・レイテンシ −44%。[[summaries/2026-llm-optimization-guide]] の量子化カタログ（GPTQ −75% 等）がサービング側の事後量子化だとすれば、こちらは**モデル提供側が訓練段階で量子化を引き受ける**形であり、「量子化はデプロイ時の後処理」という前提を崩しつつある。
 
 ### モデル圧縮 — 量子化・プルーニング・蒸留
+
+> **量子化は 2026-08-02 に独立した概念ページ [[model-quantization]] へ切り出した。** 手法の詳細（GPTQ・AWQ・GGUF・bitsandbytes・NF4・QLoRA・STE）、外れ値への 4 系統の対処、PTQ と QAT の違い、そして「量子化は必ずしもレイテンシを下げない」という論点はそちらにある。本節はサービング文脈での位置づけに留める。
 
 再訓練なしにモデル自体を軽くするレバー（[[summaries/2026-llm-optimization-guide]] が定量値を集約）。**量子化**はパラメータの精度を下げる圧縮で、GPTQ 4 ビットは精度 ≈99.5% を維持しながら**約 −75% のコスト**（INT8 で −50%）という報告がある。**プルーニング**（寄与の小さい重み・ヘッド・層の除去）と**蒸留**（大モデルの挙動を小モデルへ転写）は、モデルファミリーの階層化——定型クエリは小モデル、高価値タスクは大モデルへルーティング——を可能にする。ただし引用値は特定ベンチマークのものであり、エージェントの多段ツール呼び出しや長い CoT での累積影響は**アプリケーションごとの品質検証が必須**。
 
@@ -168,6 +175,8 @@ decode が 1 トークンずつ逐次的でメモリ帯域律速なら、**下�
 **なぜこの視点が要るのか**。DeepSeek のハードウェア環境（H800。輸出規制で NVLink 帯域が制限された版）は、当時のフロンティア研究所より不利だった。**制約が厳しいほど協調設計の利得が大きくなる**ので、この系譜は「潤沢な計算資源がない側から出てきた方法論」として読める。記事の結論——ツールチェーンの構築者はこれらの最適化をモデルのコンパイル経路に取り込むことを検討すべきで、研究チームはアーキテクチャの着想の初期段階から HPC の専門性と協働すべき——は、2025 年時点の提言だが、その後の [[summaries/2026-deepseek-v4]]（CSA/HCA、mHC）でむしろ強化されている。
 
 ### 低精度訓練 — FP8 を極大規模で通す
+
+（量子化一般の基礎と、外れ値への対処の全体像は [[model-quantization]] を参照。）
 
 推論の量子化と違い、**訓練を低精度で通した公開記録は少ない**。DeepSeek-V3（[[summaries/2024-deepseek-v3]], 2024）は 671B の MoE を **FP8 混合精度**で訓練しきり、BF16 比の相対 loss 誤差を**一貫して 0.25% 未満**に収めた。実装の要点が転用可能である。
 

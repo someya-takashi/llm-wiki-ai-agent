@@ -177,6 +177,7 @@ FP16 では FlashAttention-2/3 とも標準実装比 1.7 分の 1（中間の so
 - [[summaries/2023-flashattention-2]] — 直接の前作。A100 でピークの 73% まで詰めたが、H100 では 35% だった
 - [[summaries/2022-flashattention]] — 三部作の起点。IO を律速と特定した側
 - [[llm-inference-optimization]] — 本論文が根拠となる概念ページ（非同期化・低精度・FLOPs の非等価性）
+- [[model-quantization]] — incoherent processing を「分布そのものをならす」路線として他の外れ値対策と並べるページ
 - [[summaries/2024-deepseek-v3]] — FP8 を極大規模の**訓練**で通した側。外れ値への答え方が対照的（細粒度量子化 vs 直交回転）
 - [[transformer-architecture]] — MQA/GQA・MLA といった KV cache 削減の系譜。本論文の付録 A はそれらが「$\mathbf{Q},\mathbf{K},\mathbf{V}$ の得られ方を変えるだけで中核の計算は変えない」ため、attention 本体の改善が等しく恩恵をもたらすと整理している
 - [[summaries/2023-lost-in-the-middle]] — 長い窓が安くなっても使いこなせるとは限らない、という対の論点
