@@ -107,4 +107,6 @@ LLM（Large Language Model, 大規模言語モデル）に「考える（thought
 - [[agent-loop]] — thought-action-observation ループの定式化
 - [[tool-use-and-function-calling]] — Wikipedia API を初期のツール利用として位置づけ
 - [[agent-safety-and-guardrails]] — HITL 介入（人間による thought 編集）の最初期の実例
+- [[summaries/2023-sglang]] — ReAct を serving のベンチマークに使い、**状態を追記する構造ゆえに prefix キャッシュが効いて vLLM 比 5.6 倍**になることを示した論文
+- [[llm-programming-systems]] — 本論文のような多段の LLM プログラムをどう書き、どう速く実行するかの層
 - [[translations/2022-react]] — 全文翻訳

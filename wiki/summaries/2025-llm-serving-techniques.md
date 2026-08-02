@@ -334,6 +334,7 @@ memory-bound の領域にいる限りこれが続くので、**バッチサイ�
 ## 関連ページ
 
 - [[llm-serving-systems]] — 本記事が主要な根拠となる概念ページ
+- [[summaries/2023-pagedattention]] / [[summaries/2023-sglang]] — 本記事が PagedAttention と RadixAttention として紹介した機構の**原典**。本記事の「PagedAttention → prefix キャッシュ」という繋ぎは、原典に照らすと滑らかすぎる（vLLM の共有 prefix は手動で、公開コードでは動かなかった）
 - [[llm-inference-optimization]] — 「1 回の前向き計算を速くする」側。本記事は「多数のクライアントを多重化する」側を扱う
 - [[model-quantization]] — weight-only と weight-activation の区別。本記事の Roofline 図がその根拠を視覚的に示している
 - [[summaries/2025-understanding-llm-serving]] — 同じ主題をビジネス寄りに扱った記事。ルーティング／カスケードとツールスタックを補う

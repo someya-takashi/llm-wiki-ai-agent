@@ -4,6 +4,7 @@ aliases: [エージェントフレームワーク, agentic design patterns, work
 tags: [agent-frameworks, llm-agents]
 related:
   - "[[agent-loop]]"
+  - "[[llm-programming-systems]]"
   - "[[tool-use-and-function-calling]]"
   - "[[multi-agent-systems]]"
   - "[[model-context-protocol]]"

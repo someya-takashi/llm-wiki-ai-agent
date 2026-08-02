@@ -4,6 +4,7 @@ aliases: [LLM serving, サービング, サービングシステム, serving sys
 tags: [llm-serving-systems, llm-inference-optimization, model-quantization, transformer-architecture]
 related:
   - "[[llm-inference-optimization]]"
+  - "[[llm-programming-systems]]"
   - "[[model-quantization]]"
   - "[[low-precision-training]]"
   - "[[transformer-architecture]]"
@@ -11,12 +12,14 @@ related:
   - "[[context-engineering]]"
   - "[[agent-observability]]"
 summaries:
+  - "[[summaries/2023-pagedattention]]"
+  - "[[summaries/2023-sglang]]"
   - "[[summaries/2025-llm-serving-techniques]]"
   - "[[summaries/2025-understanding-llm-serving]]"
   - "[[summaries/2026-llm-optimization-guide]]"
   - "[[summaries/2024-deepseek-v3]]"
   - "[[summaries/2022-flashattention]]"
-updated: 2026-08-02
+updated: 2026-08-03
 ---
 
 # LLM Serving Systems（LLM サービングシステム）
@@ -99,14 +102,40 @@ memory-bound の領域にいる限りこれが続く。**現代の GPU と LLM �
 
 <figure>
 
-![](../../raw/assets/2025-llm-serving-techniques/paged-attention.png)
+![](../../raw/assets/2023-pagedattention/x6.png)
 
-<figcaption>図4: PagedAttention。KV cache を論理ブロックと物理ブロックに分ける。リクエスト A からは連続に見えるが、実際には物理ブロック 1・7・3 にばらばらに置かれている。出典: [[summaries/2025-llm-serving-techniques]] が引用する vLLM 論文（arXiv:2309.06180）。</figcaption>
+<figcaption>図4: PagedAttention。attention のキーとバリューのベクトルが非連続なブロックとして格納されている。クエリ "forth" に対し、3 つのブロックが物理メモリ上でばらばらの位置にある。出典: [[summaries/2023-pagedattention]] の Figure 5。</figcaption>
 </figure>
 
-固定サイズの物理ブロックを事前に用意し、仮想アドレスから物理アドレスへ変換する。リクエスト終了時にブロックが解放されるので、**断片化が起きず、バッチサイズを限界まで上げられる**。メモリの無駄は**約 −55%**（[[summaries/2026-llm-optimization-guide]]）。
+固定サイズの物理ブロックを事前に用意し、論理ブロックから物理ブロックへ **block table**（OS のページテーブルにあたる）で変換する。リクエスト終了時にブロックが解放されるので、**断片化が起きず、バッチサイズを限界まで上げられる**。vLLM はリクエストごとの無駄を **1 ブロック以内**に抑える。
 
-**古典的な OS の技法がそのまま効く**という点が、この層の性格をよく表している。
+**無駄の内訳が 3 つに分解されている**のが原典の見どころである（[[summaries/2023-pagedattention]]）。
+
+| 種類 | 何が起きているか | いつ分かるか |
+|---|---|---|
+| **予約（reserved）** | 将来のトークンのために確保した分。最終的には使うが、その間ほかのリクエストが使えない | サービング前から |
+| **内部断片化** | 最大長に合わせた過剰供給。実際の出力が短ければ丸ごと無駄 | **リクエストが終わって初めて**分かる |
+| **外部断片化** | アロケータ（buddy allocation）に由来。**生成トークンに決して使われない** | サービング前から |
+
+**実測が痛烈である——既存システムが KV cache のメモリのうち実際のトークンの状態に使えているのは 20.4〜38.2% にすぎない。** 結果としてスループットは **2〜4 倍**（対 Orca・FasterTransformer）、同時処理数は Orca (Oracle) の 2.2 倍・Orca (Max) の 4.3 倍になる。
+
+**OS の比喩が最後まで使い切られている**点が、この層の性格をよく表している。
+
+| OS | vLLM |
+|---|---|
+| ページ | KV ブロック |
+| バイト | トークン |
+| プロセス | リクエスト |
+| ページテーブル | block table |
+| スワップ空間 | CPU メモリ |
+| fork の copy-on-write | **参照カウント ＋ ブロック粒度の copy-on-write** |
+| 共有ライブラリ | 共有 prefix |
+
+そして**どこで比喩を捨てるか**も明示されている——**all-or-nothing の退避**（系列のブロックはまとめてアクセスされるので、全部退避するか全くしないか）と、**再計算による復旧**（生成済みトークンを元のプロンプトへ連結すれば 1 回の prefill で作り直せる。**OS では不可能**）である。
+
+> **カーネル単体は遅い、という正直なアブレーションが重要である。** PagedAttention の attention カーネルは block table へのアクセス・追加の分岐・可変系列長の処理という間接参照の税を払うので、**FasterTransformer より 20〜26% 遅い**。**それでも端から端までは 2〜4 倍速い**——より多くのリクエストが載るからである。**カーネルを速くするのでなく memory-bound の領域でバッチサイズを上げることで勝つ**、という前節の Roofline の帰結そのものである。
+
+**実務的な既定値も原典にある。** ブロックサイズは **16**（ShareGPT では 16〜128 が最良だが、Alpaca では系列がブロックより短くなるので大きいブロックが大きく劣化する）。復旧は、**小ブロックなら再計算・大ブロックなら退避**が有利で、**再計算のオーバーヘッドが退避のレイテンシの 20% を超えることは決してない**。
 
 ### Prefix キャッシュ — エージェントで最も効く
 
@@ -114,14 +143,30 @@ memory-bound の領域にいる限りこれが続く。**現代の GPU と LLM �
 
 <figure>
 
-![](../../raw/assets/2025-llm-serving-techniques/radix-attention.png)
+![](../../raw/assets/2023-sglang/x6.png)
 
-<figcaption>図5: RadixAttention。KV cache の再利用関係を radix tree（基数木）として整理し、LRU エビクションで GPU メモリを管理する。出典: [[summaries/2025-llm-serving-techniques]] が引用する SGLang 論文（arXiv:2312.07104）。</figcaption>
+<figcaption>図5: LRU 退避を伴う RadixAttention の 9 時点にわたる動作。2 つのチャットセッション・few-shot 学習のバッチ・自己一貫性サンプリングに応じて、radix tree が分割・共有・退避されていく。緑が新規、青がアクセスされたキャッシュ、赤が退避されたノード。出典: [[summaries/2023-sglang]] の Figure 6。</figcaption>
 </figure>
 
-効くのは**システムプロンプトを使う場合・長い文章に複数の質問をする場合・多ターンの会話**である。**prefill の計算量と KV cache のメモリの両方**が減る。SGLang の **RadixAttention** はこれを radix tree で管理し、LRU エビクションを実装した。
+効くのは**システムプロンプトを使う場合・長い文章に複数の質問をする場合・多ターンの会話**である。**prefill の計算量と KV cache のメモリの両方**が減る。
+
+> **系譜を正確に押さえる（本 wiki の以前の記述の訂正）。** 「PagedAttention → prefix キャッシュ」と滑らかに繋ぐのは誤りである。**vLLM 論文の共有 prefix は「提供者が事前定義した prefix のために物理ブロックを予約しておく」手動の仕組み**であり、しかも [[summaries/2023-sglang]] は「**vLLM の論文はこの機能を論じているが、信頼できる高性能なカーネルがないため公開されたコードは対応していない**」と明言している。**自動の prefix 再利用は SGLang の貢献である。**
+
+**RadixAttention** の設計が要点である（[[summaries/2023-sglang]]）。
+
+- **radix tree（基数木）** は trie と違って**辺に可変長のトークン列をラベル付けできる**ので空間効率が良い。キーがトークン列、値が KV cache のテンソルになる
+- **LRU で葉ノードを再帰的に退避**する
+- **実行中のバッチが使っているノードは退避できない**ので、各ノードが**参照カウンタ**を持つ
+- 木の構造は **CPU 上**に置く。**オーバーヘッドは順伝播 17.6 秒に対し木の演算 0.07 秒、キャッシュヒットゼロのトレースでもわずか 0.5%**
+- **continuous batching や paged attention と互換**である
+
+**キャッシュだけでは足りず、スケジューリングが組で要る。** 先着順のままだと、大量のリクエストが来たときにスケジューラが切り替えを起こして**キャッシュのスラッシング**が発生する。SGLang は**一致した prefix の長さでリクエストを並べ替える**（cache-aware scheduling）。
 
 > **エージェント設計への直接の含意がここにある。** 多ターンの trajectory は定義上「共通 prefix ＋ 少しずつ伸びる末尾」であり、prefix キャッシュが最もよく効く形をしている。逆に言えば、**プロンプトの可変部分（タイムスタンプ・ランダムな ID・シャッフルしたツール一覧）を先頭に置くと、キャッシュが毎回無効になる**。「安定した接頭辞、変動する末尾」はエージェントのプロンプト設計の実務規律である（→ [[context-engineering]]）。
+
+**この含意には一次の数字がある。** [[summaries/2023-sglang]] は **ReAct エージェント（HotpotQA）で vLLM 比スループット 5.6 倍・レイテンシ 13%** を報告し、理由をこう述べている——**「この改善は主に、エージェントが現在の状態（思考・行動・観測）を続く LLM 呼び出しのためのプロンプトへ追記していく過程に由来する」**。13B・33B でも同様に約 5 倍である。
+
+対照的に、**1 シミュレーションあたり 1 回しか LLM を呼ばない generative agents では 30% の改善に留まる**——連鎖がなければ再利用する prefix も伸びないからである。**「エージェントだから速くなる」のではなく、「状態を追記する形をしているから速くなる」。** ただしそこでも、**タイムスタンプに基づいて異なる速度で変化する複数の引数を含む複雑な再利用パターンを、ランタイムが自動的に検出できる**と報告されている。
 
 ## スケジューリング — SLO を 2 つ持つ
 
@@ -339,6 +384,9 @@ memory-bound の領域にいる限りこれが続く。**現代の GPU と LLM �
 ## 関連ページ
 
 - [[llm-inference-optimization]] — 「1 回の前向き計算を速くする」側。本ページはそこから切り出した
+- [[llm-programming-systems]] — フロントエンド側。SGLang はこの 2 つの層の**協調設計**として設計されている
+- [[summaries/2023-pagedattention]] — PagedAttention と vLLM の原典
+- [[summaries/2023-sglang]] — RadixAttention とキャッシュを意識したスケジューリングの原典。エージェントの 5.6 倍もここ
 - [[model-quantization]] — 量子化の詳細。本ページの Roofline 図が「重みのみか、重みと活性か」の根拠を視覚化している
 - [[low-precision-training]] — 訓練側の低精度。サービングとは目的が違う
 - [[transformer-architecture]] — MQA/GQA/MLA・SWA・SSM の系譜。アーキテクチャがサービングの動作領域を決める

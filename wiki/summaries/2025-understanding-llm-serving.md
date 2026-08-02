@@ -128,6 +128,7 @@ QLoRA・AWQ・GPTQ・GGUF を「いつ使うか」で並べる。詳細は [[mod
 ## 関連ページ
 
 - [[llm-serving-systems]] — 本記事が属する概念ページ。ルーティング／カスケードとツールスタックの節が本記事に依拠している
+- [[llm-programming-systems]] — 本記事の「ツールスタック」の一段下、LLM プログラムをどう書くかの層
 - [[summaries/2025-llm-serving-techniques]] — 同じ主題の技術側。本記事が名前だけ挙げる機構（continuous batching・PagedAttention）の中身はそちらにある
 - [[summaries/2022-gptq]] — 本記事の「Gradient Post-Training Quantization」という誤りを正す原典
 - [[model-quantization]] — 量子化 4 手法の詳細

@@ -5,6 +5,7 @@ tags: [tool-use-and-function-calling, llm-agents]
 related:
   - "[[agent-loop]]"
   - "[[llm-serving-systems]]"
+  - "[[llm-programming-systems]]"
   - "[[reasoning-and-planning]]"
   - "[[multi-agent-systems]]"
   - "[[model-context-protocol]]"
