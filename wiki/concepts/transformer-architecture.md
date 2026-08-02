@@ -6,6 +6,7 @@ related:
   - "[[mixture-of-experts]]"
   - "[[llm-inference-optimization]]"
   - "[[model-quantization]]"
+  - "[[low-precision-training]]"
   - "[[agent-memory]]"
   - "[[context-engineering]]"
   - "[[test-time-compute]]"

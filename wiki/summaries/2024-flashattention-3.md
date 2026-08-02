@@ -181,6 +181,8 @@ FP16 では FlashAttention-2/3 とも標準実装比 1.7 分の 1（中間の so
 - [[summaries/2022-smoothquant]] — 同じ「等価変換で数値的性質だけを変える」系統。本論文の付録 A が引く外れ値管理の先行研究でもある
 - [[summaries/2022-llm-int8]] — 本論文が「外れ値特徴の管理」として引く先行研究
 - [[summaries/2024-deepseek-v3]] — FP8 を極大規模の**訓練**で通した側。外れ値への答え方が対照的（細粒度量子化 vs 直交回転）
+- [[low-precision-training]] — 訓練側の低精度の系譜。本論文の incoherent processing と同じ原理（Random Hadamard 変換）が FP4 訓練にも現れる
+- [[summaries/2025-nvfp4-pretraining]] — 同じ直交回転を **4 ビット訓練**で使った仕事。ただし適用先を Wgrad に限定し、Fprop / Dgrad に適用すると劣化すると報告している
 - [[transformer-architecture]] — MQA/GQA・MLA といった KV cache 削減の系譜。本論文の付録 A はそれらが「$\mathbf{Q},\mathbf{K},\mathbf{V}$ の得られ方を変えるだけで中核の計算は変えない」ため、attention 本体の改善が等しく恩恵をもたらすと整理している
 - [[summaries/2023-lost-in-the-middle]] — 長い窓が安くなっても使いこなせるとは限らない、という対の論点
 - [[summaries/2026-gpt2-to-kimi3]] — カーネル実装の成熟度が新アーキテクチャの速度を決めるという同じ主題

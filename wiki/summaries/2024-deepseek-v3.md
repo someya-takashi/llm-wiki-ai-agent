@@ -156,6 +156,9 @@ MoE の負荷が偏るとルーティング崩壊を招き、エキスパート�
 - [[transformer-architecture]] — MLA（KV を潜在ベクトルへ圧縮する attention）
 - [[llm-inference-optimization]] — FP8 訓練・DualPipe・prefill/decode 分離・冗長エキスパート・ハードウェア提言
 - [[model-quantization]] — 本レポートの細粒度量子化を、外れ値への 4 系統の対処の一つとして位置づけるページ
+- [[low-precision-training]] — 訓練を低精度で回す系譜（BF16 → FP8 → FP4）。本レポートはその FP8 世代の極大規模の実証にあたる
+- [[summaries/2023-fp8-lm]] — 1 年早い FP8 訓練フレームワーク。「どこを FP8 にしないか」を先に決める設計は共通だが、あちらは精度分離とオプティマイザ、こちらは細粒度量子化に重心がある
+- [[summaries/2025-nvfp4-pretraining]] — 次世代の FP4 訓練。本レポートの「活性の勾配のブロック単位量子化で発散」という否定的結果と対をなす知見が並ぶ
 - [[summaries/2022-llm-int8]] — 外れ値が 6.7B で創発するという、細粒度量子化が必要になる理由の一次資料
 - [[summaries/2024-flashattention-3]] — 同じ 2024 年に FP8 の外れ値問題へ別の答えを出した仕事。本レポートが**スケールの粒度を細かくする**（活性 1×128 タイル・重み 128×128 ブロック）のに対し、あちらは加えて**直交回転で分布そのものをならす**（incoherent processing）。適用層も訓練 vs attention カーネルで対照的
 - [[reinforcement-learning-from-human-feedback]] — GRPO・ルール／モデルベース RM・R1 からの蒸留・自己報酬

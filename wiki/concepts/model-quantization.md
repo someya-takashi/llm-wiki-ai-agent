@@ -1,8 +1,9 @@
 ---
 type: concept
-aliases: [量子化, quantization, model quantization, PTQ, QAT, 訓練後量子化, 量子化を意識した訓練, GPTQ, AWQ, EfficientQAT, Block-AP, E2E-QP, Q-PEFT, OBQ, Optimal Brain Quantization, weight-only quantization, 重みのみ量子化, W4A16, W8A8, salient weights, 顕著な重み, vector quantization, ベクトル量子化, AQLM, QuIP, GGUF, GGML, bitsandbytes, LLM.int8, NF4, QLoRA, double quantization, 二重量子化, block quantization, ブロック量子化, STE, straight-through estimator, calibration dataset, 較正データセット, SmoothQuant, incoherent processing, RTN, absmax, affine quantization, アフィン量子化, INT8, INT4, FP8, BF16, k-quant, llama.cpp]
+aliases: [量子化, quantization, model quantization, PTQ, QAT, 訓練後量子化, 量子化を意識した訓練, GPTQ, AWQ, EfficientQAT, Block-AP, E2E-QP, Q-PEFT, OBQ, Optimal Brain Quantization, weight-only quantization, 重みのみ量子化, W4A16, W8A8, salient weights, 顕著な重み, vector quantization, ベクトル量子化, AQLM, QuIP, GGUF, GGML, bitsandbytes, LLM.int8, NF4, QLoRA, double quantization, 二重量子化, block quantization, ブロック量子化, STE, straight-through estimator, calibration dataset, 較正データセット, SmoothQuant, incoherent processing, RTN, absmax, affine quantization, アフィン量子化, INT8, INT4, FP8, FP4, NVFP4, NVFP4A16, MXFP4, BF16, k-quant, llama.cpp]
 tags: [model-quantization, llm-inference-optimization, llm-foundations]
 related:
+  - "[[low-precision-training]]"
   - "[[parameter-efficient-fine-tuning]]"
   - "[[llm-inference-optimization]]"
   - "[[transformer-architecture]]"
@@ -19,6 +20,7 @@ summaries:
   - "[[summaries/2025-llm-quantization-explained]]"
   - "[[summaries/2024-deepseek-v3]]"
   - "[[summaries/2024-flashattention-3]]"
+  - "[[summaries/2025-nvfp4-inference]]"
   - "[[summaries/2026-gemma-4]]"
   - "[[summaries/2026-llm-optimization-guide]]"
   - "[[summaries/2026-deepseek-v4]]"
@@ -45,6 +47,8 @@ updated: 2026-08-02
 | FP8 (e4m3) | 1 | 4 | 3 | — | Hopper 以降 |
 
 **BF16 と FP16 を「どちらも 16 ビット」で括らない**のが最初の分かれ道である。BF16 は指数部が FP32 と同じなので動的範囲が一致し、訓練中のアンダーフロー・オーバーフローに強い。一方で仮数部が 7 ビットしかないため、**同じ値を丸めたときの誤差は FP16 より大きい**（[[summaries/2025-llm-quantization-explained]] が 1000 テンソルで実測している）。訓練の安定性が問題なら BF16、狭い範囲での細かさが要るなら FP16、という使い分けになる。
+
+> **この主張の原典は [[summaries/2019-bfloat16]] である**（Kalamkar ら, Intel Labs / Facebook, 2019）。BF16 の実質的な貢献は精度でなく、**FP16 訓練に必須だった loss scaling という調整項目を消したこと**にあった。詳細と 5 領域 8 モデルの実証は [[low-precision-training]] にある。なお **BF16 が常に優れているわけではない**——[[summaries/2023-fp8-lm]] は、master weight のように「狭い範囲で細かい更新」を扱う場面では BF16 が FP16 ＋ テンソルスケーリングに負けることを実測している。**形式の優劣は用途で反転する。**
 
 メモリ見積もりは単純な掛け算である。10 億パラメータなら FP32 で 4.0GB、INT8 で 1.0GB。7B モデルは FP16 で 28GB だが 4 ビットなら 7GB に収まり、コンシューマ GPU に載る。
 
@@ -266,10 +270,13 @@ QAT の定義は「**偽量子化と STE によって、量子化されたモデ
 
 推論だけの話ではない。
 
+> **訓練そのものを低精度で回す話は、2026-08-02 に独立した概念ページ [[low-precision-training]] へ切り出した。** BF16（2019）→ FP8（2023）→ FP4（2025）の系譜、技法のカタログ、「どこを低精度にしないか」の規律、否定的結果の一覧はそちらにある。**目的が違う点に注意**——低精度訓練は**訓練コストを下げる**もので成果物は高精度のモデルでよく、QAT は**低ビットで配れるモデルを作る**ものである。両者は直交する。本節は概観に留める。
+
 - **FP8 訓練**（[[summaries/2024-deepseek-v3]]）— 671B の MoE を FP8 混合精度で訓練しきり、BF16 比の相対 loss 誤差を 0.25% 未満に収めた公開記録。要点は**どこを FP8 にしないか**を先に決めること（埋め込み・出力ヘッド・MoE ゲーティング・正規化・attention は高精度のまま）、**細粒度量子化**（活性 1×128 タイル、重み 128×128 ブロック）、そして**否定的結果の公開**（活性の勾配をブロック単位で量子化すると 16B モデルが約 300B トークンで発散する）。
 - **FP8 カーネル**（[[summaries/2024-flashattention-3]]）— attention を FP8 で計算するためのレイアウト適合と、block quantization ＋ incoherent processing による精度対策。per-tensor ベースライン比で RMSE 2.6 分の 1。ただし**効いているのはほぼ incoherent processing だけ**である（ブロック量子化を外しても誤差はほぼ変わらない）。
 - **提供側の QAT**（[[summaries/2026-gemma-4]]）— 事後量子化でなく訓練段階で量子化を引き受け、int2/int4 混合の重みを配布する。E2B は bf16 4.6GB → **0.8GB**。「量子化はデプロイ時の後処理」という前提を崩す動き。
 - **KV cache の圧縮**（[[summaries/2026-deepseek-v4]]）— 量子化とは別路線だが目的は同じで、学習された圧縮とスパース選択（CSA/HCA）で 1M コンテキストの KV cache を一般的な BF16 GQA8 構成の約 2% にする。
+- **FP4 訓練**（[[summaries/2025-nvfp4-pretraining]]）— 12B を **10T トークン、4 ビット**で訓練しきった公開記録。ここまで来ると形式単体では成立せず、**Random Hadamard 変換・確率的丸め・2D スケーリング・選択的高精度層**を全部載せて初めて収束する。詳細は [[low-precision-training]]。
 
 ## 選び方
 
@@ -305,6 +312,8 @@ QAT の定義は「**偽量子化と STE によって、量子化されたモデ
 - [[transformer-architecture]] — BF16 と FP16 の違いが効く訓練の安定性、KV cache 削減の系譜（MLA / CSA）
 - [[mixture-of-experts]] — ルータのような感度の高い部分を高精度に残す selective precision の判断
 - [[context-engineering]] — KV cache 量子化がコンテキスト長の経済性に効く接点
+- [[low-precision-training]] — 訓練そのものを低精度で回す話。BF16 → FP8 → FP4 の系譜。本ページから切り出した
 - [[parameter-efficient-fine-tuning]] — QLoRA・QA-LoRA・PEQA の系統。「マージで FP16 へ戻る」問題の接点
+- [[summaries/2025-nvfp4-inference]] — NVFP4 を AWQ / AutoRound / bitsandbytes と並べて実測した記事。weight-only と weight+activation の差が最も鮮明に出ている
 - [[summaries/2022-gptq]] / [[summaries/2023-awq]] / [[summaries/2024-efficientqat]] — 重みのみ量子化の三部作。互いを名指しで批判し合っており、その対立軸が本ページの骨格になっている
 - [[summaries/2025-llm-quantization-guide]] / [[summaries/2025-llm-quantization-explained]] — 本ページの主な根拠となる 2 記事（手法カタログ側と原理・実装側）
