@@ -4,6 +4,7 @@ aliases: [トランスフォーマー, decoder-only, attention, linear attention
 tags: [transformer-architecture, llm-foundations]
 related:
   - "[[mixture-of-experts]]"
+  - "[[positional-encoding]]"
   - "[[llm-inference-optimization]]"
   - "[[model-quantization]]"
   - "[[low-precision-training]]"
@@ -25,7 +26,8 @@ summaries:
   - "[[summaries/2026-gemma-4]]"
   - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2021-switch-transformers]]"
-updated: 2026-08-02
+  - "[[summaries/2021-roformer]]"
+updated: 2026-08-03
 ---
 
 # Transformer Architecture（トランスフォーマーアーキテクチャ）
@@ -35,6 +37,8 @@ updated: 2026-08-02
 ## 基本構造 — decoder-only
 
 GPT-2 以来の標準形は **decoder-only**（デコーダのみ）構成である（[[summaries/2026-gpt2-to-kimi3]] が実装コード付きで解説）: トークン埋め込み＋位置埋め込み → 同一構造のブロック × N 層 → 最終正規化 → LM head（隠れ状態を語彙のロジットへ写像）。各ブロックは **attention**（系列内の他トークンから情報を集める）と **MLP**（位置ごとの変換）を、**残差接続**（入力に出力を足し込む）で包んだもの。GPT-2 は 12 層・12 ヘッド・埋め込み 768 で 124M パラメータ、Kimi K3（2026）は 2.8T——**7 年で 22,580 倍**にスケールしたが、この骨格自体はほぼ変わっていない。
+
+この骨格には、attention 自体が持てない要素がひとつ外付けされている——**位置情報**である。self-attention は入力の並べ替えに対して同変であり、そのままでは語順を見ていない。そこで位置符号化を注入するのだが、その注入先が (1) 入力ベクトルに足す（絶対位置埋め込み）、(2) attention スコアに足す（相対バイアス）、(3) query/key を回転させる（**RoPE** = Rotary Position Embedding, → [[summaries/2021-roformer]]）のどれかで、システムとの相性が大きく変わる。現代モデルがほぼ例外なく (3) を採るのは精度の差ではなく、**追加パラメータも $N\times N$ のバイアス行列も要らず、$q$/$k$ に分離できるので linear attention・KV cache・カーネル融合のすべてと喧嘩しない**からである。系譜と拡張（YaRN・p-RoPE・部分 RoPE）、および MLA との衝突は [[positional-encoding]] に独立させた（2026-08-03）。
 
 自己回帰生成では、過去トークンの key/value を **KV cache** に保存して再計算を避ける。この cache は系列長 O(N) で成長し、長コンテキストではメモリ帯域のボトルネックになる——以降のアーキテクチャ発展の大半は、この「**推論時の記憶をどう持つか**」への応答である → [[llm-inference-optimization]]。
 
@@ -133,6 +137,7 @@ transformer 側から見た要点は 3 つ。**(1) 置き場所は FFN 層**—�
 
 ## 関連ページ
 
+- [[positional-encoding]] — 位置符号化の系譜（絶対 → 相対 → RoPE → 長コンテキスト拡張）
 - [[mixture-of-experts]] — MoE の詳細（ゲーティング設計・ルーティング水準・負荷分散・システム・理論）
 - [[llm-inference-optimization]] — KV cache・メモリ帯域・カーネルという「速さ」の側
 - [[agent-memory]] — 同型の記憶問題をモデルの外側で解く系譜

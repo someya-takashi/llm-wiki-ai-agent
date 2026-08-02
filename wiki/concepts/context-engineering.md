@@ -4,6 +4,7 @@ aliases: [コンテキストエンジニアリング, context management, コン
 tags: [context-engineering, llm-agents, agent-memory]
 related:
   - "[[agent-memory]]"
+  - "[[positional-encoding]]"
   - "[[llm-serving-systems]]"
   - "[[retrieval-augmented-generation]]"
   - "[[agent-loop]]"
@@ -25,7 +26,7 @@ summaries:
   - "[[summaries/2026-meta-harness]]"
   - "[[summaries/2025-manus-context-engineering]]"
   - "[[summaries/2026-managed-agents]]"
-updated: 2026-08-02
+updated: 2026-08-03
 ---
 
 # Context Engineering（コンテキストエンジニアリング）
@@ -188,6 +189,7 @@ few-shot 例示はコンテキスト積載の古典で、CoT（[[summaries/2022-
 - [[agent-loop]] — 毎ターンのコンテキスト更新が起きる実行ループ
 - [[multi-agent-systems]] — コンテキスト分離としてのサブエージェント
 - [[tool-use-and-function-calling]] — ツール定義もコンテキストを占める。最小集合に絞る判定基準
+- [[positional-encoding]] — ウィンドウの上限を決める側。長コンテキスト拡張（YaRN 等）の実体は位置符号化の内挿である
 - [[summaries/2023-lost-in-the-middle]] — 基本制約 2（想起の劣化）の一次資料
 - [[summaries/2025-effective-context-engineering]] — 本ページの主題を命名・定式化した出典（注意予算・context rot・JIT・長時間タスクの 3 手法）
 - [[summaries/2023-memgpt]] / [[summaries/2025-multi-agent-research-system]] — 本ページの主要な根拠原典

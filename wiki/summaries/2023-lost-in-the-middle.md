@@ -123,6 +123,7 @@ translation: "[[translations/2023-lost-in-the-middle]]"
 ## 関連ページ
 
 - [[context-engineering]] — 本ページの主な接続先。基本制約と、この現象の追試の系譜
+- [[positional-encoding]] — 「その位置を表現できること」と「その位置を等しく参照できること」の差。本ページはその差の実測にあたる
 - [[retrieval-augmented-generation]] — reader が retriever より先に飽和する。再ランキングと切り詰め
 - [[agent-memory]] — 有限のコンテキストに何を残すかという設計の動機
 - [[summaries/2023-memgpt]] — この現象を設計動機として明示的に引く同時期の仕事

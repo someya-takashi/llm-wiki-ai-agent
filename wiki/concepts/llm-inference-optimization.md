@@ -4,6 +4,7 @@ aliases: [推論最適化, inference optimization, KV cache, TTFT, TPS, serving,
 tags: [llm-inference-optimization, llm-foundations]
 related:
   - "[[model-quantization]]"
+  - "[[positional-encoding]]"
   - "[[mixture-of-experts]]"
   - "[[transformer-architecture]]"
   - "[[test-time-compute]]"
@@ -26,7 +27,8 @@ summaries:
   - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2021-switch-transformers]]"
   - "[[summaries/2025-manus-context-engineering]]"
-updated: 2026-08-02
+  - "[[summaries/2021-roformer]]"
+updated: 2026-08-03
 ---
 
 # LLM Inference Optimization（LLM 推論の高速化・サービング）
@@ -228,6 +230,7 @@ MoE（→ [[mixture-of-experts]]）の推論経済は独特で、**計算は活�
 ## 関連ページ
 
 - [[transformer-architecture]] — コスト構造を決めるアーキテクチャの側
+- [[positional-encoding]] — RoPE がカーネル融合の接ぎ木点になる理由と、KV cache・量子化との相互作用
 - [[test-time-compute]] — 推論時計算を「賢さ」に使う側（本ページはそれを安く捌く側）
 - [[context-engineering]] — コンテキスト積載のコスト意識
 - [[multi-agent-systems]] — 並列化とトークン経済
