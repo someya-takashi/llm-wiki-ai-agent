@@ -108,6 +108,8 @@ v1（Opus 4.5）の結果: solo 20 分/$9 は見た目それらしいが**ゲー
 
 ## 関連ページ
 
+- [[summaries/2024-swe-agent]] — ACI（agent-computer interface）の原典。ハーネスを「モデルを底上げする足場」として設計する方向の出発点
+
 - [[coding-agents]] — 本記事が第 2 の根拠原典（3 エージェント構成・ハーネス縮小の方法論）
 - [[agent-evaluation]] — evaluator の懐疑チューニング・few-shot 校正・主観の採点可能化
 - [[self-reflection]] — 自己評価の甘さと「分離した懐疑」による回避

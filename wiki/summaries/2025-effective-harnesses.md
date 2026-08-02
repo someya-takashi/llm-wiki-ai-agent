@@ -101,6 +101,8 @@ translation: "[[translations/2025-effective-harnesses]]"
 
 ## 関連ページ
 
+- [[summaries/2024-swe-agent]] — 同じ問題を研究側から扱った原典。ツール設計のアブレーションが具体的
+
 - [[coding-agents]] — 本記事を初出典として新設した概念ページ
 - [[context-engineering]] — compaction の限界とセッション間の状態外部化
 - [[agent-frameworks]] — Anthropic 実務連作（全 5 本）の 3 本目。harness の語彙はここで整理している

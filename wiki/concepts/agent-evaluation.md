@@ -10,6 +10,7 @@ related:
   - "[[agent-observability]]"
   - "[[computer-use-agents]]"
 summaries:
+  - "[[summaries/2024-swe-agent]]"
   - "[[summaries/2026-ai-scientist]]"
   - "[[summaries/2022-rlhf-illustrated]]"
   - "[[summaries/2023-dpo]]"
@@ -41,7 +42,9 @@ LLM（Large Language Model, 大規模言語モデル）エージェントの能�
 
 タスク集合を与えて**最終成果の成否**を機械判定する方式。エージェント領域の代表的ベンチマーク:
 
-- **SWE-bench (Pro/Lite)** — 実 GitHub イシューの修正。指標は resolve rate（テストが通る修正を出せた率）
+- **SWE-bench (Pro/Lite)** — 実 GitHub イシューの修正。指標は resolve rate（テストが通る修正を出せた率）。素性は [[summaries/2024-swe-agent]] が詳しい: **12 の Python リポジトリの実際の GitHub イシューから自動収集した 2,294 件**（Lite は自己完結したバグ修正 300 件、Dev は 225 件）で、**人間が書いた単体テストによる実行ベースの評価**。自動プログラム修復・バグ位置特定・テスト生成という**別々に研究されてきた SE のサブタスクを単一のタスク定式化へ統一している**点が、コード生成ベンチマーク（HumanEval 等、問題が約 100 行で自己完結）との違いである。
+  - **汚染の検査が組み込みやすい**のも利点で、同論文はイシューの**作成年で層別**して「**作成年と解決率に明確な相関はない**」ことを示した（2023 年 23.33% / 2021 年 23.81% / 2020 年 10.61% など、単調でない）。カットオフ後の問題だけでベンチを組む [[summaries/2023-reflexion]] の LeetcodeHardGym とは別方向の、**既存ベンチマークの中で時間軸を使って汚染を見る**やり方。
+  - **絶対水準の解釈には注意が要る。** 2024 年前半の SWE-agent は full で 12.47%——当時の最高性能だが **87.5% は解けていない**。この種のベンチマークは**数値が急速に古びる**ので、`ingested` の日付を確認して読むこと。
 - **Terminal Bench** — 端末操作でのタスク遂行
 - **LiveCodeBench (Pro)** — 競技プログラミング（汚染対策として出題時期を区切る）
 - **GPQA-Diamond / Humanity's Last Exam（HLE）** — 大学院レベル科学 QA／学際難問

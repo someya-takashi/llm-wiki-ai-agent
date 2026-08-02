@@ -101,6 +101,8 @@ LLM（Large Language Model, 大規模言語モデル）に「考える（thought
 
 ## 関連ページ
 
+- [[summaries/2024-swe-agent]] — thought + action の形式を実務的な ACI へ発展させた例
+
 - [[reasoning-and-planning]] — ReAct が属する概念。CoT との対比の本拠地
 - [[agent-loop]] — thought-action-observation ループの定式化
 - [[tool-use-and-function-calling]] — Wikipedia API を初期のツール利用として位置づけ

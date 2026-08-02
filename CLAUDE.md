@@ -197,6 +197,7 @@ summaries_used:
 
 - **Obsidian**：wiki の閲覧・グラフビュー確認。ユーザーが裏側で開いている。
 - **Obsidian Web Clipper**：記事を markdown 化して `raw/articles/` に保存。
+- **`pdftotext` / PyMuPDF（`fitz`）**：PDF 原典からの本文テキストと図の抽出（ingest skill のケース B）。**PDF だからといって図を諦めない**——ベクタ図はキャプション位置を境界に領域をレンダリングして取得する。
 - **Marp**：スライド出力が必要な質問への回答に使う（任意）。
 - **Dataview**：frontmatter ベースの動的集計（任意）。
 

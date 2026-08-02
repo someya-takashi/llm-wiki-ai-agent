@@ -106,6 +106,8 @@ LLM（Large Language Model, 大規模言語モデル）システムの性能を�
 
 ## 関連ページ
 
+- [[summaries/2024-swe-agent]] — 手作業で ACI を設計した原典。本論文が自動化しようとしている対象
+
 - [[agent-frameworks]] — ハーネス層の設計論。人手設計→仮定の棚卸し→自動探索という第三段階
 - [[coding-agents]] — proposer も探索対象もコーディングエージェント。再帰的な自己改善の入口
 - [[context-engineering]] — 「何を保存・取得・提示するか」＝ハーネスの定義そのもの。積載設計が探索対象になった
