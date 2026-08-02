@@ -136,6 +136,8 @@ huggingface のドキュメントから導いた手順が末尾にある。**動
 ## 関連ページ
 
 - [[model-quantization]] — 本記事が主要な根拠の一つとなる概念ページ。QLoRA の位置づけの訂正もここに集約した
+- [[summaries/2023-qlora]] — 本記事が QAT に分類した QLoRA の一次資料。§3 が「勾配は LoRA のパラメータについてのみ計算する」と明記している
+- [[summaries/2022-smoothquant]] — 本記事が引く外れ値分析の一次資料
 - [[summaries/2025-llm-quantization-guide]] — ほぼ同時期のもう 1 本。こちらが原理と実装なら、あちらは手法カタログ。相互に補完する
 - [[llm-inference-optimization]] — 量子化を推論経済の文脈に置くページ
 - [[summaries/2024-deepseek-v3]] — FP8 訓練での細粒度量子化。「外れ値はチャネル単位で対処する」という同じ発想

@@ -18,6 +18,9 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ### Papers
 
+- [[summaries/2022-llm-int8]] — **LLM.int8()**（Dettmers, Lewis, Belkada, Zettlemoyer, NeurIPS 2022, arXiv:2208.07339）。**175B を性能劣化ゼロで INT8 にした初の手法**だが、価値の半分は量子化技法でなく**創発現象の記述**にある。手法は (a) **vector-wise 量子化**（行列積を独立な内積の列と見なし、隠れ状態の各行と重みの各列に別々の absmax スケールを持たせる）と (b) **混合精度分解**（大きさ 6.0 超の外れ値を含む特徴次元だけ 16 ビットへ分離し、残り 99.9% を 8 ビットに）。**なぜ vector-wise だけでは足りないか**が明快で、vector-wise は「行＝系列次元」をスケールするのに**外れ値は「列＝特徴次元」に生じる**——軸が直交している。§4 の創発の分析が白眉で、**6B→6.7B で相転移**（影響される層 65%→100%）、**1 系列 15 万個の外れ値がわずか 6 次元に集中**、それを消すと **top-1 attention 質量 40%→20%・パープレキシティ 600〜1000% 悪化**（ランダム 7 次元なら 0.1%）。そして**創発を予測するのはパラメータ数でなくパープレキシティ**（サイズには非単調、パープレキシティには単調）。速度は正直に報告されており、**モデル次元 4096 以下では FP16 より遅い**。
+- [[summaries/2022-smoothquant]] — **SmoothQuant**（Xiao, Lin, Seznec, Wu, Demouth, Han / MIT・NVIDIA, ICML 2023, arXiv:2211.10438）。外れ値を**分離するのでなく「移す」**。活性を per-channel の平滑化係数で割り重みを逆方向に掛ける**数学的に等価な変換**で難しさを活性から重みへ移し、**W8A8**（重みも活性も INT8）を成立させて INT8 GEMM カーネルを使えるようにする。移す量は **migration strength α**（OPT/BLOOM 0.5、GLM-130B 0.75、LLaMA 0.8）。最も鋭いのは **「per-channel の活性量子化は精度的には正解なのに使えない」という証明**——INT8 GEMM はスケーリングを外側次元（トークン・出力チャネル）にしか置けず、内側の入力チャネルには原理的に届かない。**LLM.int8() を名指しで批判**し数字で示す: OPT-13B・seq256 で **FP16 152.6ms / LLM.int8() 237.1ms / SmoothQuant-O3 112.1ms**——精度は両者とも FP16 に一致するのに速度は正反対。MT-NLG 530B を 16 台→**8 台の単一ノード**へ。
+- [[summaries/2023-qlora]] — **QLoRA**（Dettmers, Pagnoni, Holtzman, Zettlemoyer / UW, NeurIPS 2023, arXiv:2305.14314）。**65B のファインチューニングを 780GB 超から 48GB 未満へ**。3 つの技法——**NF4**（分位量子化に基づき、ゼロ中心正規分布に情報理論的に最適な 4 ビット表現）、**二重量子化**（スケール係数を量子化。0.5→0.127 ビット/param）、**paged optimizers**（統合メモリで OOM を防ぐ。33B の訓練には必須）。**QLoRA は QAT ではなく PTQ ＋ PEFT** である（§3「勾配は LoRA のパラメータについてのみ計算する」）。PEFT 側の知見も重い——**メモリの大半はアダプタでなく活性の勾配**（7B で LoRA 26MB に対し入力勾配 567MB）、ゆえに**全線形層にアダプタを置くべきで r は性能に無関係**。後半は評価方法論の論文になっており、**LLM-as-a-judge のバイアスを実測**: GPT-4 の**順序効果**、**自己贔屓**（自分の出力に Elo 1348、人間評価では 1176）、**サンプル水準の一致は Fleiss κ=0.25**（人間同士でも 0.42）。データは**量より適合性**（9k の OASST1 が 450k の FLAN v2 に勝つ）で、**強い MMLU は強いチャットボット性能を意味しない**。
 - [[summaries/2023-llm-agents-survey]] — Xi et al.（Fudan NLP, 2023, 686 文献）。分野の語彙を定めた古典サーベイ: brain/perception/action の 3 モジュール・応用 3 分類（単一/マルチ/人間協調）・エージェント社会・評価 4 観点・安全 3 論点。
 - [[summaries/2024-llm-security-privacy-survey]] — Das et al.（FIU, 2024）。LLM のセキュリティ攻撃（prompt injection・jailbreak・backdoor・poisoning）とプライバシー攻撃（勾配漏洩・MIA・PII 漏洩）＋防御機構＋応用リスクの脅威分類サーベイ。ジェイルブレイクの 2 失敗モード。
 - [[summaries/2022-instructgpt]] — InstructGPT（Ouyang et al., OpenAI, NeurIPS 2022）。RLHF を汎用の指示追従に初適用した一次資料で ChatGPT の前身。SFT→報酬モデル→PPO の 3 段・1.3B が 175B に勝つ・**アラインメント税**と PPO-ptx・整合コストは事前学習の 1.6%・「誰に整合させているのか」の 4 層分解。バイアスは改善せず、指示されれば GPT-3 より有害になる。
@@ -77,6 +80,9 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ## Translations
 
+- [[translations/2022-llm-int8]] — LLM.int8() 論文の全文翻訳（本文 §1〜7 ＋ 付録 A〜F。圧縮なし）。**クリップ不良を復元**——Figure 3・4 はいずれも 2 パネル図だが**各図の (a) しか残っておらず**（`x4.png`/`x6.png` 欠落）、**本キャプション 2 つも消滅**していた。とくに復元した (b) パネルは「創発を予測するのはパラメータ数でなくパープレキシティ」という本論文の最重要の主張を担う図である。原論文で **Table 2（§6）と Table 3（付録 A）が同一の重複**である点も訳注に記した。
+- [[translations/2022-smoothquant]] — SmoothQuant 論文の全文翻訳（本文 §1〜7 ＋ 付録 A。圧縮なし）。**クリップは健全**で、画像 10 枚・Figure 1〜10・Table 1〜10 がすべて揃っていた。HTML 表 2 つを markdown へ変換。
+- [[translations/2023-qlora]] — QLoRA 論文の全文翻訳（本文 §1〜9 ＋ 付録 A〜G）。**クリップは健全**（画像 6 枚・Figure 1〜6・Table 1〜13 が完全）。**圧縮は 1 箇所のみ**で、§6.1 の定性分析における対話ログを要点訳に留めた（6 カテゴリの知見自体は完全に訳出）。HTML 表 4 つを markdown へ変換。
 - [[translations/2025-llm-quantization-guide]] — 「LLM Quantization Explained: A Complete Guide」の全文翻訳（画像 4 枚収録）。**クリップは健全**（切断・欠落なし）。図 4 の手法比較表は中身が文字だけの表なので、画像に加えて **markdown の表としても転記**した。拍手・共有の誘導は本文でない定型要素として除外。原文の誤りは訳注では触れず、要約と概念ページ側で指摘している。
 - [[translations/2025-llm-quantization-explained]] — 「LLM Quantization Explained」の全文翻訳（画像 17 枚収録）。**クリップは健全**。埋め込み画像 20 枚のうち **3 枚を chrome として除外**（冒頭の装飾タイトルカード、末尾の著者プロフィール／宣伝 2 枚）。線形量子化の式の図は中身が数式だけの箱なので、**数式を本文へも起こした**。References（リンク集）は既定どおり除外し、主要な一次資料（LLM.int8・SmoothQuant・QLoRA・STE）は要約側で言及した。
 - [[translations/2020-rag]] — RAG 論文の全文翻訳（付録 A〜I 含む。周辺化・DPR の式は LaTeX 維持、生成例は原文のまま収録）。
@@ -129,6 +135,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 
 ## Concepts
 
+- [[parameter-efficient-fine-tuning]] — PEFT。事前学習済みの重みを凍結し少数のパラメータだけ訓練する手法群。**LoRA の定式化**、**PEFT のメモリの内訳という反直観的な事実**（アダプタ 26MB に対し活性の勾配 567MB——だからアダプタを削っても総メモリは減らず、逆に増やしても安い）、**チューニングすべきは r でなく配置**（全線形層に置く）、**QLoRA が QAT でなく PTQ ＋ PEFT である理由**、そして**データは量より適合性**。根拠は現時点で [[summaries/2023-qlora]] に依拠しており、LoRA 本体の原典は未取得である旨をページ冒頭に明記している。
 - [[model-quantization]] — モデルの量子化。**推論サービングだけの道具ではない**（訓練・ファインチューニング・エッジ配布・カーネル実装にまたがる）ため [[llm-inference-optimization]] から切り出した。基礎（BF16 は範囲・FP16 は精度、affine 量子化の s と z）、量子化する 3 対象（重み・活性・KV cache）、**外れ値への 4 系統の対処**（分けて保持／粒度を細かく／重要な重みを守る／分布そのものをならす）、PTQ と QAT（偽量子化と STE）、代表手法（GPTQ・AWQ・GGUF・bitsandbytes・NF4・二重量子化）、**QLoRA は QAT ではなく PTQ ＋ PEFT** という分類の訂正、そして「量子化＝高速化ではない」。
 - [[llm-agents]] — 総論ハブ。エージェントの定義と系譜・brain/perception/action・応用 3 形態・エージェント社会。各論ページへの入口。
 - [[reasoning-and-planning]] — LLM に思考過程・計画を明示的に生成させる手法群。CoT・CoT-SC・ReAct・ToT を扱う。
@@ -195,6 +202,8 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - FlashAttention-3 / 非同期化 / asynchrony / warp-specialization / WGMMA / TMA / Tensor Memory Accelerator / warpgroup / CTA / pingpong scheduling / SMEM / GMEM / RMEM / setmaxnreg / LDSM / STSM / SASS / k-major / wave quantization → [[llm-inference-optimization]]
 - FP8 / e4m3 / block quantization / ブロック量子化 / incoherent processing / 非干渉化処理 / Hadamard 行列 / 外れ値 / outlier features / per-tensor スケーリング → [[llm-inference-optimization]]
 - 量子化 / quantization / PTQ / QAT / 訓練後量子化 / 量子化を意識した訓練 / GPTQ / AWQ / GGUF / GGML / k-Quant / llama.cpp / bitsandbytes / LLM.int8 / NF4 / NormalFloat / QLoRA / double quantization / 二重量子化 / STE / straight-through estimator / 偽量子化 / fake-quantization / calibration dataset / 較正データセット / SmoothQuant / RTN / absmax / affine quantization / アフィン量子化 / ゼロ点 / zero-point / スケール係数 / 動的量子化 / 静的量子化 / per-channel / INT8 / INT4 / BF16 / bfloat16 → [[model-quantization]]
+- vector-wise 量子化 / 混合精度分解 / mixed-precision decomposition / 創発的な外れ値 / emergent outlier features / W8A8 / W4A16 / migration strength / 移行強度 / per-token 量子化 / group-wise 量子化 / Outlier Suppression / ZeroQuant / paged optimizers / 分位量子化 / quantile quantization → [[model-quantization]]
+- PEFT / parameter-efficient fine-tuning / パラメータ効率のよいファインチューニング / LoRA / Low-rank Adapter / 低ランクアダプタ / アダプタ / adapter / prompt tuning / prefix tuning / IA3 / BitFit / フルファインチューニング → [[parameter-efficient-fine-tuning]]
 - MQA / Multi-Query Attention / GQA / Grouped-Query Attention → [[transformer-architecture]]
 - exact attention / 厳密 attention / 近似 attention / approximate attention / block-sparse / ブロックスパース / Linformer / Performer / Reformer / Longformer / BigBird → [[transformer-architecture]]
 - MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / MoonViT / NaViT / early fusion / DEP / encoder-free / p-RoPE / per-layer embeddings / CSA / HCA / mHC / Hyper-Connections / Muon / attention sink → [[transformer-architecture]]

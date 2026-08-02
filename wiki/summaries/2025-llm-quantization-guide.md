@@ -122,6 +122,7 @@ GPTQ や AWQ のような訓練後の手法は、量子化の前に小さな**�
 ## 関連ページ
 
 - [[model-quantization]] — 本記事が主要な根拠の一つとなる概念ページ。誤りの訂正もここに集約した
+- [[summaries/2022-llm-int8]] — 本記事の「NF8」「64 要素ブロック」の記述が誤りであることを確定させた一次資料（LLM.int8() は absmax vector-wise ＋ 混合精度分解）
 - [[summaries/2025-llm-quantization-explained]] — ほぼ同時期のもう 1 本。こちらが手法カタログなら、あちらは原理と実装。相互に補完する
 - [[llm-inference-optimization]] — 「量子化は必ずしもレイテンシを下げない」がこのページの主題群と直結する
 - [[summaries/2026-llm-optimization-guide]] — 本番サービングの実務側。GPTQ 4 ビットで −75% という定量値の出どころ
