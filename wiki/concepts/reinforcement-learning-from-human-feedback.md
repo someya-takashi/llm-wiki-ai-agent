@@ -11,6 +11,7 @@ related:
   - "[[agent-safety-and-guardrails]]"
 summaries:
   - "[[summaries/2022-instructgpt]]"
+  - "[[summaries/2024-deepseek-v3]]"
   - "[[summaries/2022-rlhf-illustrated]]"
   - "[[summaries/2023-dpo]]"
   - "[[summaries/2024-deepseekmath]]"
@@ -22,7 +23,7 @@ summaries:
   - "[[summaries/2025-cot-faithfulness]]"
   - "[[summaries/2025-long-cot-survey]]"
   - "[[summaries/2024-llm-security-privacy-survey]]"
-updated: 2026-08-01
+updated: 2026-08-02
 ---
 
 # Reinforcement Learning from Human Feedback（RLHF と事後訓練の強化学習）
@@ -162,6 +163,16 @@ $$\mathcal{L}_{\text{DPO}} = -\mathbb{E}_{(x,y_w,y_l)\sim\mathcal{D}}\left[\log\
 
 R1 の重要な副次的知見: 小型モデルに RL を直当てするより、**大型モデルが RL で発見した推論パターンを蒸留（出力での SFT）する方が圧倒的に安くて強い**（Qwen-32B で 47.0 vs 72.6）。推論パターンの「発見」には大きなベースモデルと大規模 RL が要るが、「転写」は 80 万サンプルの SFT で足りる。この分業は 2026 年に DeepSeek-V4 でパイプライン設計の原理へ昇格する（後述）。
 
+### 蒸留は逆向きにも流れる — DeepSeek-V3
+
+R1 が V3-Base の上に作られた一方で、**V3 の事後訓練は R1 から推論能力を蒸留している**（[[summaries/2024-deepseek-v3]]）。同じ系列の中で「ベースを提供する側」と「推論を提供する側」が入れ替わる相互参照の関係になっている。
+
+やり方が具体的である。R1 が生成したデータは正確だが**過剰思考・書式の悪さ・長すぎ**を抱えるので、ドメイン別の**エキスパートモデル**（SFT+RL）をデータ生成器にし、各問題について `<problem, original response>` と `<system prompt, problem, R1 response>` の 2 種類の SFT サンプルを作る。システムプロンプトは**反省と検証の機構を含む応答**へ誘導するよう設計され、RL フェーズで高温サンプリングを使うと**明示的なシステムプロンプトがなくても R1 のパターンが取り込まれる**ようになる。最後に棄却サンプリングで精選する。
+
+アブレーション（V2.5 上）は LiveCodeBench-CoT の Pass@1 が 31.1 → 37.4、MATH-500 が 74.6 → 83.2 と明確な改善を示すが、**平均応答長も増える**（MATH-500 で 769 → 1510 トークン）。「推論能力を入れると長くなる」という代償が最初から数字で出ており、[[summaries/2025-kimi-k2]] の予算制御や [[summaries/2026-kimi-k2.5]] の Toggle（出力 −25〜30%）はこの問題への後続の回答にあたる。
+
+報酬側の構成も RLVR と RLHF の分業の実例になっている。**ルールベース RM**（答え合わせ・コンパイラ。「操作や悪用に耐性がある」ので可能な限りこちらを使う）と**モデルベース RM**（V3 の SFT チェックポイントから訓練。**最終報酬だけでなく報酬に至る思考連鎖も含む選好データ**で訓練して reward hacking を緩和）の 2 系統。さらに**自己報酬**——constitutional AI の方法で **V3 自身の投票評価をフィードバック源にする**——を採るが、その前に RewardBench で GPT-4o・Claude-3.5-Sonnet の最良版と同等（平均 87.0、maj@6 で 89.6）であることを示している。**ジャッジとして使う前にジャッジとしての性能を測る**という順序は [[agent-evaluation]] の規律そのものである。
+
 ## 2025 — 検証可能と検証不能を再統合する: Kimi K2
 
 [[summaries/2025-kimi-k2]]（2025）は、RLVR と RLHF 的な選好報酬の分業を**単一の joint RL に統合する**設計を公開した。検証できるタスクは Gym 化された検証器群（数学の答え合わせ・コード実行・書式のコード検証・忠実性ジャッジ・「遵守したと嘘をつく」挙動を検出する hack-check 層）で、検証できないオープンエンド領域は **Self-Critique Rubric Reward**——モデル自身が critic となり、コア価値＋reward hacking 排除の規範＋人間注釈のルーブリックに照らして自己出力をペアワイズ評価——で報酬化する。**ペアワイズ比較という形は 2022 年の報酬モデルのままで、比較する主体が人間からモデル自身に移った**と読める。
@@ -217,4 +228,5 @@ R1 の「発見は RL・転写は蒸留」の分業を、**単一モデルの訓
 - [[summaries/2022-instructgpt]] — 古典的 RLHF の一次資料（InstructGPT）。アラインメント税と「誰に整合させているのか」の出所
 - [[summaries/2022-rlhf-illustrated]] — 同じパイプラインの一般向け解説と、陳腐化の対応表
 - [[summaries/2023-dpo]] — 報酬モデルと RL ループを消す変数変換。同値クラスと定理 1、PPO の分散の診断
+- [[summaries/2024-deepseek-v3]] — GRPO の本番適用・ルール／モデルベース RM の分業・R1 からの逆向きの蒸留・自己報酬
 - [[summaries/2024-deepseekmath]] / [[summaries/2025-deepseek-r1]] — GRPO・RLVR の根拠原典

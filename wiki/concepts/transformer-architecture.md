@@ -10,6 +10,7 @@ related:
   - "[[test-time-compute]]"
   - "[[reinforcement-learning-from-human-feedback]]"
 summaries:
+  - "[[summaries/2024-deepseek-v3]]"
   - "[[summaries/2025-moe-survey]]"
   - "[[summaries/2026-gpt2-to-kimi3]]"
   - "[[summaries/2025-deepseek-r1]]"
@@ -46,6 +47,8 @@ GPT-2 以来の標準形は **decoder-only**（デコーダのみ）構成であ
 - **圧縮してから選ぶ**（DeepSeek-V4）: 第三の路線が **KV の学習圧縮＋スパース選択**の二段構えである（[[summaries/2026-deepseek-v4]], 2026）。**CSA**（Compressed Sparse Attention）は KV を m=4 トークンごとに 1 エントリへ学習された重み付き和で圧縮した上で、軽量な **Lightning Indexer** が各クエリに top-k（512〜1024）個の圧縮エントリだけを選ぶ。**HCA**（Heavily Compressed Attention）は m′=128 の激圧縮＋密 attention で、両者を層で交互配置する。圧縮では拾えない局所依存は直近 128 トークンの sliding window ブランチが補い、attention sink（合計 attention を 1 未満に調整できる学習ロジット）・部分 RoPE・QKV の RMSNorm を併用する。結果は劇的で、**1M コンテキストの KV cache は一般的な BF16 GQA8 構成の約 2%**、推論 FLOPs は前世代 V3.2 の 27%——linear 化が「状態を固定サイズに畳む」なら、この路線は「**可変長のまま解像度を落とし、読む場所を選ぶ**」ことで 100 万トークンを実用化した。1.6T/284B の 2 サイズで実証されている。
 
 この系譜は [[agent-memory]] と美しく同型である——追記だけの記憶が干渉し（A-Mem 以前の生ログ蓄積）、選択的上書き（A-Mem の memory evolution）や退避・要約（MemGPT）が要る、という問題を、アーキテクチャは**重み・状態の内部で**解いている。
+
+**MLA — 追い出さずに圧縮する**。attention 側で KV cache を縮める代表例が **Multi-head Latent Attention**（[[summaries/2024-deepseek-v3]], 2024）である。key と value を**低ランクの潜在ベクトル $\mathbf{c}_t^{KV}$ へ結合圧縮**し、生成時にキャッシュするのは**その潜在ベクトルと、RoPE を担う分離された key の 2 つだけ**にする（V3 ではヘッド 128 × ヘッド次元 128 に対し KV 圧縮次元 512）。標準的な MHA に匹敵する性能を保ちながらキャッシュを大幅に削減し、query 側も低ランク圧縮して訓練時の活性化メモリを減らす。上の系譜が「固定容量に何を残すか（追い出しポリシー）」の線だとすれば、MLA は**そもそも 1 トークンあたりの占有量を下げる**線であり、両者は独立に効く。後継の DeepSeek-V4（[[summaries/2026-deepseek-v4]]）はこれを CSA/HCA——圧縮に加えて**スパース選択**——へ発展させた。
 
 ## MoE — 条件付き容量
 

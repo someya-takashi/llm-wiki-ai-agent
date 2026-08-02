@@ -22,6 +22,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[summaries/2024-llm-security-privacy-survey]] — Das et al.（FIU, 2024）。LLM のセキュリティ攻撃（prompt injection・jailbreak・backdoor・poisoning）とプライバシー攻撃（勾配漏洩・MIA・PII 漏洩）＋防御機構＋応用リスクの脅威分類サーベイ。ジェイルブレイクの 2 失敗モード。
 - [[summaries/2022-instructgpt]] — InstructGPT（Ouyang et al., OpenAI, NeurIPS 2022）。RLHF を汎用の指示追従に初適用した一次資料で ChatGPT の前身。SFT→報酬モデル→PPO の 3 段・1.3B が 175B に勝つ・**アラインメント税**と PPO-ptx・整合コストは事前学習の 1.6%・「誰に整合させているのか」の 4 層分解。バイアスは改善せず、指示されれば GPT-3 より有害になる。
 - [[summaries/2023-dpo]] — DPO（Rafailov et al., Stanford, NeurIPS 2023）。KL 制約付き最適化の解を逆に解いて報酬を方策で表し、Bradley-Terry が差にしか依存しないので分配関数が消える——**報酬モデルの訓練と RL ループを両方排除**して二値交差エントロピー 1 本にする。報酬-KL フロンティアが PPO を（真の報酬を持つ PPO-GT ですら）支配。GPT-4 ジャッジ検証の参照実装も。
+- [[summaries/2024-deepseek-v3]] — DeepSeek-V3（DeepSeek-AI, arXiv:2412.19437, 2024-12）。671B 総/37B 活性の MoE を **278.8 万 H800 GPU 時間（$5.576M）・loss spike ゼロ**で訓練。**補助損失を使わない負荷分散**（バイアス項をルーティングにのみ使う。ただし本質は「均衡の粒度を系列→バッチへ緩めること」で、バッチ単位補助損失も同等）・MLA・MTP・**極大規模での FP8 訓練の初の検証**・DualPipe・冗長エキスパート。R1 の Base であり、同時に R1 から推論を蒸留している。
 - [[summaries/2025-moe-survey]] — MoE 包括サーベイ（Mu & Lin, arXiv:2503.07137, 2025-03）。基本設計・学習パラダイム別アルゴリズム・理論・応用の 4 部。**wiki に無かった 2 領域**を持ち込む: ゲーティングの設計空間（コサイン・Soft MoE・指数型分布族）とルーティング水準、継続学習/メタ学習/マルチタスク/RL での MoE、そして理論（普遍近似・MLE 収束と Voronoi 損失・2 層 CNN 単一エキスパートの 87.5% 上限）。独自実験はなく、システム記述は DeepSeek-V3 で止まる。
 - [[summaries/2021-switch-transformers]] — Switch Transformers（JMLR 2022）。MoE 実用化の転換点: top-1 ルーティング・selective precision・負荷分散損失・蒸留 30%・初の 1.6T モデル。並列化体系（data/model/expert）の原典。
 - [[summaries/2020-rag]] — RAG（NeurIPS 2020）。パラメトリック/非パラメトリック記憶の end-to-end 結合。幻覚減・索引差し替えによる知識更新・retrieval collapse の初記録。
@@ -89,6 +90,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[translations/2026-kimi-k2.5]] — Kimi K2.5 テクニカルレポートの全文翻訳（欠落していた図7 と脚注 2 件を ar5iv から復元。Table 4 は太字含め正規化。システムプロンプト・ツールスキーマは原文のまま収録）。
 - [[translations/2026-gemma-4]] — Gemma 4 テクニカルレポートの全文翻訳（PDF 原典。表 12 点＋Algorithm 1 を転記、図 2 枚はユーザー提供。制御トークン書式・会話例は原文のまま収録）。
 - [[translations/2026-deepseek-v4]] — DeepSeek-V4 テクニカルレポートの全文翻訳（欠落していた SVG 図 11 枚を ar5iv から復元。プロンプトボックス 2 点は SVG からテキスト化。脚注 4 件復元・HTML 表 8 個を正規化）。
+- [[translations/2024-deepseek-v3]] — DeepSeek-V3 テクニカルレポートの翻訳（本文 §1〜6 ＋ 付録 B/C。ar5iv クリップ底本で、欠落していた脚注 4 件と Figure 11 の総キャプション、§3.2.2 で途中で切れていた一文を原ページから復元。図 15 枚収録、HTML 表 5 個を markdown 化。Table 6 のみ分量の都合で要点訳。Appendix A の貢献者一覧は謝辞相当として除外）。
 - [[translations/2025-moe-survey]] — MoE 包括サーベイの全文翻訳（本文 §I〜VII 全訳）。**ar5iv でも画像化されていない Figure 1（TikZ forest の分類ツリー）を LaTeX マークアップからネスト箇条書きに再構成**。本文図 2 枚を収録。原典に表・脚注は 1 つも存在しないことを ar5iv 照合で確認。
 - [[translations/2021-switch-transformers]] — Switch Transformers 論文の全文翻訳（多パネル図の欠落 4 枚と Mesh TF 擬似コード 3 本・脚注 11 件を ar5iv から復元。付録 A〜F 含む）。
 - [[translations/2024-deepseekmath]] — DeepSeekMath 論文の全文翻訳（欠落していた貢献箇条書き・脚注 7 件を ar5iv から復元。ar5iv 自体で平文化していた表 6 個をセル順序から再構成。付録 A.1 の全導出含む）。
@@ -160,9 +162,11 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - PEFT / LoRA / SFT → [[parameter-efficient-fine-tuning]]
 - HITL / CoT モニタリング / CoT faithfulness / prompt injection / sandboxing / safety case / jailbreak / DAN / backdoor attack / data poisoning / membership inference / MIA / PII leakage / gradient leakage / SmoothLLM / goal hijacking / competing objectives → [[agent-safety-and-guardrails]]
 - Long CoT / test-time scaling / overthinking / reasoning boundary / Best-of-N / budget forcing → [[test-time-compute]]
+- MLA / Multi-head Latent Attention → [[transformer-architecture]]
+- FP8 / 低精度訓練 / 細粒度量子化 / DualPipe / all-to-all / expert parallelism / EP / IB / NVLink → [[llm-inference-optimization]]
 - KV cache / TTFT / TPS / prefill / decode / FlashAttention / PagedAttention / quantization / continuous batching / speculative decoding / MTP / QAT → [[llm-inference-optimization]]
 - MLA / linear attention / DeltaNet / Mamba / KDA / AttnRes / decoder-only / MoonViT / NaViT / early fusion / DEP / encoder-free / p-RoPE / per-layer embeddings / CSA / HCA / mHC / Hyper-Connections / Muon / attention sink → [[transformer-architecture]]
-- MoE / Mixture of Experts / 専門家混合 / Mixtral / Switch Transformers / GShard / GLaM / ゲーティング関数 / gating function / router / ルータ / expert capacity / 負荷分散 / load balancing / token dropping / Soft MoE / コサインルータ / Top-P ルーティング / 共有エキスパート / shared expert / スパース性スケーリング則 / MMoE / MoA / 条件付き計算 / conditional computation → [[mixture-of-experts]]
+- MoE / Mixture of Experts / 専門家混合 / Mixtral / Switch Transformers / GShard / GLaM / ゲーティング関数 / gating function / router / ルータ / expert capacity / 負荷分散 / load balancing / token dropping / Soft MoE / コサインルータ / Top-P ルーティング / 共有エキスパート / shared expert / スパース性スケーリング則 / MMoE / MoA / 条件付き計算 / conditional computation / auxiliary-loss-free / 補助損失なし負荷分散 / バイアス項 / node-limited routing / ノード制限ルーティング / redundant experts / 冗長エキスパート / DeepSeekMoE → [[mixture-of-experts]]
 - Arena / Chatbot Arena / Elo → [[agent-evaluation]]
 - DSML → [[tool-use-and-function-calling]]
 - agentic search → [[retrieval-augmented-generation]]

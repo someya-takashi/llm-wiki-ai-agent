@@ -133,6 +133,8 @@ GRM（Generative Reward Model, 生成型報酬モデル）は **actor 自身が�
 
 ## 関連ページ
 
+- [[summaries/2024-deepseek-v3]] — 直系の前身。MLA → CSA/HCA、補助損失なし負荷分散、FP8 訓練、DualPipe の出所
+
 - [[transformer-architecture]] — CSA/HCA（第三の attention 路線）・mHC・Muon・訓練安定化
 - [[llm-inference-optimization]] — 1M コンテキストの KV 経済・FP4 QAT・on-disk KV cache・batch invariance・MegaMoE
 - [[reinforcement-learning-from-human-feedback]] — OPD への転換・actor 兼 GRM・WAL の長さバイアス

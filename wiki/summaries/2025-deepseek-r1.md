@@ -103,6 +103,8 @@ R1 が生成した 80 万サンプルで Qwen/Llama の 1.5B〜70B を **SFT だ
 
 ## 関連ページ
 
+- [[summaries/2024-deepseek-v3]] — 本モデルのベースである DeepSeek-V3-Base の一次資料。逆に V3 の事後訓練は R1 から推論を蒸留しており、相互参照の関係にある
+
 - [[reinforcement-learning-from-human-feedback]] — 本原典が主要根拠となる概念ページ（RLHF/RLVR/GRPO）
 - [[reasoning-and-planning]] — 長 CoT の獲得経路がプロンプトから報酬へ移った転換点。PRM/MCTS の失敗談も
 - [[self-reflection]] — reflection の創発（外付け → 内生）
