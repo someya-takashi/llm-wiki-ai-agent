@@ -10,7 +10,7 @@ related:
   - "[[multi-agent-systems]]"
 summaries:
   - "[[summaries/2026-kimi-k2.5]]"
-updated: 2026-07-28
+updated: 2026-08-03
 ---
 
 # Computer-Use Agents（コンピュータ操作エージェント）
@@ -39,7 +39,9 @@ Anthropic の Claude computer use（2024〜）と OpenAI の Operator は、こ�
 
 ## 評価 — OSWorld と WebArena
 
-- **OSWorld（-Verified）**: 実 OS（Linux デスクトップ）上の実アプリ（LibreOffice, GIMP, ブラウザ等）を操作する数百タスクのベンチマーク。成功判定はタスクごとの検証スクリプトによる**終了状態評価**（→ [[agent-evaluation]] の end-state evaluation と同じ原理）。人間は 70%+ とされ、63〜66% のフロンティアモデルはこれに接近しつつある。
+- **OSWorld（-Verified）**: 実 OS（Linux デスクトップ）上の実アプリ（LibreOffice, GIMP, ブラウザ等）を操作する **369 タスク**のベンチマーク（-Verified はその検証済み部分集合）。成功判定はタスクごとの検証スクリプトによる**終了状態評価**（→ [[agent-evaluation]] の end-state evaluation と同じ原理）。原典（Xie ら, NeurIPS 2024, arXiv:2404.07972）は**人間の基準線を 72.36%**、当時の最良モデルを **12.24%** と報告している。
+
+  > **鮮度の注記（2026-08-03 の lint で Web 照合）**: 上の「フロンティアモデルが人間水準に接近しつつある」という本ページの旧記述は**古い**。2026-08 時点の OSWorld-Verified リーダーボードの上位は **85% 前後**（Claude Mythos 5 / Claude Fable 5 が 85%、Claude Opus 4.8 が 83.4%）で、**人間の基準線 72.36% をすでに 10 ポイント以上上回っている**。つまり本節が扱うべき問いは「人間に追いつけるか」から「**このベンチマークが飽和したあと何を測るか**」へ移っている。ただしこの数値はリーダーボード集計サイト由来であり、**本 wiki が取り込んだ一次資料ではない**（K2.5 レポートの 63.3% は 2026 年初頭時点の一次資料としてそのまま残してある）。**OSWorld 原典（2404.07972）自体が未取得**である。
 - **WebArena**: 自己ホスト型の実 Web アプリ群（EC サイト・フォーラム・GitLab 等）での GUI ブラウジングタスク。K2.5 の評価では判定スクリプトの誤り修正や fuzzy_match のジャッジモデル指定など、**ハーネスの手直しが結果に効く**ことも記録されており、スコアは測定条件とセットで読む必要がある。
 
 ## 設計論点

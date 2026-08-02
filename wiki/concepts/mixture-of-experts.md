@@ -16,10 +16,8 @@ summaries:
   - "[[summaries/2023-moe-explained]]"
   - "[[summaries/2026-gpt2-to-kimi3]]"
   - "[[summaries/2025-kimi-k2]]"
-  - "[[summaries/2026-kimi-k2.5]]"
-  - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2025-deepseek-r1]]"
-updated: 2026-08-02
+updated: 2026-08-03
 ---
 
 # Mixture of Experts（MoE, 専門家混合）

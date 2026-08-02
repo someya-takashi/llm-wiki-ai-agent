@@ -13,8 +13,7 @@ related:
 summaries:
   - "[[summaries/2026-ai-scientist]]"
   - "[[summaries/2025-multi-agent-research-system]]"
-  - "[[summaries/2026-sakana-fugu]]"
-updated: 2026-08-02
+updated: 2026-08-03
 ---
 
 # Research Agents（リサーチエージェント）

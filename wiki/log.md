@@ -754,7 +754,7 @@ type: log
 - 原典側の表記の揺れ（クリップ不良ではない。訳注に記録）: $\theta_i$ の定義が式 (15) では $10000^{-2(i-1)/d}$、§3.3・§3.4.3 では $10000^{-2i/d}$／$g$ の第 3 引数が式 (11) では $m-n$、式 (21) では $n-m$／本文は事前学習「100k ステップ」だが図3 左の横軸は 250K まで伸びている／式 (16) の $\boldsymbol{x}^\intercal$ と式 (32) の $\boldsymbol{W}_q\boldsymbol{x}_n$ は添字の誤記
 - メモ: **論文の実証は弱いのに手法は標準になった**という珍しい型の原典。GLUE は 6 タスク中 **3 勝 3 敗**（負け幅の方が大きい: MNLI −4.4/−3.6・SST-2 −2.8・QNLI −2.5 に対し勝ちは QQP を除けば最大 +1.2）なのに、本文は「3 つで有意に上回り、改善は相当なものである」としか書かず**負けに一切触れない**。唯一大きな勝ちの QQP +15.2 は **BERT 側の 71.2 が異常に低い**（通常 88〜91）ので単独で疑わしい。翻訳は +0.2 BLEU（単一シード・信頼区間なし）。さらに、現在 RoPE と最も結びつけられる**外挿（訓練長を超える系列）を一度も検証していない**——中国語実験の 1024 は 1536 まで含めて事前学習したモデルの評価である。著者自身が §4.5.5 で「なぜ速く収束するのか」「なぜ長文で強いのか」の**どちらも説明できない**と明記している
 - メモ: 概念ページには **`## 本 wiki における根拠の所在`** 節を置き、一次資料あり／二次資料のみ（系譜 (b) の Shaw・Transformer-XL・T5・DeBERTa はすべて RoFormer の関連研究節経由＝**RoPE を提案する側による整理**）／原典なし（**YaRN・Position Interpolation・ALiBi・NoPE**）を区別した。`llm-programming-systems`（SGLang）で始めた作法の 2 例目
-- データギャップ（次の取り込み候補）: **YaRN 原典（Peng ら 2023）**と **ALiBi 原典（Press ら 2021）**。長コンテキスト化は現在の主戦場なのに、本 wiki では「他の原典が使っている手法」としてしか登場していない。既存のギャップ（DeepSeek-LLM 2401.02954 / DeepSeek-V2 2405.04434 / Anthropic HH 2204.05862 / context rot（Chroma）/ lost in the middle 原典）は変わらず
+- データギャップ（次の取り込み候補）: **YaRN 原典（Peng ら 2023）**と **ALiBi 原典（Press ら 2021）**。長コンテキスト化は現在の主戦場なのに、本 wiki では「他の原典が使っている手法」としてしか登場していない。既存のギャップ（DeepSeek-LLM 2401.02954 / DeepSeek-V2 2405.04434 / Anthropic HH 2204.05862 / context rot（Chroma））は変わらず（**訂正 2026-08-03 lint**: この一覧に挙げた「lost in the middle」は、**2026-08-02 に [[summaries/2023-lost-in-the-middle]] として取り込み済み**であり未取得ではなかった。繰り越し時の確認漏れ）
 
 ## [2026-08-03] ingest | LlamaFirewall: An open source guardrail system for building secure AI agents
 
@@ -770,7 +770,7 @@ type: log
 - メモ（批判点）: **評価が防御なしで生成された静的トレースへの後付け適用**である。しかも「**攻撃が最初は成功しても後でフラグが立てばそのトレースを『防御された』に再分類する**」と明記されており、**流出後の検知を阻止に数えている**。utility の基準は 47.7%（防御なしでも半分以上失敗）で、そこからの 5.05pt 減は**相対 10.6%** ——論文の "modest" は甘い。CodeShield の**再現率 79%**（危険なコードの 5 本に 1 本は通る、CI はおよそ 0.61〜0.97）。そして**論文自身の図5 が、ガードレールなしの基準 ASR がベースモデル間で 2.8%（claude-3-7-sonnet）〜39.4%（gpt-4-turbo）と 14 倍開くことを示しながら、モデル間の差に一言も触れていない**——モデルの選択は一次のセキュリティ統制である
 - メモ（原典内の矛盾・誤り。すべて訳注に記録）: CodeShield の対応言語が §1・§2.2 で **8**、§4.4 で **7**／**存在しない「付録 E」への参照が 2 か所**（実体は付録 C）／CodeShield の結果を「Figure 4 に示す」とあるが実際は **Figure 3**／**Figure 4 のキャプションは「攻撃成功率」だが中身は評価データの件数分布**で、図中の構成（悪性 289・良性 0・None/Benign 576 除外・攻撃タイプ 6 種）は本文の「600 シナリオ（良性 300・悪性 300）・7 技法」と**どの数字も合わない**／§4.1 の番号つきリストが 3 戦術を挙げながら 2 項目しかない
 - メモ（**Figure 6 の軸ラベル誤りの検証**）: Figure 6 は縦軸ラベルが `ASR (%)`・図題も "ASR at Various Utility Reductions" だが、**プロットされている量は攻撃防止率（基準 ASR からの削減ポイント）** である。キャプション本文の記述とは一致する。図1 の値と数値照合して確定した——有用性低下 3% の点で PromptGuard 2 86M は約 14.5 を示し、17.63 − 3.3 = 14.33 に一致。ProtectAI PI detector も 17.63 − 13.7 = 3.9 に対し約 3.9、Deepset は 17.63 − 15.3 = 2.33 に対し約 2.4。**ラベルどおり「ASR」と読むと最良のスキャナが最悪に見えるという反転が起きる**
-- データギャップ（次の取り込み候補）: **AgentDojo 原典**（Debenedetti ら 2024）——本 wiki で初めて言及されたが、本論文経由の二次記述しかない。プロンプトインジェクション防御の系列（**CaMeL**（Debenedetti ら 2025）・**Spotlighting**（Hines ら 2024）・**Instruction Hierarchy**（Wallace ら 2024））も、いずれも「LlamaFirewall が比較対象として言及するもの」としてしか登場していない。既存のギャップ（YaRN / ALiBi / DeepSeek-LLM / DeepSeek-V2 / Anthropic HH / context rot / lost in the middle 原典）は変わらず
+- データギャップ（次の取り込み候補）: **AgentDojo 原典**（Debenedetti ら 2024）——本 wiki で初めて言及されたが、本論文経由の二次記述しかない。プロンプトインジェクション防御の系列（**CaMeL**（Debenedetti ら 2025）・**Spotlighting**（Hines ら 2024）・**Instruction Hierarchy**（Wallace ら 2024））も、いずれも「LlamaFirewall が比較対象として言及するもの」としてしか登場していない。既存のギャップ（YaRN / ALiBi / DeepSeek-LLM / DeepSeek-V2 / Anthropic HH / context rot）は変わらず（**訂正 2026-08-03 lint**: この一覧に挙げた「lost in the middle」は、**2026-08-02 に [[summaries/2023-lost-in-the-middle]] として取り込み済み**であり未取得ではなかった。繰り越し時の確認漏れ）
 
 ## [2026-08-03] ingest | ガードレールの原典 2 本（Llama Guard / NeMo Guardrails）
 
@@ -791,3 +791,32 @@ type: log
 - メモ（NeMo の数字の決着とコードのバグ）: hallucination rail について**本文 §5.2 は「95% まで押し上げる」、図6 は 90%、付録 G.2.3 は「25% 押し上げる」** と 3 つの数字が併存する。**65% ＋ 25 ポイント = 90% なので図と付録が整合し、本文の 95% が誤り**と確定できる。§5.1 の「上位 3 つのモデルを図5 に示す」も**図には 4 モデル**。そして**付録 E.2 に印刷された jailbreak rail のコードが動かない**——`jailbreak_chain.apredict(bot_response=bot_response)` を呼んでいるがテンプレート変数は `user_input` で `input_variables` も `["user_input"]`、しかも `bot_response` はそのスコープで未定義（E.1 からの写し間違い）。判定も `if "no" in check` の部分文字列一致で脆い。**論文に印刷されたガードレールのコード自体が壊れている**のは、2023 年時点のこの分野の成熟度の記録として読める
 - メモ（系譜の整理）: 2023 年秋〜冬に**同じ問いへ正反対の 2 つの答え**（ガードレール＝モデル / ガードレール＝プログラム）が出て、**2 年後の LlamaFirewall が両方を取った**——PromptGuard と AlignmentCheck は Llama Guard の子孫、統一ポリシーエンジン（カスタムのパイプライン・条件つき是正戦略・差し込める検出器）は NeMo の子孫。さらに **AlignmentCheck の構造は Llama Guard の構造そのもの**である——判定の基準（Llama Guard はタクソノミー、AlignmentCheck はユーザーの目標）を**プロンプトで渡すことで単一のモデルを任意の基準の判定器にする**。「何を違反と呼ぶかを実行時パラメータにする」という発明は、対象を変えて生き延びた
 - データギャップ（次の取り込み候補）: **Anthropic hh-rlhf（2204.05862）** ——Llama Guard のプロンプトの出所であり NeMo のモデレーション評価データでもある。既存のギャップ一覧に載っていたが、これで**2 本の原典が同時に依存する**状態になったので優先度が上がった。**AgentDojo 原典**（Debenedetti ら 2024）、**SelfCheckGPT**（Manakul ら 2023、NeMo の hallucination rail の下敷き）、**ToxicChat**（Lin ら 2023）、**OpenAI Moderation の原典**（Markov ら 2023）も未取得。CaMeL / Spotlighting / Instruction Hierarchy は前回から変わらず
+
+## [2026-08-03] lint | wiki 全体の健康診断と記録の不整合の修正
+
+- 走査: wiki 配下 165 ページ（concepts 28 / summaries 67 / translations 66 / questions 1 / root 3）・約 396 万字
+- **健全だった点**: 孤立ページ **0 件**／dangling link は実質 **1 件**（`web-agents`。他 2 件は index・overview のテンプレ行）／index.md への掲載漏れ **0 件**／log.md の見出し形式 **63/63 準拠**／frontmatter の wikilink 引用符違反 **0 件**／どの概念ページからも参照されない summary **0 件**／個別手法・製品・ベンチマーク・人物/組織の専用ページ **0 件**（CLAUDE.md §1 の粒度規約どおり）。陳腐化しやすい記述も、確認範囲ではすべて時点が明記されていた（「K2.5 評価時点（2026 年初頭）」「当時（2025）の SOTA」等）
+- **修正 1** — `index.md` の「未作成の想定スラグ」行が古かった。`parameter-efficient-fine-tuning` は 2026-08-02 に作成済みなのに未作成扱いのままだったので除去し、残る `web-agents` には「本 wiki に原典が 1 件もないテーマ」である旨を併記した
+- **修正 2** — 概念ページの frontmatter `summaries` に、**本文で一度も引用していない原典が 11 件**残っていた。`summaries` は「この概念の根拠となる原典」（CLAUDE.md §2）なので、宣言だけで本文に現れないのは規約違反にあたる。**原因ははっきりした型で、分割の残骸**である——量子化を `model-quantization` へ、MoE を `mixture-of-experts` へ、位置符号化を `positional-encoding` へ切り出した際に、親ページの出典欄を刈らなかった。内訳と処置:
+	- 削除 10 件: `llm-inference-optimization`（2025-llm-quantization-guide / -explained / 2025-moe-survey）、`transformer-architecture`（2023-moe-explained / 2025-moe-survey / 2025-deepseek-r1）、`mixture-of-experts`（2026-deepseek-v4 / 2026-kimi-k2.5）、`llm-agents`（2026-ai-scientist）、`research-agents`（2026-sakana-fugu）
+	- **本文に引用を足したもの 1 件**: `llm-inference-optimization` の `2021-roformer`。本文（FlashAttention-3 の非干渉化処理の節）が「直前の rotary embedding へ融合すれば追加コストもない」と論じているのに出典を引いていなかっただけなので、削除でなく本文側を直した——**RoPE がブロック対角の回転だけで実質メモリ帯域律速だからこそ、そこが「ついでに何かを混ぜ込める場所」になる**という接続を明記し、[[positional-encoding]] と [[summaries/2021-roformer]] へリンクした
+	- なお `2021-roformer` の登録は 2026-08-03 の RoFormer ingest で私が入れたもので、**同じ型をその場で作っていた**
+- **修正 3** — 2026-08-03 の **2 つの** ingest（RoFormer・LlamaFirewall）のデータギャップ欄に、**前日 2026-08-02 に取り込み済みの lost in the middle（Liu et al. 2023）を「未取得」として繰り越していた**。両方の行に訂正を追記した。同じ一覧を毎回コピーして持ち回るやり方の弱点で、**繰り越す前に実在を確認する**手順が要る
+- **検出のみ（未対応）— 根拠が薄い概念ページ**:
+	- `computer-use-agents`: 根拠原典 **1 本**（Kimi K2.5 のみ）かつ `updated` が **2026-07-28 で全概念ページ中最古**。CUA は最も変化が速い領域で、OSWorld 63.3% / WebArena 58.9% といった数値が単一原典に乗っている
+	- `agent-observability`: ページ自身が「可観測性そのものを主題とする一次資料はまだ ingest していない」と明記（5 本の summaries はすべて他テーマからの間借り）
+	- `model-context-protocol`: 根拠 **2 本、いずれも二次資料**。**MCP の仕様そのものが未取得**で、版を重ねる領域なので陳腐化リスクが高い
+	- `llm-programming-systems`: 2 本（ページ自身が根拠の薄さを明記済み・許容範囲）
+- **検出のみ（未対応）— 分割圧力**: `agent-safety-and-guardrails` と `reinforcement-learning-from-human-feedback` がともに **24k 字**で最大。前者は 2026-08-03 に 2 回加筆し層 (2) が 3 段構造になった。即分割ではないが、次にガードレール系を 1〜2 本入れると検討域に入る
+- **データギャップ（優先度つきで再整理）**:
+	- **高（複数の既存原典が同時に依存）**: **Anthropic hh-rlhf（2204.05862）** ——Llama Guard のプロンプト出所 ＋ NeMo のモデレーション評価データ ＋ RLHF 系譜の基点の 3 方向／**AgentDojo（Debenedetti ら 2024）** ——`agent-evaluation` に防御評価の節まで作ったのに一次資料なし／**YaRN（Peng ら 2023）** ——`positional-encoding` が明示的にギャップ宣言
+	- **中**: ALiBi（Press ら 2021）・SelfCheckGPT（Manakul ら 2023）・ToxicChat（Lin ら 2023）・OpenAI Moderation（Markov ら 2023）・CaMeL / Spotlighting / Instruction Hierarchy
+	- **繰り越し**: Tree of Thoughts・Self-Refine・LoRA 本体・DeepSeek-LLM / V2・context rot（Chroma）・AI Scientist v1
+	- **テーマとしての空白**: **web agents**（CLAUDE.md §1 が想定スラグに挙げ overview がリンクしているのに原典ゼロ）
+- **修正 4（computer-use-agents の鮮度照合）** — ユーザー選択により、根拠 1 本・`updated` 最古だった `computer-use-agents` の記述を Web で照合した。**古くなっている記述を 1 件確認**:
+	- 旧記述は「人間は 70%+ とされ、63〜66% のフロンティアモデルはこれに接近しつつある」だった。しかし **2026-08 時点の OSWorld-Verified リーダーボードの上位は 85% 前後**（Claude Mythos 5 / Claude Fable 5 が 85%、Claude Opus 4.8 が 83.4%）で、**原典（Xie ら, NeurIPS 2024, arXiv:2404.07972）が報告する人間の基準線 72.36% をすでに 10 ポイント以上上回っている**。つまり「人間に追いつけるか」という枠組み自体が失効し、問いは「**このベンチマークが飽和したあと何を測るか**」へ移っている
+	- 同原典から**タスク数 369**・**当時の最良モデル 12.24%** も確定できたので、曖昧だった「数百タスク」を修正した
+	- 処置: K2.5 レポート由来の 63.3%（2026 年初頭の一次資料）はそのまま残し、**日付と出所を明記した鮮度注記ブロック**を併置した。**リーダーボード集計サイト由来で本 wiki の一次資料ではない**旨も明記している
+	- **`updated` を 2026-07-28 → 2026-08-03 へ**
+- **データギャップに追加**: **OSWorld 原典（arXiv:2404.07972, Xie ら, NeurIPS 2024）**。人間基準線 72.36%・369 タスク・評価スクリプトの設計といった、`computer-use-agents` と `agent-evaluation` の双方が依拠する数値の出所が二次経由のままである。上記「高」優先の 3 本（hh-rlhf / AgentDojo / YaRN）に次ぐ候補
+- ユーザーの指示: 「記録の不整合 3 件を直す」＋「computer-use-agents を補強する」を選択。**両方とも本エントリで完了**

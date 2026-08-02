@@ -11,14 +11,11 @@ related:
   - "[[context-engineering]]"
   - "[[multi-agent-systems]]"
 summaries:
-  - "[[summaries/2025-llm-quantization-guide]]"
-  - "[[summaries/2025-llm-quantization-explained]]"
   - "[[summaries/2022-flashattention]]"
   - "[[summaries/2023-flashattention-2]]"
   - "[[summaries/2024-flashattention-3]]"
   - "[[summaries/2024-deepseek-v3]]"
   - "[[summaries/2025-deepseek-series]]"
-  - "[[summaries/2025-moe-survey]]"
   - "[[summaries/2026-gpt2-to-kimi3]]"
   - "[[summaries/2025-multi-agent-research-system]]"
   - "[[summaries/2026-llm-optimization-guide]]"
@@ -199,7 +196,7 @@ decode が 1 トークンずつ逐次的でメモリ帯域律速なら、**下�
 | 主な手段 | **スケールの粒度を細かくする**（活性 1×128 タイル、重み 128×128 ブロック） | 同様のブロック量子化 ＋ **分布そのものをならす** |
 | 固有の手 | ハードウェア誤差の実測と CUDA Core への昇格累積 | **非干渉化処理（incoherent processing）** |
 
-FlashAttention-3 の**非干渉化処理**が面白いのは、精度を上げるのに**出力を一切変えない**点である。$\mathbf{Q}$ と $\mathbf{K}$ の両方に同じランダム直交行列 $\mathbf{M}$ を掛けてから量子化すると、$\mathbf{M}\mathbf{M}^{\top}=I$ より $(\mathbf{Q}\mathbf{M})(\mathbf{K}\mathbf{M})^{\top}=\mathbf{Q}\mathbf{K}^{\top}$ なので attention の出力は恒等である。一方で $\mathbf{Q}\mathbf{M}$ の各要素は元の要素のランダムな和になるため、**外れ値が広く薄くならされる**。$\mathbf{M}$ を $\pm1$ のランダム対角行列と Hadamard 行列の積に取れば $O(d\log d)$ で掛けられ、直前の rotary embedding（メモリ帯域律速）へ融合すれば追加コストもない。量子化の研究（QuIP / QuIP#）からの借用である。
+FlashAttention-3 の**非干渉化処理**が面白いのは、精度を上げるのに**出力を一切変えない**点である。$\mathbf{Q}$ と $\mathbf{K}$ の両方に同じランダム直交行列 $\mathbf{M}$ を掛けてから量子化すると、$\mathbf{M}\mathbf{M}^{\top}=I$ より $(\mathbf{Q}\mathbf{M})(\mathbf{K}\mathbf{M})^{\top}=\mathbf{Q}\mathbf{K}^{\top}$ なので attention の出力は恒等である。一方で $\mathbf{Q}\mathbf{M}$ の各要素は元の要素のランダムな和になるため、**外れ値が広く薄くならされる**。$\mathbf{M}$ を $\pm1$ のランダム対角行列と Hadamard 行列の積に取れば $O(d\log d)$ で掛けられ、直前の rotary embedding（メモリ帯域律速）へ融合すれば追加コストもない——**rotary embedding（RoPE）がブロック対角の回転だけで実質メモリ帯域律速だからこそ、ここが「ついでに何かを混ぜ込める場所」になる**（→ [[positional-encoding]], [[summaries/2021-roformer]]）。量子化の研究（QuIP / QuIP#）からの借用である。
 
 FP8 の RMSE は per-tensor ベースライン比 **2.6 分の 1**（2.4e-2 → 9.1e-3）。ただしアブレーションを見ると**効いているのはほぼ非干渉化処理だけ**で、ブロック量子化を外しても 9.3e-3 とほぼ変わらないのに、非干渉化処理を外すとベースラインと同じ 2.4e-2 に戻る。論文は 2 つを並列に提示するが、この設定での寄与は非対称である。**量子化を検討するときは、スケールの粒度を細かくする方向だけでなく、分布そのものをならす方向も選択肢に入れる**——これが持ち帰るべき一般則になる。
 

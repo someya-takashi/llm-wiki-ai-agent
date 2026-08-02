@@ -13,11 +13,10 @@ related:
   - "[[agent-evaluation]]"
   - "[[agent-safety-and-guardrails]]"
 summaries:
-  - "[[summaries/2026-ai-scientist]]"
   - "[[summaries/2023-llm-agents-survey]]"
   - "[[summaries/2022-react]]"
   - "[[summaries/2024-building-effective-agents]]"
-updated: 2026-08-02
+updated: 2026-08-03
 ---
 
 # LLM Agents（LLM ベースエージェント）— 総論

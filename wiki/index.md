@@ -194,7 +194,7 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 - [[agent-observability]] — 本番で動くエージェントを外から見えるようにする層。評価との境界・行動ログ/指標/監査証跡の 3 層・非決定性とトレースの限界（CoT の不忠実性）。
 
 未作成の想定スラグ（CLAUDE.md §1 の命名規約より。作成したら上のリストへ移す）：
-`web-agents` / `parameter-efficient-fine-tuning`
+`web-agents`（**本 wiki に原典が 1 件もないテーマ**。BrowseComp / WideSearch 系の記述は現状 [[multi-agent-systems]] と [[agent-evaluation]] に散在している）
 
 ### 略称リダイレクト
 
