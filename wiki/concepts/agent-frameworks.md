@@ -9,6 +9,8 @@ related:
   - "[[multi-agent-systems]]"
   - "[[model-context-protocol]]"
   - "[[agent-evaluation]]"
+  - "[[coding-agents]]"
+  - "[[context-engineering]]"
 summaries:
   - "[[summaries/2024-building-effective-agents]]"
   - "[[summaries/2025-effective-harnesses]]"
@@ -17,7 +19,8 @@ summaries:
   - "[[summaries/2025-llm-reasoning-to-agents]]"
   - "[[summaries/2026-agent-orchestration-guide]]"
   - "[[summaries/2026-managed-agents]]"
-updated: 2026-08-01
+  - "[[summaries/2026-dive-into-claude-code]]"
+updated: 2026-08-03
 ---
 
 # Agent Frameworks（エージェントフレームワークと設計パターン)
@@ -95,6 +98,69 @@ LLM（Large Language Model, 大規模言語モデル）エージェントを**�
 
 両者は競合しない。むしろ、探索が新しいハーネスを次々に出してくるほど、それを載せ替えられる安定した土台の価値は上がる。
 
+## 拡張点は 3 つしかない — 本番系から抽出した一般則
+
+[[summaries/2026-dive-into-claude-code]]（2026）が Claude Code v2.1.88 の公開ソースから抽出した一般化は、**フレームワークを作る側・選ぶ側の双方にとって最も実用的な整理**だと思う。
+
+> **あらゆるエージェントループは 3 つの注入点を持つ。`assemble()` はモデルが*何を見るか*を、`model()` は*何に手を伸ばせるか*を、`execute()` は行動が*実行されるか／どう実行されるか*を制御する。**
+
+```python
+while not stopped:
+    context = assemble(tool_schemas, history, hook_additions)  # (a) 何を見るか
+    action  = model(context, tools)                            # (b) 何に手を伸ばせるか
+    if action.is_text_only():
+        stopped = run_stop_hooks(action); continue
+    if not permitted(action): continue                         # (c) 実行されるか
+    action = run_pre_tool_hooks(action)
+    result = execute(action)
+    result = run_post_tool_hooks(result)
+    history.append(action, result)
+```
+
+**この 3 点に、拡張機構が過不足なく配置できる。**
+
+### 4 機構をコンテキストコストで階層化する
+
+Claude Code は単一の統一された拡張 API を持たず、**4 つの機構をコンテキストコストの順に並べている**。
+
+| 機構 | 独自の能力 | **コンテキストコスト** | 注入点 |
+|---|---|---|---|
+| **フック** | ライフサイクル介入・イベント駆動の自動化 | **ゼロ**（既定） | `execute()` |
+| **スキル** | ドメイン固有の指示・メタツール呼び出し | **低**（frontmatter の記述のみ） | `assemble()` |
+| **プラグイン** | 複数コンポーネントの梱包＋配布 | **中**（内容による） | 3 点すべて |
+| **MCP サーバー** | 外部サービス統合（マルチトランスポート） | **高**（ツールスキーマ） | `model()` |
+
+**「なぜ 4 つも要るのか」への答えが、フレームワーク設計の一般則になっている。**
+
+> **異なる種類の拡張性は、コンテキストウィンドウに異なるコストを課す。単一の機構では、ゼロコンテキストのライフサイクルフックからスキーマの重いツールサーバーまでの全範囲を、拡張の作者に不要なトレードオフを強いることなく張れない。**
+
+**段階的なコストの順序づけが意味するのは「安い拡張はコンテキストを使い果たさずに広くスケールでき、高価なものは本当に新しいツール面を必要とする場合のために取っておける」ことである。** 単一の tool-only API を提供する枠組みは、**ゼロコンテキストで済むはずのライフサイクル介入にもツールスキーマのコストを払わせてしまう**。
+
+**代償も明記されている**——**4 機構は、ある統合タスクにどれを使うか決めるときの学習曲線を増やす**。そして組み合わせが創発的な挙動を生む（プラグインが PreToolUse フックでツール入力を修正する、パススコープのルールが会話の途中で遅延ロードされて分類器の挙動を変える等）。**「単一の設定ファイルからは予測が難しい」**。
+
+### メタツール — 拡張をツールとして露出する
+
+Claude Code の基本ツールプールには **2 つのメタツール**が並ぶ。**両者は根本的に異なる**。
+
+- **SkillTool** — 名前でスキルを起動し、**その指示を現在のコンテキストウィンドウへ注入する**。
+- **AgentTool** — **新しい隔離されたコンテキストウィンドウを生成する**（→ [[multi-agent-systems]]）。
+
+**だから前者は低コスト、後者は高コストになる。** 「拡張を追加のツールとして見せる」という同じ形をとりながら、**コンテキストへの影響がまったく違う 2 つを区別している**のが設計として重要である。
+
+ツールプールの組み立て（`assembleToolPool()`）は 5 段——基本ツールの列挙（**最大 54。19 は無条件、35 は機能フラグ・環境・ユーザー種別に依存**）→ モードによるフィルタ（**`CLAUDE_CODE_SIMPLE` モードでは Bash・Read・Edit の 3 つだけ**）→ deny ルールによる事前フィルタ → MCP ツールの統合 → **重複除去（組み込みが MCP に優先）**。**すべての実行パス（REPL と AgentTool の両方）が同じ関数を呼ぶ**ので、組み立ては一貫する。
+
+### フレームワークは層をなす — Claude Code と OpenClaw の合成
+
+**本ページ冒頭の「フレームワーク観」に対する 2026 年時点の追記として重要な観察**が、同論文の OpenClaw との対比から出ている。
+
+OpenClaw は約 2 ダースのメッセージング表面をエージェントランタイムへ繋ぐ **local-first の WebSocket ゲートウェイ**で、Claude Code とは正反対の賭けをしている——**エージェントループは「系の中心」ではなく「制御平面の中の 1 コンポーネント」**であり、**プラグインは単一エージェントのコンテキストではなくゲートウェイ全体の能力面を拡張する**（12 の能力型を中央レジストリへ登録する）。
+
+**そして 2 つは排他的ではない。**
+
+> **OpenClaw は ACP（Agent Client Protocol）を通じて Claude Code・OpenAI Codex・Gemini CLI を外部のコーディングハーネスとしてホストできる。**（中略）**エージェントの設計空間は平坦な分類ではなく層状のものであり、ゲートウェイ水準の系とタスク水準のハーネスが合成できる。**
+
+**「どのフレームワークを選ぶか」ではなく「どの層のフレームワークを、どの層と組み合わせるか」という問いになりつつある**、というのがこの対比の含意である。→ [[model-context-protocol]]（MCP と ACP の関係）
+
 ## 実装原則（simplicity / transparency / ACI）
 
 1. **Simplicity** — 設計を単純に。
@@ -111,3 +177,4 @@ LLM（Large Language Model, 大規模言語モデル）エージェントを**�
 - [[agent-observability]] — 抽象度と可観測性のトレードオフ、障害の局在化
 - [[summaries/2024-building-effective-agents]] — 本ページの主要な根拠原典
 - [[summaries/2026-managed-agents]] — ランタイム分離（brain / session / hands）の根拠原典
+- [[summaries/2026-dive-into-claude-code]] — 3 つの注入点・4 機構のコンテキストコスト階層・メタツール・ACP による層の合成の根拠原典
