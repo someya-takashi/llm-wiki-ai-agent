@@ -11,6 +11,7 @@ related:
   - "[[multi-agent-systems]]"
   - "[[reasoning-and-planning]]"
   - "[[coding-agents]]"
+  - "[[harness-engineering]]"
 summaries:
   - "[[summaries/2023-lost-in-the-middle]]"
   - "[[summaries/2023-swe-bench]]"
@@ -251,3 +252,4 @@ few-shot 例示はコンテキスト積載の古典で、CoT（[[summaries/2022-
 - [[summaries/2025-effective-context-engineering]] — 本ページの主題を命名・定式化した出典（注意予算・context rot・JIT・長時間タスクの 3 手法）
 - [[summaries/2023-memgpt]] / [[summaries/2025-multi-agent-research-system]] — 本ページの主要な根拠原典
 - [[summaries/2026-dive-into-claude-code]] — 5 層 compaction・読み取り時の射影・遅延ロードを本番実装（Claude Code v2.1.88）から解剖した根拠原典
+- [[harness-engineering]] — コンテキスト管理を 1 つの層として含む、ハーネス全体の設計

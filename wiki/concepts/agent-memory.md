@@ -11,6 +11,7 @@ related:
   - "[[tool-use-and-function-calling]]"
   - "[[coding-agents]]"
   - "[[agent-safety-and-guardrails]]"
+  - "[[harness-engineering]]"
 summaries:
   - "[[summaries/2025-effective-context-engineering]]"
   - "[[summaries/2023-memgpt]]"
@@ -142,3 +143,4 @@ MemGPT が「どこに置くか」（階層間の配置）を自己管理した�
 - [[multi-agent-systems]] — 記憶の隔離／共有の設計
 - [[summaries/2023-memgpt]] — 本ページの主要な根拠原典
 - [[summaries/2026-dive-into-claude-code]] — CLAUDE.md の 4 階層・埋め込みを使わない検索・「指針と強制の分離」の根拠原典
+- [[harness-engineering]] — 記憶がハーネスの層として単独で最大の利得（+5.6 pp）を持つという測定

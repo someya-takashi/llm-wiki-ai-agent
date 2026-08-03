@@ -10,6 +10,7 @@ related:
   - "[[context-engineering]]"
   - "[[coding-agents]]"
   - "[[agent-frameworks]]"
+  - "[[harness-engineering]]"
 summaries:
   - "[[summaries/2022-react]]"
   - "[[summaries/2026-sakana-fugu]]"
@@ -130,3 +131,4 @@ ReAct のループは「LLM 呼び出し 1 回 = 1 ステップ」の最小構�
 - [[summaries/2022-react]] — 本ページの主要な根拠原典
 - [[summaries/2026-dive-into-claude-code]] — 本番のループ（Claude Code の `queryLoop()`）をソースから解剖した根拠原典。単一 State オブジェクト・回数を数える回復・3 つの注入点
 - [[coding-agents]] — そのループが置かれている応用領域
+- [[harness-engineering]] — ループを包む実行基盤そのものの設計

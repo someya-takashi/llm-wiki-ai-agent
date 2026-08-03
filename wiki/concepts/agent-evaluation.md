@@ -10,6 +10,7 @@ related:
   - "[[agent-observability]]"
   - "[[computer-use-agents]]"
   - "[[llm-red-teaming]]"
+  - "[[harness-engineering]]"
 summaries:
   - "[[summaries/2023-qlora]]"
   - "[[summaries/2023-swe-bench]]"
@@ -35,6 +36,7 @@ summaries:
   - "[[summaries/2024-harmbench]]"
   - "[[summaries/2024-jailbreakbench]]"
   - "[[summaries/2023-tap]]"
+  - "[[summaries/2026-agentic-harness-engineering]]"
 updated: 2026-08-03
 ---
 
@@ -237,3 +239,5 @@ judge を**開発ループの品質関門**として使う実務の記録が Ant
 - [[summaries/2024-harmbench]] — 測定手続きのパラメータ標準化・validation/test 分割・能力と安全策を切り離す採点基準の根拠原典
 - [[summaries/2024-jailbreakbench]] — 判定器を 300 例の人手ラベルで選ぶ手続き・良性の対照セットの根拠原典
 - [[summaries/2023-tap]] — 判定器を探索ループの内部に置いた場合の失敗（偽陽性が探索を早期に打ち切らせ 84%→4.2%）の根拠原典
+- [[harness-engineering]] — ハーネス差でスコアが動くこと、自己帰属の精度・再現率という評価の型
+- [[summaries/2026-agentic-harness-engineering]] — pass@1 の厳しめの規約（インフラ中断も失敗）、Succ/Mtok、自己予測を実測と突き合わせる評価設計の根拠原典
