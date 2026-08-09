@@ -22,12 +22,13 @@ summaries:
   - "[[summaries/2025-kimi-k2]]"
   - "[[summaries/2026-kimi-k2.5]]"
   - "[[summaries/2026-deepseek-v4]]"
+  - "[[summaries/2026-kimi-k3]]"
   - "[[summaries/2026-sakana-fugu]]"
   - "[[summaries/2025-cot-faithfulness]]"
   - "[[summaries/2025-long-cot-survey]]"
   - "[[summaries/2024-llm-security-privacy-survey]]"
   - "[[summaries/2022-anthropic-hh]]"
-updated: 2026-08-03
+updated: 2026-08-10
 ---
 
 # Reinforcement Learning from Human Feedback（RLHF と事後訓練の強化学習）
@@ -53,6 +54,7 @@ updated: 2026-08-03
 | 2025 | joint RL・自己批評 | 検証可能／不可能の分業を単一の RL に統合。**報酬モデルをモデル自身に兼ねさせる** | [[summaries/2025-kimi-k2]] |
 | 2026 | 能力別マルチモーダル RL・トークン効率 | RL のドメイン編成をモダリティ別から**能力別**へ。固定予算訓練を交互スケジュールへ | [[summaries/2026-kimi-k2.5]] |
 | 2026 | OPD（On-Policy Distillation） | パイプライン最終段の **mixed RL を蒸留に置換** | [[summaries/2026-deepseek-v4]] |
+| 2026 | MOPD（Multi-Teacher OPD） | 領域 × 努力の **9 専門家を per-effort 教師で 1 モデルへ蒸留統合** | [[summaries/2026-kimi-k3]] |
 
 ## 2022 — 古典的 RLHF: 人間の選好を報酬モデルにする
 
@@ -231,6 +233,18 @@ R1 の「発見は RL・転写は蒸留」の分業を、**単一モデルの訓
 
 インフラの教訓も具体的である。プリエンプション可能な rollout サービスでは、中断されたリクエストを**ゼロから再生成すると「短い応答ほど中断を生き延びやすい」ため方策の長さ分布が歪む（数学的に不正）**——トークン粒度の Write-Ahead Log で必ず続きから再開する。エージェント RL の実行環境は DSec（4 実行基盤・数十万並行サンドボックス・trajectory ログによる決定論的リプレイ）が支える。K2 の agentic rollout 基盤（partial rollout）と並ぶ、エージェント RL インフラの公開記録である。
 
+## 2026 — 専門家を「努力ごと」に分けて統合する: Kimi K3（MOPD）
+
+DeepSeek-V4 の「スペシャリスト RL → OPD で統合」を、**推論努力の次元まで分けた**のが Kimi K3（[[summaries/2026-kimi-k3]]）である。3 段パイプライン——
+
+1. **SFT** — 前世代の領域特化 Kimi モデルで軌跡を合成し、多段検証＋人間介在注釈。**SFT 段から MXFP4/MXFP8 の QAT を適用**（→ [[llm-inference-optimization]]。RL 中もロールアウトと訓練が同じ量子化で train/inference mismatch を除く）。
+2. **per-domain × per-effort RL** — 個別タスクごとに専門 RL モデルを作るのではなく、**3 領域（汎用タスク／汎用エージェント／コーディングエージェント）× 3 努力水準（low/high/max）= 9 個の専門家**を訓練する。V4 が「領域別」だったのに対し、K3 は **努力水準も分離軸に加えた**のが差分である（下記 [[test-time-compute]]）。
+3. **MOPD（Multi-Teacher On-Policy Distillation）** — 9 専門家を単一モデルへ統合する。密なトークンごとの OPD 報酬 $r^d_{\mathrm{opd}}(y_t\mid e,x,y_{<t})=\mathrm{clip}(\mathrm{sg}(\log\frac{\pi_{\text{teacher}}^{(d,e)}}{\pi_\theta}),-R_{\max},R_{\max})$——領域 $d$ とサンプルされた努力 $e$ に対応する教師が最適化を導く。この密な報酬は **RL フレームワークへ切れ目なく統合され、partial rollout をそのまま可能にする**（V4 が全語彙ロジット蒸留のために別インフラを要したのと対照的）。より細粒度の top-$k$ 蒸留も試したが収束速度・最終性能に明確な優位はなかった、と明記。
+
+**系譜の位置づけ**: 「専門家 → 統合」は K2 の joint RL（自己批評で報酬モデルを兼ねる）→ V4 の OPD（10 体超の教師をロジット蒸留）→ K3 の MOPD（領域 × 努力の 9 教師をトークンごと OPD で統合）と進んだ。**分割の軸が「検証可能/不可能」→「領域」→「領域 × 努力」と細かくなり、統合の手段が重みマージを避けて一貫してオンポリシー蒸留へ収束している**のが読み取れる。
+
+**RL の細部でも 2 点が本 wiki に効く。** (1) **Reasoning Effort RL**——問題ごとに初期予算 $b_0(x)$ を紐づけ、$\tau\cdot b_0(x)$ を超える軌跡の報酬を **−1** で上書きし、$\tau$ をアニールして max→high→low の専門家を作る。K2.5 の固定予算訓練・V4 の 3 モード別 RL の次にあたる、努力を**訓練で作る**設計 → [[test-time-compute]]。(2) **Agentic GRM の必須プロトコル**——検証不能な汎用タスクの審判に「結果を読む→ルーブリック生成→採点→スコアパッドに記録」を強制し、冗長性への reward hacking は予算ベースで抑える。K2 の自己批評・V4 の actor 兼 GRM の系譜で、**判定を手続き化する**方向の一歩 → [[agent-evaluation]]。
+
 ## 設計論点
 
 - **報酬の設計＝訓練の設計**。検証器（テスト・照合器）が書ける領域では RLVR が人手アノテーションを置き換える。逆に、検証器のない領域は選好報酬モデルに戻るしかなく、そこでは **reward hacking**（報酬モデルの穴を突く学習）が常在リスクになる——R1 がニューラル報酬モデル（PRM 含む）を意図的に避けたのはこのため。[[agent-evaluation]] の「judge の信頼性を先に検証せよ」と同根の問題であり、[[summaries/2022-rlhf-illustrated]] の「KL ペナルティがないと出鱈目で報酬モデルを騙し始める」という 2022 年の観察がその原型にあたる。
@@ -255,6 +269,7 @@ R1 の「発見は RL・転写は蒸留」の分業を、**単一モデルの訓
 - [[llm-red-teaming]] — レッドチーミングで作った選好データが訓練へ戻る側。過剰拒否の機構
 - [[agent-safety-and-guardrails]] — RLHF による整合の構造的な穴（competing objectives / mismatched generalization）
 - [[multi-agent-systems]] — GRPO でオーケストレーションを訓練する応用（Fugu）
+- [[agent-environments]] — RL を回す訓練環境（K3 の white-box harness・KG 合成・AET・AgentENV）
 - [[parameter-efficient-fine-tuning]] — パラメータを凍結して微調整する側
 - [[summaries/2022-instructgpt]] — 古典的 RLHF の一次資料（InstructGPT）。アラインメント税と「誰に整合させているのか」の出所
 - [[summaries/2022-anthropic-hh]] — 同時期の対をなす一次資料（Anthropic HH）。**hh-rlhf データセットの出典**。税がモデルサイズで符号を変えること、√D_KL と報酬の線形関係、PM の高スコア域での崩壊と反復オンライン化、そしてレッドチーミングのデータが過剰拒否を作る機構
@@ -263,3 +278,4 @@ R1 の「発見は RL・転写は蒸留」の分業を、**単一モデルの訓
 - [[summaries/2025-deepseek-series]] — DeepSeek 4 本（LLM/V2/V3/R1）の二次解説。DeepSeek-LLM の DPO 採用と、R1 の 4 段階パイプラインの平易な整理
 - [[summaries/2024-deepseek-v3]] — GRPO の本番適用・ルール／モデルベース RM の分業・R1 からの逆向きの蒸留・自己報酬
 - [[summaries/2024-deepseekmath]] / [[summaries/2025-deepseek-r1]] — GRPO・RLVR の根拠原典
+- [[summaries/2026-kimi-k3]] — SFT → per-domain×per-effort RL → MOPD の 3 段、Reasoning Effort RL、Agentic GRM の必須プロトコルの根拠原典

@@ -22,9 +22,10 @@ summaries:
   - "[[summaries/2026-kimi-k2.5]]"
   - "[[summaries/2026-gemma-4]]"
   - "[[summaries/2026-deepseek-v4]]"
+  - "[[summaries/2026-kimi-k3]]"
   - "[[summaries/2021-switch-transformers]]"
   - "[[summaries/2021-roformer]]"
-updated: 2026-08-03
+updated: 2026-08-10
 ---
 
 # Transformer Architecture（トランスフォーマーアーキテクチャ）
@@ -63,6 +64,8 @@ $$C = M \times D$$
 - **Gated DeltaNet**（Mamba-2 のゲートとの統合）: データ依存のスカラー α で状態全体を減衰させる**忘却ゲート**を追加（α=1 で純 delta rule、α=0 で全消去）。ただし減衰は一様。
 - **KDA（Kimi Delta Attention）**: 減衰を**チャネルごと**に学習する細粒度ゲーティング。
 - **ハイブリッド**（Kimi Linear / K3）: 固定状態の再帰系（KDA）と完全 softmax 検索（**MLA** = Multi-head Latent Attention, 潜在圧縮つきの完全 attention）を**層単位でインターリーブ**する（K3 は KDA 3 : MLA 1）。固定状態は必然的に情報を捨てるため、周期的な完全検索で取りこぼしを回収する分業である。
+
+**K3 の精緻化（[[summaries/2026-kimi-k3]]）は、Kimi Linear からの 3 つの数値・ゲート上の変更に集約される。** (1) **下限つき減衰（lower-bounded decay）** — チャンク計算はキーを逆累積減衰 $1/\Gamma$ で再スケールするが、$\Gamma$ が保持係数の積なのでこの逆数は際限なく増大して低精度でオーバーフローする。K3 は対数減衰の写像を負 Softplus から**スケール済みシグモイド** $g=g_{\min}\sigma(\cdot)$ に替えて $(g_{\min},0)$ に有界化する（$g_{\min}=-5$ で 16 トークンタイルの逆再スケール係数が $e^{80}$ 未満＝BF16 の動的範囲内）。これにより**全因果タイルを密な Tensor Core 行列積で計算できる**（Kimi Linear は位置対計算を要した）。(2) **全ランク出力ゲート** — KDA/MLA の出力ゲートを低ランクから入力依存の**全ランク射影** $\bm{y}=\mathbf{W}_o[\sigma(\mathbf{W}_g\bm{x})\odot\mathrm{RMSNorm}(\tilde{\bm{o}})]$ へ。(3) **NoPE（No Position Encoding）** — MLA 層に明示的位置符号化を一切与えず、位置は KDA の再帰ゲーティングと減衰が暗黙に担う。**結果としてコンテキストを 1M へ延ばす際に RoPE 再スケール等の位置符号化の変更が不要**になる（K2/K2.5 との違い）。
 - **間引きと共有**（Gemma 系）: 状態を固定サイズに畳む代わりに、**softmax attention のまま KV cache を削る**別路線もある。Gemma 4（[[summaries/2026-gemma-4]]）は (1) local:global 比 5:1（大半の層を sliding window ローカル attention にし、全系列を見るグローバル層を間引く）、(2) グローバル層で **values = keys**（key を value として再利用し保存テンソルを半減）、(3) **p-RoPE**（位置回転を次元の一部 p=0.25 のみに適用）の 3 点でグローバル KV cache を実質 37.5% 削減した。完全検索の表現力を保ったままメモリを削る、エッジ・オンデバイス志向の解である。E2B/E4B の **per-layer embeddings**（層ごとの埋め込みを外部化し、総 5B/8B のうち実効 2.3B/4.5B だけを実効計算に使う）も同系の「容量と実効コストの分離」にあたる。
 - **圧縮してから選ぶ**（DeepSeek-V4）: 第三の路線が **KV の学習圧縮＋スパース選択**の二段構えである（[[summaries/2026-deepseek-v4]], 2026）。**CSA**（Compressed Sparse Attention）は KV を m=4 トークンごとに 1 エントリへ学習された重み付き和で圧縮した上で、軽量な **Lightning Indexer** が各クエリに top-k（512〜1024）個の圧縮エントリだけを選ぶ。**HCA**（Heavily Compressed Attention）は m′=128 の激圧縮＋密 attention で、両者を層で交互配置する。圧縮では拾えない局所依存は直近 128 トークンの sliding window ブランチが補い、attention sink（合計 attention を 1 未満に調整できる学習ロジット）・部分 RoPE・QKV の RMSNorm を併用する。結果は劇的で、**1M コンテキストの KV cache は一般的な BF16 GQA8 構成の約 2%**、推論 FLOPs は前世代 V3.2 の 27%——linear 化が「状態を固定サイズに畳む」なら、この路線は「**可変長のまま解像度を落とし、読む場所を選ぶ**」ことで 100 万トークンを実用化した。1.6T/284B の 2 サイズで実証されている。
 
@@ -121,9 +124,13 @@ transformer 側から見た要点は 3 つ。**(1) 置き場所は FFN 層**—�
 
 各層の入力は「埋め込み＋全先行層出力の等重み和」という**残差ストリーム**であり、層が深くなると古い情報が薄まる（残差の希釈）・後段の層が影響力を得るために出力を肥大させる、という問題を持つ。Kimi K3 の **AttnRes** は、和の各項に学習された重み（query-key ドット積から計算）を掛け、**先行層の出力を選択的に読む**——トークン方向だけでなく**深さ方向にも attention を張る**発想で、+2% のレイテンシで残差希釈の緩和と 1.25 倍の計算優位を得る（12 層ごとの blockwise 適用）。
 
+**AttnRes の定式化（[[summaries/2026-kimi-k3]]）を明示すると**: 各層 $l$ が層固有の学習可能な擬似クエリ $\bm{q}_l=\bm{w}_l$ を持ち、キー・値は先行層の出力 $\bm{k}_i=\bm{v}_i=f_i(\bm{h}_i)$（$i=0$ は埋め込み）。attention 重みは softmax カーネル $\phi(\bm{q},\bm{k})=\exp(\bm{q}^\top\mathrm{RMSNorm}(\bm{k}))$ で、**RMSNorm が大出力の層が重みを支配するのを防ぐ**。深さ $L<100$ なら **Full AttnRes** の $O(L^2 d)$ 演算は手頃だが、全層出力を生かす $O(Ld)$ メモリが重い。K3 は層を**12 層 × 8 ブロックの Block AttnRes** に分割し（ブロック内は総和で 1 表現へ縮約、ブロック間のみ完全 attention）、メモリ・通信を $O(Ld)\to O(Nd)$ に削減する。これは「トークン方向の softmax attention」と同じ論法を**深さ方向**へ移したもので、上の attention 系譜と対をなす（トークン方向＝KDA/MLA、深さ方向＝AttnRes）。
+
+**活性化も K3 で替わった——SwiGLU → SiTU-GLU（Sigmoid Tanh Unit GLU）。** SwiGLU の 2 つの乗法因子はいずれも無界で、同時に大きい座標が活性化の外れ値を生み低精度でオーバーフローする。SiTU-GLU は Swish の線形因子と up 分岐に**滑らかなキャップ** $\beta\tanh(x/\beta)$ を独立に適用し、原点近傍では SwiGLU に 1 次まで一致しつつ出力を $|f|\le\beta_1\beta_2=100$（$\beta_1=4,\beta_2=25$）に有界化する。ハードクランプと違い飽和境界から離れた勾配を保つ。これは Gemma 4 の logit soft-cap（tanh で attention ロジットを有界化）と同じ「tanh で低精度の外れ値を抑える」発想の活性化版である。
+
 もう一つの設計軸が**残差ストリームの多重化**である。Hyper-Connections（HC）は残差ストリームを n 倍幅（例: 4 本）に拡張し、層ごとに学習された行列で「どの残差レーンから読み・どう混ぜて書き戻すか」を決める——隠れサイズと独立な補完的スケーリング軸だが、深く積むと数値不安定になる。DeepSeek-V4 の **mHC**（Manifold-Constrained Hyper-Connections, [[summaries/2026-deepseek-v4]]）は、残差混合行列を**二重確率行列の多様体（Birkhoff 多面体）へ Sinkhorn-Knopp 反復で射影**してスペクトルノルム ≤1 の非拡大写像に制約し、「信号が層を経ても増幅されない」保証つきで多重残差を 1.6T 級・61 層で成立させた（実時間オーバーヘッド 6.7%）。AttnRes（読み方を選ぶ）と mHC（レーンを増やして安定に混ぜる）は、「残差接続は無設計の足し算でよい」という前提を壊す同時代の 2 解である。
 
-オプティマイザ側にも系譜がある。**Muon**（勾配行列を Newton-Schulz 反復で直交化してから更新する）は Kimi K2 が MuonClip（QK-Clip 併用）として 1T 級で実証し（→ [[summaries/2025-kimi-k2]]）、DeepSeek-V4 も採用——ただし V4 は attention 側の QKV RMSNorm でロジット爆発を防げるため **QK-Clip を使わない**。1.6T 級で残る loss spike には、**Anticipatory Routing**（MoE のルーティングだけ過去パラメータで先読み計算し、ルーティングと本体の同期更新が作る外れ値の悪循環を断つ。spike 検出時のみ動的起動）と **SwiGLU Clamping**（線形成分 ±10）という「原理は未解明だが有効」と明記された 2 技法で対処している——大規模訓練の安定性が、理論より先に実践知として共有されている現状の記録でもある。
+オプティマイザ側にも系譜がある。**Muon**（勾配行列を Newton-Schulz 反復で直交化してから更新する）は Kimi K2 が MuonClip（QK-Clip 併用）として 1T 級で実証し（→ [[summaries/2025-kimi-k2]]）、DeepSeek-V4 も採用——ただし V4 は attention 側の QKV RMSNorm でロジット爆発を防げるため **QK-Clip を使わない**。K3 はさらに **Per-Head Muon** へ精緻化する（[[summaries/2026-kimi-k3]]）——Newton–Schulz 直交化を $Q/K/V$ 射影行列全体に適用すると全ヘッドが単一の結合ブロックとして扱われてしまうので、モーメンタム行列を**ヘッド次元に沿って分割し各ヘッドのブロックを別々に直交化**する。1.6T 級で残る loss spike には、**Anticipatory Routing**（MoE のルーティングだけ過去パラメータで先読み計算し、ルーティングと本体の同期更新が作る外れ値の悪循環を断つ。spike 検出時のみ動的起動）と **SwiGLU Clamping**（線形成分 ±10）という「原理は未解明だが有効」と明記された 2 技法で対処している——大規模訓練の安定性が、理論より先に実践知として共有されている現状の記録でもある。
 
 ## 設計論点
 
@@ -141,3 +148,4 @@ transformer 側から見た要点は 3 つ。**(1) 置き場所は FFN 層**—�
 - [[context-engineering]] — 有限ウィンドウ制約の使い方の側
 - [[test-time-compute]] — アーキテクチャが捌く推論時計算の使い方
 - [[summaries/2026-gpt2-to-kimi3]] — 本ページの主要な根拠原典
+- [[summaries/2026-kimi-k3]] — KDA の下限つき減衰・全ランクゲート・NoPE、Block AttnRes、SiTU-GLU、Per-Head Muon の根拠原典

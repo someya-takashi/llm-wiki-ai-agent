@@ -16,6 +16,7 @@ related:
   - "[[harness-engineering]]"
   - "[[agent-skills]]"
   - "[[agent-memory]]"
+  - "[[agent-environments]]"
 summaries:
   - "[[summaries/2022-instructgpt]]"
   - "[[summaries/2022-rlhf-illustrated]]"
@@ -37,7 +38,8 @@ summaries:
   - "[[summaries/2026-dive-into-claude-code]]"
   - "[[summaries/2026-code-as-agent-harness]]"
   - "[[summaries/2026-externalization]]"
-updated: 2026-08-04
+  - "[[summaries/2026-kimi-k3]]"
+updated: 2026-08-10
 ---
 
 # Agent Safety and Guardrails（エージェントの安全性とガードレール）
@@ -124,6 +126,8 @@ InstructGPT §5.2「Who are we aligning to?」は、「human values に整合さ
 最も確実な安全策は、**危険な行動をそもそも行動空間に含めない**こと。[[summaries/2022-react]] の Wikipedia API は閲覧のみで編集できない設計であり、これが最初期の実例。実務では権限の最小化・読み書きの分離・破壊的操作の隔離（sandboxing, 危険な操作を隔離環境に閉じ込めること）として一般化されている → [[tool-use-and-function-calling]]。
 
 sandboxing の本番規模の実例が DeepSeek の **DSec**（[[summaries/2026-deepseek-v4]]）である: エージェントのコード実行を Function Call（事前ウォームのコンテナプール）／Docker 互換コンテナ／microVM（Firecracker, VM レベル隔離）／fullVM（QEMU, 任意ゲスト OS）の **4 実行基盤**に振り分け、セキュリティ要求に応じて隔離強度をパラメータ 1 つで切り替える。数十万並行のサンドボックスを管理し、**全コマンドと結果を trajectory ログに永続記録**する——隔離（層 1）と行動ログ監視（層 3）を同一基盤で提供する設計であり、「エージェント RL・評価のインフラは安全性インフラを兼ねる」ことを示す例でもある。
+
+**同じ系譜の次の記録が Kimi K3 の AgentENV**（[[summaries/2026-kimi-k3]]）である。K3 も従来のコンテナベース／GPU サンドボックス／**microVM ベースの AgentENV** の複数ランタイムを使うが、AgentENV の設計動機が示唆的である——**「エージェントが有能になるほど積極的に探索し reward hacking を試みる」ため、伝統的なコンテナベースのランタイムでの初期実験では意図しないエージェント操作が kernel panic やデッドロックを引き起こした**。microVM 隔離が「できるだけ多くの探索を許す」と「安全」の緊張を解く。さらに AgentENV は**漸進的なチェックポイント**（前回以降に汚れたメモリページのみ保存）で**チェックポイント/再開の遅延を 133ms/49ms** まで下げ、partial rollout で軌跡が複数反復にまたがる agentic RL を支える。**訓練・評価を通じて 150 万イメージにわたる 5,121 万個のサンドボックスが作られた**——DSec が「隔離＋ログ記録」を同一基盤で提供したのに続き、AgentENV は**「隔離＋再開性」を微細に測る**。エージェントの探索能力の向上そのものがサンドボックスへの要求（暴走を封じる隔離強度）を引き上げる、という関係が読み取れる → [[agent-environments]]。
 
 **認証情報を「狭める」のではなく「届かなくする」**。上の CUA の例（パスワードを平文でシステムプロンプトに置く）が示すとおり、資格情報の扱いは行動空間設計の弱点になりやすい。Managed Agents の設計記録（[[summaries/2026-managed-agents]], Anthropic, 2026）は、この論点を実運用の失敗から整理している。密結合時代の同社サービスでは Claude が生成した未信頼コードと認証情報が**同じコンテナ**にあり、prompt injection は「自分の環境を読ませる」だけで成立した——そしてトークンを奪えば、攻撃者は**制限のない新しいセッションを起こして作業を委任できる**（被害が初回の注入を超えて増殖する）。
 
@@ -422,6 +426,8 @@ CoT より硬い監視面は**行動そのもの**である。ツール呼び出
 - [[summaries/2026-deepseek-v4]] — 本番規模 sandboxing（DSec）の実例
 - [[summaries/2026-externalization]] — **外部化した成果物が攻撃面になる**（記憶の汚染／スキルの注入／プロトコルのなりすまし）と、インフラとしての統治の根拠原典
 - [[agent-skills]] — スキルの合成をセキュリティに敏感な過程として扱う
+- [[summaries/2026-kimi-k3]] — AgentENV microVM サンドボックス（探索能力の向上が隔離要求を上げる関係）の根拠原典
+- [[agent-environments]] — サンドボックスを訓練環境の一部として見る側
 - [[summaries/2026-code-as-agent-harness]] — **耐久的なハーネス状態としての HITL**・executable accountability・権限の多層モデルと文脈依存性の根拠原典
 - [[harness-engineering]] — ハーネスを safety governor として設計する側。PEV ループの Execute フェーズが本ページの権限設計に対応する
 - [[summaries/2025-llamafirewall]] — 層 (2)（入出力のガードレール）の根拠原典。実装され、測られ、本番投入された系の一次資料。層 (3) の CoT 監視とも接続する
