@@ -23,10 +23,11 @@ summaries:
   - "[[summaries/2026-gemma-4]]"
   - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2026-kimi-k3]]"
+  - "[[summaries/2025-kimi-linear]]"
   - "[[summaries/2021-switch-transformers]]"
   - "[[summaries/2025-manus-context-engineering]]"
   - "[[summaries/2021-roformer]]"
-updated: 2026-08-10
+updated: 2026-08-11
 ---
 
 # LLM Inference Optimization（LLM 推論の高速化・サービング）
@@ -43,7 +44,7 @@ LLM（Large Language Model, 大規模言語モデル）の**推論を速く・�
 
 ### 状態を固定サイズに畳む — アーキテクチャ側の解
 
-linear attention 系（→ [[transformer-architecture]] の系譜）は、KV cache の O(N) 成長そのものを、固定 D×D 状態への畳み込みで解消する。デコードコストは系列長によらず O(1) になり、Kimi Linear は full attention 比**最大 6 倍のデコードスループット**を主張する（自己申告の管理下比較）。代償は完全検索の放棄で、実運用のモデル（Kimi K3）は固定状態層と完全 attention 層のハイブリッドでバランスを取る。
+linear attention 系（→ [[transformer-architecture]] の系譜）は、KV cache の O(N) 成長そのものを、固定 D×D 状態への畳み込みで解消する。デコードコストは系列長によらず O(1) になる。**この効率主張の一次資料が Kimi Linear（[[summaries/2025-kimi-linear]]）である**——KDA:MLA=3:1 のハイブリッドで、1M コンテキストの**デコードスループット最大 6.3×**（TPOT 1.84ms vs MLA 11.48ms、大バッチ効果込み。バッチ1でも 2.2×）、プレフィルは 512k で 2.3×・1M で 2.9×、そして 4 層に 1 層しかフル層が KV を貯めないので**KV cache を最大 75% 削減**する。推論はプレフィルが FLOP 集約的なチャンクカーネル、デコードは軽い再帰カーネルへ切り替える二段構え。KDA 自身のカーネルも $a=b=k$ 束縛で二次チャンキングと行列積を削り、一般 DPLR の**約 2 倍速い**（→ [[transformer-architecture]]）。ただし主結果は 1.4T の自己申告の管理下比較で、「full attention 超え」は割り引いて読む。代償は完全検索の放棄で、実運用のモデル（Kimi K3）は固定状態層と完全 attention 層のハイブリッドでバランスを取る。KDA 状態の再利用（プレフィックスキャッシュ・投機デコードのロールバック）に固有の設計問題は後継 K3 が詰めた（下記）。
 
 ### IO-awareness — 律速はどこにあるか（FlashAttention）
 
@@ -239,4 +240,5 @@ MoE（→ [[mixture-of-experts]]）の推論経済は独特で、**計算は活�
 - [[context-engineering]] — コンテキスト積載のコスト意識
 - [[multi-agent-systems]] — 並列化とトークン経済
 - [[summaries/2026-gpt2-to-kimi3]] — 本ページの主要な根拠原典
+- [[summaries/2025-kimi-linear]] — 固定状態による KV 75% 削減・6.3× デコード・二段カーネルの一次資料（KDA の前身）
 - [[summaries/2026-kimi-k3]] — MXFP4 QAT（混合精度）・MTP→EAGLE-3 draft・KDA を意識したプレフィックスキャッシュの根拠原典

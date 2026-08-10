@@ -16,7 +16,8 @@ summaries:
   - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2026-gemma-4]]"
   - "[[summaries/2024-flashattention-3]]"
-updated: 2026-08-03
+  - "[[summaries/2025-kimi-linear]]"
+updated: 2026-08-11
 ---
 
 # Positional Encoding（位置符号化）
@@ -100,7 +101,17 @@ RoPE の重要な副産物は、**調整できるハイパーパラメータが�
 - **Position Interpolation（位置内挿）**: 位置インデックスそのものを縮めて、訓練済みの範囲に押し込む。
 - **NTK-aware scaling / YaRN**（Yet another RoPE extensioN）: 周波数帯ごとに扱いを変えて内挿する。高周波（近距離を担う）は残し、低周波（遠距離を担う）を伸ばす。**実務での標準**であり、本 wiki では [[summaries/2024-deepseek-v3]] が **4K → 32K → 128K の 2 段階拡張（各 1000 ステップ）** に使った記録があり、Kimi 系（[[summaries/2026-kimi-k2.5]]）でも採用されている。DeepSeek-V3 の 128K 対応は MLA の設計変更ではなく **YaRN から来ている**（→ [[summaries/2025-deepseek-series]] が V2/V3 の主張と実際を突き合わせて確認している）。
 - **部分適用（partial / p-RoPE）**: 全次元でなく一部の次元だけを回す。Gemma 4（[[summaries/2026-gemma-4]]）は **$p=0.25$**、DeepSeek-V4（[[summaries/2026-deepseek-v4]]）も**部分 RoPE** を採る。回さない次元は位置に依存しない「内容だけ」のチャネルになり、極端な長距離での位置情報の干渉を減らす狙いがある。
-- **NoPE（No Positional Encoding）**: decoder-only の因果マスク自体が位置情報を含む（各トークンが見られる先行トークンの個数が位置を表す）ため、位置符号化を一切入れなくても学習できるという主張がある。**本 wiki には原典がない**ので、ここでは存在の言及に留める（→ 末尾の「根拠の所在」）。
+- **NoPE（No Positional Encoding）**: decoder-only の因果マスク自体が位置情報を含む（各トークンが見られる先行トークンの個数が位置を表す）ため、位置符号化を一切入れなくても学習できるという主張がある。ただし純 NoPE を大規模で使う実例は少なく、実際には**別の演算子に位置の責任を移したうえでフル層だけ NoPE にする**形が現れている。その一次資料が Kimi Linear（[[summaries/2025-kimi-linear]]）で、次の (e) に独立させた。
+
+### (e) KDA — 位置符号化を「学習可能な遷移行列」に畳む
+
+RoPE の系譜 (c) を「$q$/$k$ を固定回転で回す乗法的位置符号化」と読むと、**線形アテンションのゲート付きデルタ則は同じ骨格の一般化**として読める、というのが Kimi Linear（[[summaries/2025-kimi-linear]]）の理論的貢献である。RoPE は $s_{t,i}=q_t^\top(\prod_{j=i+1}^t \boldsymbol{R}_j)k_i$ と**回転行列の累積積**で相対位置を入れる。KDA（Kimi Delta Attention, → [[transformer-architecture]]）の出力も $o_t=\sum_i q_t^\top\big(\prod_{j=i+1}^t \mathrm{Diag}(\alpha_j)(I-\beta_j k_jk_j^\top)\big)k_i\,v_i$ と書け、**RoPE の固定回転行列 $\boldsymbol{R}_j$ を「データ依存で学習可能な遷移行列」に置き換えたもの**とみなせる。含意は 3 つ:
+
+- **直交性の縛りを外す**。RoPE の $\boldsymbol{R}_j$ は直交行列に限られるが、KDA の遷移行列にその制約はない。ぶん表現力が高く、RoPE の固定周波数ゆえの外挿問題（学習時の長さへの過適合、YaRN 等での再調整が要る原因）を原理的に回避しうる。
+- **チャネルごとの位置解像度**。RoPE が次元対ごとに異なる回転周波数を割り当てて非一様フーリエ変換のように働くのと同様、KDA の**チャネルごと減衰 $\mathrm{Diag}(\alpha_t)$** が次元ごとの位置解像度の多様性を担う。ヘッド単位スカラー減衰の GDN にはこの多様性がなく、これが KDA を細粒度ゲートにした動機。
+- **だからフル層は NoPE にできる**。Kimi Linear は位置と直近性バイアスの責任を全部 KDA に委ね、MLA（フル）層には位置符号化を一切入れない。副産物として (1) NoPE の MLA は推論時に純 MQA へ変換できて速い、(2) YaRN 等の RoPE 周波数再調整なしに長コンテキスト化できる。表5 では NoPE 版が長コンテキストで RoPE 版を上回り、RoPE 版は短コンテキストのみ同等だった。後継の K3（[[summaries/2026-kimi-k3]]）もこの NoPE 設計を継いでいる。
+
+この「位置を専用の位置認識演算子に移し、フル層は NoPE」という分業は、上の (d) の部分 RoPE（一部次元だけ回す）と同じ問題意識——**位置情報を全次元に強制しない**——の、より踏み込んだ形と読める。
 
 ## システムとの相互作用
 
@@ -146,9 +157,9 @@ DeepSeek の **MLA**（Multi-head Latent Attention）がその実例である（
 
 このページの記述の重みは一様ではない。読むときの注意として明示しておく。
 
-- **一次資料がある**: RoPE 本体（[[summaries/2021-roformer]]）、系列位置効果（[[summaries/2023-lost-in-the-middle]]）、MLA と decoupled RoPE key（[[summaries/2025-deepseek-series]]）、YaRN の実務適用（[[summaries/2024-deepseek-v3]]、[[summaries/2026-kimi-k2.5]]）、p-RoPE と部分 RoPE（[[summaries/2026-gemma-4]]、[[summaries/2026-deepseek-v4]]）、rotary へのカーネル融合（[[summaries/2024-flashattention-3]]）。
+- **一次資料がある**: RoPE 本体（[[summaries/2021-roformer]]）、系列位置効果（[[summaries/2023-lost-in-the-middle]]）、MLA と decoupled RoPE key（[[summaries/2025-deepseek-series]]）、YaRN の実務適用（[[summaries/2024-deepseek-v3]]、[[summaries/2026-kimi-k2.5]]）、p-RoPE と部分 RoPE（[[summaries/2026-gemma-4]]、[[summaries/2026-deepseek-v4]]）、rotary へのカーネル融合（[[summaries/2024-flashattention-3]]）、**NoPE ＋ 位置認識演算子の設計と「KDA＝学習可能な乗法的位置符号化」の読み**（[[summaries/2025-kimi-linear]]、K3 が継承）。
 - **二次資料しかない**: 系譜 (b) の Shaw ら・Transformer-XL・T5・DeBERTa は、いずれも [[summaries/2021-roformer]] の関連研究節を通した記述である。**RoPE を提案する側による整理**なので、加法的手法の弱点の描き方には当然バイアスがありうる。
-- **原典が無い**: **Position Interpolation・NTK-aware scaling・YaRN の各原論文**、**ALiBi の原論文**、**NoPE の研究**。これらは本 wiki では「他の原典が使っている手法」としてしか登場していない。長コンテキスト化は現在の主戦場なので、**YaRN 原典（Peng ら 2023）と ALiBi 原典（Press ら 2021）は次に取り込む候補**として記録しておく。
+- **原典が無い**: **Position Interpolation・NTK-aware scaling・YaRN の各原論文**、**ALiBi の原論文**。これらは本 wiki では「他の原典が使っている手法」としてしか登場していない。長コンテキスト化は現在の主戦場なので、**YaRN 原典（Peng ら 2023）と ALiBi 原典（Press ら 2021）は次に取り込む候補**として記録しておく（NoPE は Kimi Linear で一次資料を得た）。
 
 ## 関連ページ
 
@@ -158,3 +169,4 @@ DeepSeek の **MLA**（Multi-head Latent Attention）がその実例である（
 - [[context-engineering]] — 伸ばしたウィンドウをどう使うか
 - [[model-quantization]] ・ [[low-precision-training]] — 「何を低精度にしてはいけないか」
 - [[summaries/2021-roformer]] — 本ページの主要な根拠原典
+- [[summaries/2025-kimi-linear]] — NoPE ＋ KDA を「学習可能な位置符号化」とする節 (e) の一次資料

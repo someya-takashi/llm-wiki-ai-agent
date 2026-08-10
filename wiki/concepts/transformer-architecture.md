@@ -23,9 +23,10 @@ summaries:
   - "[[summaries/2026-gemma-4]]"
   - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2026-kimi-k3]]"
+  - "[[summaries/2025-kimi-linear]]"
   - "[[summaries/2021-switch-transformers]]"
   - "[[summaries/2021-roformer]]"
-updated: 2026-08-10
+updated: 2026-08-11
 ---
 
 # Transformer Architecture（トランスフォーマーアーキテクチャ）
@@ -62,8 +63,10 @@ $$C = M \times D$$
 - **linear attention**（2020, Katharopoulos ら）: ELU+1 のような特徴写像を q, k に別々に適用して積を再結合可能にし、K・V の蓄積を**固定 D×D 状態**へ畳む。デコードは O(1) になるが、特徴写像は softmax の劣化近似であり、**加算だけの書き込みは容量超過で干渉する**（Schlag の Fast Weight Programmers が指摘した overcapacity 問題）。
 - **DeltaNet**（delta rule）: 新しい key で古い値を読み出し、**差分だけを書く**選択的上書き。干渉を能動的に解消する。一般化 Householder 遷移行列への再パラメータ化により、チャンク単位の並列訓練が可能（チャンク C=64/128 がテンソルコアに合う）。
 - **Gated DeltaNet**（Mamba-2 のゲートとの統合）: データ依存のスカラー α で状態全体を減衰させる**忘却ゲート**を追加（α=1 で純 delta rule、α=0 で全消去）。ただし減衰は一様。
-- **KDA（Kimi Delta Attention）**: 減衰を**チャネルごと**に学習する細粒度ゲーティング。
-- **ハイブリッド**（Kimi Linear / K3）: 固定状態の再帰系（KDA）と完全 softmax 検索（**MLA** = Multi-head Latent Attention, 潜在圧縮つきの完全 attention）を**層単位でインターリーブ**する（K3 は KDA 3 : MLA 1）。固定状態は必然的に情報を捨てるため、周期的な完全検索で取りこぼしを回収する分業である。
+- **KDA（Kimi Delta Attention）**: GDN のスカラー忘却ゲートを**チャネルごと**の対角ゲート $\mathrm{Diag}(\alpha_t)$ に細粒度化した線形アテンション（GLA 型のチャネル減衰とデルタ則の両取り）。一次資料は [[summaries/2025-kimi-linear]]。
+- **ハイブリッド**（Kimi Linear / K3）: 固定状態の再帰系（KDA）と完全 softmax 検索（**MLA** = Multi-head Latent Attention, 潜在圧縮つきの完全 attention）を**層単位でインターリーブ**する（KDA 3 : MLA 1）。固定状態は必然的に情報を捨てるため、周期的な完全検索で取りこぼしを回収する分業である。この 3:1 比と「full attention 超え」の実証を出した原典が [[summaries/2025-kimi-linear]] である。
+
+**KDA の一次資料は Kimi Linear（[[summaries/2025-kimi-linear]]）で、系譜の「KDA・ハイブリッド」項の根拠はすべてここにある。** 押さえるべき設計判断は 3 つ。(1) **チャネルごと減衰**——GDN の $S_t=\alpha_t(I-\beta_t k_tk_t^\top)S_{t-1}+\beta_t k_tv_t^\top$ のスカラー $\alpha_t$ を対角行列 $\mathrm{Diag}(\alpha_t)$ に替え、次元ごとに忘却率を持たせる。合成タスク（回文・MQAR・状態追跡）で GDN より速く収束し、減衰のない Mamba2 は同設定で全滅する。(2) **DPLR を $a=b=k$ に束縛**——KDA の遷移行列は一般化すると DPLR（Diagonal-Plus-Low-Rank, 対角＋低ランク）$D-a_tb_t^\top$ だが、低ランク項を $D=\mathrm{Diag}(\alpha_t),\,a_t=\beta_tk_t,\,b_t=k_t\odot\alpha_t$ と $k$ に縛ることで、数値安定用の二次チャンキングを 4→2 回に、行列積を 3 つ削り、**カーネル速度を一般 DPLR の約 2 倍**にする（表現力はほぼ同等のまま）。(3) **3:1 の層単位ハイブリッド**——アブレーションで 7:1 は検証損失が悪化、1:1 は推論が重い、0:1（純フル）は低性能、3:1 が最良で **KV を 75% 削れる**。ただし主結果は 1.4T の管理下比較（ベース／SFT どまり）で、「full attention 超え」は自己申告の内製比較である点は割り引く（→ 下記および [[agent-evaluation]]）。
 
 **K3 の精緻化（[[summaries/2026-kimi-k3]]）は、Kimi Linear からの 3 つの数値・ゲート上の変更に集約される。** (1) **下限つき減衰（lower-bounded decay）** — チャンク計算はキーを逆累積減衰 $1/\Gamma$ で再スケールするが、$\Gamma$ が保持係数の積なのでこの逆数は際限なく増大して低精度でオーバーフローする。K3 は対数減衰の写像を負 Softplus から**スケール済みシグモイド** $g=g_{\min}\sigma(\cdot)$ に替えて $(g_{\min},0)$ に有界化する（$g_{\min}=-5$ で 16 トークンタイルの逆再スケール係数が $e^{80}$ 未満＝BF16 の動的範囲内）。これにより**全因果タイルを密な Tensor Core 行列積で計算できる**（Kimi Linear は位置対計算を要した）。(2) **全ランク出力ゲート** — KDA/MLA の出力ゲートを低ランクから入力依存の**全ランク射影** $\bm{y}=\mathbf{W}_o[\sigma(\mathbf{W}_g\bm{x})\odot\mathrm{RMSNorm}(\tilde{\bm{o}})]$ へ。(3) **NoPE（No Position Encoding）** — MLA 層に明示的位置符号化を一切与えず、位置は KDA の再帰ゲーティングと減衰が暗黙に担う。**結果としてコンテキストを 1M へ延ばす際に RoPE 再スケール等の位置符号化の変更が不要**になる（K2/K2.5 との違い）。
 - **間引きと共有**（Gemma 系）: 状態を固定サイズに畳む代わりに、**softmax attention のまま KV cache を削る**別路線もある。Gemma 4（[[summaries/2026-gemma-4]]）は (1) local:global 比 5:1（大半の層を sliding window ローカル attention にし、全系列を見るグローバル層を間引く）、(2) グローバル層で **values = keys**（key を value として再利用し保存テンソルを半減）、(3) **p-RoPE**（位置回転を次元の一部 p=0.25 のみに適用）の 3 点でグローバル KV cache を実質 37.5% 削減した。完全検索の表現力を保ったままメモリを削る、エッジ・オンデバイス志向の解である。E2B/E4B の **per-layer embeddings**（層ごとの埋め込みを外部化し、総 5B/8B のうち実効 2.3B/4.5B だけを実効計算に使う）も同系の「容量と実効コストの分離」にあたる。
@@ -148,4 +151,5 @@ transformer 側から見た要点は 3 つ。**(1) 置き場所は FFN 層**—�
 - [[context-engineering]] — 有限ウィンドウ制約の使い方の側
 - [[test-time-compute]] — アーキテクチャが捌く推論時計算の使い方
 - [[summaries/2026-gpt2-to-kimi3]] — 本ページの主要な根拠原典
+- [[summaries/2025-kimi-linear]] — KDA・DPLR 制約・3:1 ハイブリッドの一次資料（K3 の KDA の前身）
 - [[summaries/2026-kimi-k3]] — KDA の下限つき減衰・全ランクゲート・NoPE、Block AttnRes、SiTU-GLU、Per-Head Muon の根拠原典
