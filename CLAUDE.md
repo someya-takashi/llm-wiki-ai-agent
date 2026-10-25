@@ -139,6 +139,7 @@ summaries_used:
 
 - ingest は基本 **1 件ずつ**、ユーザーと対話しながら進める（1 件の ingest で 3〜8 ページが触られるのが普通）。
 - 下記 §4（「機械的なまとめ」にしないルール）は、`translations/` を除くすべてのページ生成、および query の回答に **常時適用**する。
+- ingest で新しく作った **要約ページ（summaries/）は、yomiyasu スキルで推敲してからコミットする**（対象・触らない部分などの詳細は ingest skill の手順 4）。翻訳・概念ページ・overview・index・log は推敲の対象外。
 
 ---
 

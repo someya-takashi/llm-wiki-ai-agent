@@ -16,6 +16,12 @@ AI Agent wiki に新しい原典を取り込む。スキーマ全体は `CLAUDE.
 2. **対話**：ユーザーに重要な発見・疑問点・既存 wiki との関係（既知概念との接続、矛盾、新概念の発生）を簡潔に伝え、強調すべき観点をすり合わせる。
 3. **翻訳ファイルの作成**（**論文・記事の場合は必須**）：`wiki/translations/<slug>.md` を作成し、原典の本文を**一文ずつ正確に翻訳**する。詳細は下記「翻訳ファイルの仕様」を参照。
 4. **要約ページの作成**：`wiki/summaries/<slug>.md` を作成する。詳細は下記「要約ページの仕様」を参照。**ここは機械的な要約にしない**。略称の定義、難概念の補足、初学者でも読める平易な説明を心がける（CLAUDE.md §4 参照）。
+   - **yomiyasu による推敲（2026-10-26 のスキーマ更新でユーザーが指示）**：要約ページの本文が書き上がったら、検証とコミットの前に **yomiyasu スキルで推敲する**（この指示は「名前を出して頼まれたもの」として扱う）。
+     - **対象は今回新しく作った要約ページだけ**。翻訳（`translations/`）、概念ページ、overview、index、log は推敲しない。既存の要約に逆リンクを足しただけの場合も対象外。
+     - **元のファイルに直接反映する**（yomiyasu の既定の「別名で保存」は使わない）。
+     - **触らない部分**：frontmatter、`[[wikilink]]`、表、`<figure>` と `<figcaption>`、コードブロックと引用したプロンプト、数値・単位・固有名、ページのタイトル（`#` の行）と原典の表記の行、要約テンプレートの節の見出し（「一言まとめ」「背景と問題意識」など）。「一言まとめ」は本文の繰り返しに見えても削らない。
+     - CLAUDE.md §4 で必須の要素（略称の展開と短い意味づけ、難概念の補足、既存 wiki との接続の一文）は残す。
+     - 推敲で変えた主な点は、完了報告で 1〜2 行にまとめて伝える（yomiyasu の「変えたところ」の一覧をそのまま貼らない）。log.md のメモにも推敲したことを記録する。
 5. **概念ページの追加・更新**：原典で重要な役割を果たす項目について、`wiki/concepts/` にページを作るか既存ページを更新する（CLAUDE.md §1 の命名規約）。
    - **概念（concepts/）**：抽象レベルの概念・カテゴリ（例: `llm-agents`, `agent-loop`, `tool-use-and-function-calling`, `reasoning-and-planning`, `agent-memory`, `retrieval-augmented-generation`, `multi-agent-systems`, `model-context-protocol`, `coding-agents`, `agent-evaluation`）。スラグは英語フルネーム。
    - **landmark 手法・モデル・製品は専用ページを作らず、属する概念ページ内に「代表手法」として記述する**（例: ReAct・Chain-of-Thought・Tree of Thoughts は `[[reasoning-and-planning]]`、Reflexion は `[[self-reflection]]`、Toolformer は `[[tool-use-and-function-calling]]`、MemGPT は `[[agent-memory]]`、LangGraph・AutoGen・CrewAI・Claude Agent SDK は `[[agent-frameworks]]`、SWE-agent・Devin・Claude Code は `[[coding-agents]]`）。仕組み・実験・限界は概念ページ内の該当手法の項に、俯瞰と位置づけは概念ページ冒頭に書く。
