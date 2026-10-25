@@ -36,6 +36,7 @@ summaries:
   - "[[summaries/2026-externalization]]"
   - "[[summaries/2025-writing-effective-tools]]"
   - "[[summaries/2025-swe-effi]]"
+  - "[[summaries/2024-agentless]]"
 updated: 2026-10-25
 ---
 
@@ -83,6 +84,7 @@ LLM（Large Language Model, 大規模言語モデル）の**限られたコン�
 | 2023 | [[summaries/2023-swe-bench]] | コード（実 GitHub イシュー） | BM25 の文脈を 13k→50k に広げると **recall は 29.58→51.06 と上がるのに解決率は 1.96→1.22 と下がる**。編集行の ±15 行以外を畳むと **4.8→5.9 へ上がる** |
 | 2024 | [[summaries/2024-graphrag]] | 長文要約（センスメイキング） | 8k / 16k / 32k / 64k を比較し、**最小の 8k が網羅性で一様に優れた**（平均勝率 58.1%）。gpt-4-turbo は 128k を扱えるにもかかわらず |
 | 2024 | [[summaries/2024-swe-agent]] | コード（インターフェース設計） | ファイルビューアの窓サイズに**両側の最適点**（30 行 14.3 / 100 行 18.0 / 全体 12.7）。人間の UI を模した検索は**検索ツールなしより悪い** |
+| 2024 | [[summaries/2024-agentless]] | コード（位置の特定） | 関連するクラス・関数を選ぶ段で、ファイル全体を見せると正解を含む率 **53.7%（$0.15）**、宣言だけのスケルトンなら **58.3%（$0.02）**。ファイルから編集位置へ一気に飛ぶと 47.0% で、段階を踏む 50.7% より悪い |
 | 2025 | [[summaries/2025-effective-context-engineering]] | 定式化 | **context rot** として命名。機構として $n^2$ のペア関係・訓練分布の偏り・位置内挿を挙げる |
 
 **この並びから読み取れることが 3 つある。**
@@ -294,3 +296,4 @@ few-shot 例示はコンテキスト積載の古典で、CoT（[[summaries/2022-
 - [[agent-skills]] — 段階的開示の主体。スキルをいつ・どれだけロードするか
 - [[summaries/2026-externalization]] — 記憶・スキル・プロトコルの予算競合、budget-aware routing、minimal sufficiency、tool sprawl の根拠原典
 - [[harness-engineering]] — コンテキスト管理を 1 つの層として含む、ハーネス全体の設計
+- [[summaries/2024-agentless]] — 階層的な位置の特定（木構造 → スケルトン → 該当コード）で、文脈を絞るほど精度も費用も良くなった実測

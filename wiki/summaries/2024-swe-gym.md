@@ -134,3 +134,4 @@ SWE-Gym ではテストで成否が分かるので、**成功・失敗のラベ�
 - [[summaries/2023-swe-bench]] — 評価に使う SWE-bench
 - [[summaries/2024-swe-agent]] — エージェントのためのツール設計（ACI）
 - [[summaries/2025-swe-rl-long-context]] — 同じ課題を DAPO の多ターン RL で進めた後続の研究（並行研究と同じ著者群）
+- [[summaries/2024-agentless]] — テストと多数決で 40 本の候補から選ぶ手続き型。上限 42.0% と選べた 32.0% という、検証器と同じ構図の差を示した

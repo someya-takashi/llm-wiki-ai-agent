@@ -94,3 +94,4 @@ SWE-bench（実在の GitHub イシューを、PR に付いていた本物の単
 - [[summaries/2024-building-effective-agents]] — 同じ著者による ACI 原則の一般論
 - [[summaries/2025-writing-effective-tools]] — ツール説明文の改善で SOTA に届いた例として本記事を引く後続記事
 - [[summaries/2023-swe-bench]] — ベンチマークの原論文
+- [[summaries/2024-agentless]] — 同時期の手続き型の代表。Agentless の論文の表 6 に、本記事と同じ Claude 3.5 Sonnet（20241022）の 49.0% が載っている

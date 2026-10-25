@@ -22,7 +22,8 @@ summaries:
   - "[[summaries/2026-managed-agents]]"
   - "[[summaries/2026-dive-into-claude-code]]"
   - "[[summaries/2026-agentic-harness-engineering]]"
-updated: 2026-08-03
+  - "[[summaries/2024-agentless]]"
+updated: 2026-10-25
 ---
 
 # Agent Frameworks（エージェントフレームワークと設計パターン)
@@ -37,6 +38,8 @@ LLM（Large Language Model, 大規模言語モデル）エージェントを**�
 - **agent** — LLM が**自らプロセスとツール使用を動的に決める**。オープンエンドな問題向きだが、高コストで誤りが複利する。
 
 最重要の指針は「**まず最も単純な解（単一 LLM 呼び出し＋検索＋文脈内例）を試し、複雑さは成果を実証的に改善するときだけ足す**」。agentic 化そのものが目的化しがちな領域での、最も引用される歯止めである。
+
+**SWE での実例が Agentless**（[[summaries/2024-agentless]], 2024）である。GitHub のイシュー解決を「位置の特定 → 修復 → パッチの検証」の固定の workflow にし、LLM には次の手を決めさせなかった。それでも 2024 年半ばの SWE-bench Lite で、当時のオープンソースの agent をすべて上回った（GPT-4o で 32.0%、1 件 $0.70）。ただし同じ論文で、手がかりのないイシューでは agent 型が勝ち、数か月後の強いモデルでは最小構成の agent が上回った（→ [[coding-agents]]）。**workflow と agent のどちらが勝つかは、タスクの種類とモデルの強さで変わる**。
 
 ## 設計パターンのカタログ
 
@@ -154,3 +157,4 @@ OpenClaw は約 2 ダースのメッセージング表面をエージェント�
 - [[summaries/2026-managed-agents]] — ランタイム分離（brain / session / hands）の根拠原典
 - [[summaries/2026-dive-into-claude-code]] — 3 つの注入点・4 機構のコンテキストコスト階層・メタツール・ACP による層の合成の根拠原典
 - [[harness-engineering]] — モデルを包む実行基盤そのもの。設計・縮小・自動探索・自動進化・仮想化（本ページから 2026-08-03 に切り出した）
+- [[summaries/2024-agentless]] — SWE での workflow の実例（固定の 3 段階で当時のオープンソースの agent を上回った）

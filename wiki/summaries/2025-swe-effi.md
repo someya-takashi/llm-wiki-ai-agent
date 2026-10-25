@@ -163,3 +163,4 @@ Agentless は解決率が最高（48%）だが、候補パッチとテストを�
 - [[summaries/2023-swe-bench]] — ベンチマークの原論文
 - [[summaries/2025-swe-rl-long-context]] — 本論文が「RL の土台」として論じた SWE エージェントの RL の実例（DeepSWE・SkyRL と同時期）
 - [[agent-training]] — 足場とモデルの相性を訓練の側から見る
+- [[summaries/2024-agentless]] — 本論文が測った手続き型の足場 Agentless の原典（位置の特定 → 修復 → パッチの検証）

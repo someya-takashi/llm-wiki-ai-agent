@@ -29,6 +29,7 @@ summaries:
   - "[[summaries/2026-agent-orchestration-guide]]"
   - "[[summaries/2025-swe-rl-long-context]]"
   - "[[summaries/2024-swe-gym]]"
+  - "[[summaries/2024-agentless]]"
 updated: 2026-10-25
 ---
 
@@ -83,7 +84,7 @@ updated: 2026-10-25
 
 ### (4) ツールの実行
 
-テストやビルドを回す足場では、LLM の待ち時間より CPU 時間が支配的になる。SWE-Effi では、Agentless と OpenHands は実行時間の大半が CPU で、Agentless は再現テストと回帰テストを毎回回すため平均 727.9 秒の CPU 時間を使った。**トークン効率が良くても時間効率が悪い**ことがある。
+テストやビルドを回す足場では、LLM の待ち時間より CPU 時間が支配的になる。SWE-Effi では、Agentless と OpenHands は実行時間の大半が CPU で、Agentless は再現テストと回帰テストを毎回回すため平均 727.9 秒の CPU 時間を使った。**トークン効率が良くても時間効率が悪い**ことがある。Agentless の原典（[[summaries/2024-agentless]]）が報告する費用は 1 件 $0.70（GPT-4o、7.8 万トークン）で、同じモデルの SWE-agent（$2.53、49.8 万トークン）よりはるかに安いが、これは LLM の推論費だけの数字である。その内訳は段ごとに測られており、位置の特定でファイル全体の代わりにスケルトンを見せると $0.15 → $0.02、パッチの選択に再現テストを足すと +$0.25 だった。**段ごとの費用を出せるのは、手順が固定されているからでもある**。
 
 ## 最も高くつくのは失敗である
 
