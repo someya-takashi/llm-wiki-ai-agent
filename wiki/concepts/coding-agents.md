@@ -15,6 +15,7 @@ related:
   - "[[harness-engineering]]"
   - "[[agent-computer-interface]]"
   - "[[agent-cost-efficiency]]"
+  - "[[agent-training]]"
 summaries:
   - "[[summaries/2023-swe-bench]]"
   - "[[summaries/2024-swe-agent]]"
@@ -26,6 +27,8 @@ summaries:
   - "[[summaries/2026-dive-into-claude-code]]"
   - "[[summaries/2026-managed-agents]]"
   - "[[summaries/2025-swe-effi]]"
+  - "[[summaries/2024-swe-gym]]"
+  - "[[summaries/2025-swe-rl-long-context]]"
 updated: 2026-10-25
 ---
 
@@ -192,6 +195,14 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 
 > 注: Agentless・AutoCodeRover・OpenHands の原典は wiki に未取得で、上の記述は SWE-Effi を通した二次情報である。
 
+**足場の流儀は、訓練での伸び方も変える。** SWE-Gym（[[summaries/2024-swe-gym]]）は同じ Qwen2.5-Coder を 2 つの足場で訓練した。手順の決まった Moatless Tools では、素の 32B が SWE-bench Lite で 19.0% と高いが、自分の成功軌跡で訓練しても 19.7% で頭打ちになった。汎用の OpenHands では素の 32B が 3.0% しか解けないが、強いモデルの成功軌跡 491 本で SFT すると 15.3% になった。**手順を固定した足場は素のモデルを助けるが、訓練で伸ばす余地も狭める**——上の「弱いモデルには手順を固定したほうが安定する」と表裏の関係である。
+
+## モデルを訓練する — 足場の外側の改善
+
+ここまでの節は、モデルを固定して足場とツールを工夫する話だった。2024 年末から、**オープンなモデルそのものを SWE エージェントとして訓練する**研究が続いている。SWE-Gym（[[summaries/2024-swe-gym]]）は、実行環境つきのタスク 2,438 件の上で強いモデルの成功軌跡を集め、Qwen2.5-Coder-32B を SWE-bench Verified で 7.0% → 20.6%（検証器で 16 本から選ぶと 32.0%）にした。Golubev ら（[[summaries/2025-swe-rl-long-context]]）は、教師モデルを使わず、自分の成功軌跡での SFT（RFT）と多ターンの強化学習だけで Qwen2.5-72B を 11.4% → 39.0% にした。同時期の DeepSWE-32B（42.2%）・SWE-agent-LM-32B（40.2%）なども含め、**オープンな中規模モデルは 2025 年夏に Verified 40% 前後まで来た**。
+
+訓練で使うツールは小さい。RL 論文のエージェントはシェル・行範囲指定の edit・submit の 3 つだけで、SWE-agent の ACI（→ [[agent-computer-interface]]）に近い。素のモデルの失敗の多くは**ツール呼び出しの書式違反とループ**で、訓練でまず直るのもこの 2 つである（SWE-Gym では SFT でループに陥る軌跡の割合が下がった）。訓練の段取り（蒸留・RFT・多ターン RL・検証器）と落とし穴は [[agent-training]] にまとめた。
+
 ## 評価
 
 **この領域の主戦場が SWE-bench**（[[summaries/2023-swe-bench]], Jimenez ら, ICLR 2024）である。実際の GitHub イシューと、それを解決したマージ済み PR の対から **2,294 件**（12 の Python リポジトリ）を自動収集し、**リポジトリ自身の単体テストで実行ベースに採点する**。詳しい設計は [[agent-evaluation]] に置いた。
@@ -219,6 +230,7 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 
 - [[agent-loop]] — 基礎となる観測→思考→行動ループ
 - [[agent-computer-interface]] — ACI の本体（設計原則・編集インターフェースの比較・アブレーション）
+- [[agent-training]] — SWE エージェントを訓練で育てる方法（SWE-Gym・RFT・多ターン RL）
 - [[tool-use-and-function-calling]] — ツール呼び出しの仕組み
 - [[agent-evaluation]] — SWE-bench 系・終了状態評価
 - [[context-engineering]] — セッション間の状態外部化

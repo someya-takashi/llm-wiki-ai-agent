@@ -115,4 +115,6 @@ R1 が生成した 80 万サンプルで Qwen/Llama の 1.5B〜70B を **SFT だ
 - [[context-engineering]] — few-shot が性能を下げる（ゼロショット推奨）という積載設計の世代反転
 - [[test-time-compute]] — 思考長の自己獲得＝計算配分の内在化の根拠原典
 - [[transformer-architecture]] — 大規模 MoE（V3 基盤）上の推論訓練という位置づけ
+- [[summaries/2025-swe-rl-long-context]] — 単一ターンの RL を多ターンのエージェント（SWE）に広げた後続
+- [[agent-training]] — 蒸留と RL の使い分けをエージェントの訓練で見る
 - [[translations/2025-deepseek-r1]] — 全文翻訳

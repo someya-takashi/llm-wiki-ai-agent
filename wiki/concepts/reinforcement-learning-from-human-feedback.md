@@ -11,6 +11,8 @@ related:
   - "[[test-time-compute]]"
   - "[[multi-agent-systems]]"
   - "[[agent-safety-and-guardrails]]"
+  - "[[agent-training]]"
+  - "[[agent-environments]]"
 summaries:
   - "[[summaries/2022-instructgpt]]"
   - "[[summaries/2025-deepseek-series]]"
@@ -28,7 +30,9 @@ summaries:
   - "[[summaries/2025-long-cot-survey]]"
   - "[[summaries/2024-llm-security-privacy-survey]]"
   - "[[summaries/2022-anthropic-hh]]"
-updated: 2026-08-10
+  - "[[summaries/2025-swe-rl-long-context]]"
+  - "[[summaries/2024-swe-gym]]"
+updated: 2026-10-25
 ---
 
 # Reinforcement Learning from Human Feedback（RLHF と事後訓練の強化学習）
@@ -52,6 +56,7 @@ updated: 2026-08-10
 | 2025 | RLVR | 報酬の出どころを**人間の選好から検証器へ**。人間のアノテーションが律速でなくなる | [[summaries/2025-deepseek-r1]] |
 | 2025 | 蒸留との分業 | 「発見は大型モデル＋RL、転写は SFT」——小型モデルへの RL 直当てを置き換え | [[summaries/2025-deepseek-r1]] |
 | 2025 | joint RL・自己批評 | 検証可能／不可能の分業を単一の RL に統合。**報酬モデルをモデル自身に兼ねさせる** | [[summaries/2025-kimi-k2]] |
+| 2025 | 多ターンのエージェント RL | 1 回答えて採点される RL を、**環境と数十ターンやり取りしてから採点される RL** へ広げる。強い教師の軌跡の蒸留を置き換える | [[summaries/2025-swe-rl-long-context]] |
 | 2026 | 能力別マルチモーダル RL・トークン効率 | RL のドメイン編成をモダリティ別から**能力別**へ。固定予算訓練を交互スケジュールへ | [[summaries/2026-kimi-k2.5]] |
 | 2026 | OPD（On-Policy Distillation） | パイプライン最終段の **mixed RL を蒸留に置換** | [[summaries/2026-deepseek-v4]] |
 | 2026 | MOPD（Multi-Teacher OPD） | 領域 × 努力の **9 専門家を per-effort 教師で 1 モデルへ蒸留統合** | [[summaries/2026-kimi-k3]] |
@@ -213,6 +218,14 @@ R1 が V3-Base の上に作られた一方で、**V3 の事後訓練は R1 か�
 
 アルゴリズム面の追加も実務的: **予算制御**（タスク種別ごとの最大トークン予算＋超過ペナルティ——RL が応答を長くする傾向への直接対処）、**PTX loss**（高品質データの忘却防止）、**温度減衰**（探索→活用）。またツール利用のような**エージェント的タスクの RL**（agentic rollout）には、環境待ちで GPU が遊ぶ・trajectory が極端に長いという固有の困難があり、環境の専用サービス化・大量並行ロールアウト・partial rollout（長い trajectory を一時停止して次反復で再開）で対処している——エージェント RL のインフラ実務の初期の公開記録である。
 
+## 2025 — 1 回の回答から、数十ターンのやり取りへ: SWE エージェントの多ターン RL
+
+R1 や DeepSeekMath の RL は、問題に 1 回答えると採点が返る。Golubev ら（[[summaries/2025-swe-rl-long-context]], 2025）は、これを**環境が途中でフィードバックを返さない、多ターン相互作用の退化した場合**と位置づけ、SWE エージェント——コマンドを打ち、テストのログを読み、また次の手を打つ——に RL を広げた。報酬は最終パッチがテストに通るかの 1 ビットだけで、1 本の軌跡は最大 80 ターン・131k トークンになる。
+
+アルゴリズムは **DAPO**（Decoupled Clip and Dynamic sAmpling Policy Optimization）の改変である。DAPO は GRPO に、クリップの上下を別々に設定する非対称クリップ、学習信号のない（グループ内が全部成功か全部失敗の）サンプルの除外、長すぎる応答への段階的な罰、**系列ではなくトークン単位で損失を平均する**ことを足したもので、長さのばらつく軌跡で長い軌跡の各トークンの重みが薄まるのを防ぐ。Qwen2.5-72B-Instruct は RFT（成功軌跡だけの SFT）で 11.4% → 20.5%、RL で 39.0% になり（SWE-bench Verified）、**強い教師の軌跡を一切使わずに**同じ足場の DeepSeek-V3-0324（39.6%）に並んだ。
+
+アルゴリズムよりも、**多ターンにしたことで出てきた落とし穴**の記録に価値がある。文脈長を超えた軌跡を捨てるとループの負例が消えてかえってループが増えたこと、推論エンジンの更新で既定のサンプリング設定（top_k・min_p）が変わり、重要度サンプリング比の前提が崩れて学習が壊れたことである。後者は、K2.5 のトークン単位の対数比クリップや K3 の量子化をそろえる設計と同じ「ロールアウトの分布と訓練の分布を一致させる」問題の一例である。エージェントの訓練の段取り全体（蒸留・RFT・RL・検証器）は [[agent-training]] にまとめた。
+
 ## 2026 — 拡張: Kimi K2.5（同時マルチモーダル RL・PARL・トークン効率）
 
 [[summaries/2026-kimi-k2.5]]（2026）は K2 の RL 体系を 3 方向に拡張した。
@@ -269,7 +282,8 @@ DeepSeek-V4 の「スペシャリスト RL → OPD で統合」を、**推論努
 - [[llm-red-teaming]] — レッドチーミングで作った選好データが訓練へ戻る側。過剰拒否の機構
 - [[agent-safety-and-guardrails]] — RLHF による整合の構造的な穴（competing objectives / mismatched generalization）
 - [[multi-agent-systems]] — GRPO でオーケストレーションを訓練する応用（Fugu）
-- [[agent-environments]] — RL を回す訓練環境（K3 の white-box harness・KG 合成・AET・AgentENV）
+- [[agent-environments]] — RL を回す訓練環境（K3 の white-box harness・KG 合成・AET・AgentENV、SWE-Gym・SWE-rebench）
+- [[agent-training]] — エージェントを訓練する段取り（蒸留・RFT・多ターン RL・検証器）
 - [[parameter-efficient-fine-tuning]] — パラメータを凍結して微調整する側
 - [[summaries/2022-instructgpt]] — 古典的 RLHF の一次資料（InstructGPT）。アラインメント税と「誰に整合させているのか」の出所
 - [[summaries/2022-anthropic-hh]] — 同時期の対をなす一次資料（Anthropic HH）。**hh-rlhf データセットの出典**。税がモデルサイズで符号を変えること、√D_KL と報酬の線形関係、PM の高スコア域での崩壊と反復オンライン化、そしてレッドチーミングのデータが過剰拒否を作る機構
@@ -279,3 +293,5 @@ DeepSeek-V4 の「スペシャリスト RL → OPD で統合」を、**推論努
 - [[summaries/2024-deepseek-v3]] — GRPO の本番適用・ルール／モデルベース RM の分業・R1 からの逆向きの蒸留・自己報酬
 - [[summaries/2024-deepseekmath]] / [[summaries/2025-deepseek-r1]] — GRPO・RLVR の根拠原典
 - [[summaries/2026-kimi-k3]] — SFT → per-domain×per-effort RL → MOPD の 3 段、Reasoning Effort RL、Agentic GRM の必須プロトコルの根拠原典
+- [[summaries/2025-swe-rl-long-context]] — DAPO による多ターンの SWE エージェント RL（RFT → 2 段階の文脈拡張）
+- [[summaries/2024-swe-gym]] — 棄却サンプリングファインチューニングと ORM 検証器のベースライン

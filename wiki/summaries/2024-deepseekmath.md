@@ -128,4 +128,6 @@ RL 後のモデルは Top1・多数決（Maj@K）では明確に良くなるの�
 - [[summaries/2026-sakana-fugu]] — GRPO をオーケストレーション訓練に転用した応用例
 - [[summaries/2025-kimi-k2]] — 検証可能報酬＋自己批評という同時代の別解
 - [[summaries/2022-chain-of-thought]] — CoT/self-consistency の原典（本論文の推論形式の土台）
+- [[summaries/2025-swe-rl-long-context]] — GRPO の改良版 DAPO を多ターンの SWE エージェントに使った例
+- [[summaries/2024-swe-gym]] — エージェントでも Pass@K と検証器の選別（Best@K）の差が残ることを示した例
 

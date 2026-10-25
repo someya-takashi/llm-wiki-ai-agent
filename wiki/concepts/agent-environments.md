@@ -12,12 +12,15 @@ related:
   - "[[multi-agent-systems]]"
   - "[[tool-use-and-function-calling]]"
   - "[[agent-cost-efficiency]]"
+  - "[[agent-training]]"
 summaries:
   - "[[summaries/2026-kimi-k3]]"
   - "[[summaries/2025-kimi-k2]]"
   - "[[summaries/2026-kimi-k2.5]]"
   - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2025-swe-effi]]"
+  - "[[summaries/2024-swe-gym]]"
+  - "[[summaries/2025-swe-rl-long-context]]"
 updated: 2026-10-25
 ---
 
@@ -33,6 +36,7 @@ updated: 2026-10-25
 |---|---|
 | **本ページ** | **訓練用の環境**——タスク合成・検証器（報酬）・サンドボックス・ハーネスのモジュール化 |
 | [[reinforcement-learning-from-human-feedback]] | 環境の上で回す**学習則**（GRPO・OPD・partial rollout・GRM） |
+| [[agent-training]] | 環境で集めた軌跡を**どう訓練に使うか**（蒸留・RFT・多ターン RL・検証器の訓練） |
 | [[agent-evaluation]] | 能力を**測る**環境（ベンチマーク）。訓練環境と測定環境は別物（下記） |
 | [[harness-engineering]] | 環境が RL 中に差し替える**ハーネスそのもの**の設計 |
 | [[agent-safety-and-guardrails]] | サンドボックスの**隔離**を安全対策として見る側 |
@@ -109,6 +113,25 @@ updated: 2026-10-25
 
 これは [[summaries/2026-deepseek-v4]] の **DSec**（4 実行基盤・全コマンドを trajectory ログに記録）の次の世代にあたり、**「エージェント RL・評価のインフラは安全性インフラを兼ねる」**という観察の続きである → [[agent-safety-and-guardrails]]。
 
+## SWE の訓練環境 — 実行できるリポジトリを用意する
+
+モデルレポートの環境が非公開の社内基盤であるのに対し、SWE（Software Engineering）では**公開された訓練環境**が先に整った。課題は「GitHub のイシューと正解パッチ」なら大量にあるのに、**それを実行してテストできる環境**がないことだった。SWE-bench の訓練用分割（19,008 件）は正解パッチしかなく、エージェントのパッチが正しいかを自動で採点できない。
+
+| 環境 | 規模 | 作り方 | 特徴 |
+|---|---|---|---|
+| **SWE-Gym**（[[summaries/2024-swe-gym]]） | 11 リポジトリ・2,438 件（Lite 230 件）＋実行環境なしの Raw 66,894 件 | イシューが立った時点の requirements.txt・CI スクリプトを読み、**依存関係を手で設定**。正解パッチで元より多くのテストが通ることを確認。約 200 人時・1 万 CPU コア時間・Docker イメージ 6 TB | SWE-bench と重ならないリポジトリを選び汚染を避ける。依存の難しいタスクも捨てない |
+| **SWE-rebench**（[[summaries/2025-swe-rl-long-context]] が使用） | 約 3,400 リポジトリ・21,336 件 | 各タスクにイシュー・正解パッチ・検証用テスト・再現可能な環境が付く（作り方は本 wiki の原典に記載がない） | 規模が大きい。**月ごとの分割**があり、訓練データに含まれない最新の分割（2025 年 5・6 月）を汚染のない評価に使える |
+
+環境の作り方には選択がある。SWE-Gym の付録は、汎用のセットアップスクリプトで 6,415 件を集めた並行研究（Nebius の 2 本の連続したブログ記事、Badertdinov ら・Golubev ら 2024。後者は [[summaries/2025-swe-rl-long-context]] と同じ著者群）との違いを次の点に置いている。**手作業は偏りを避けるが数が増えない。自動化は数が取れるが、セットアップに失敗する（依存が難しい）タスクが系統的に抜ける**。
+
+環境があっても、**そのまま報酬に使えるとは限らない**。[[summaries/2025-swe-rl-long-context]] は 21,336 件から、次の基準で 7,249 件に絞った。
+
+- **テストを 50 回走らせて結果が揺れるタスクを除く**（外部サービスの呼び出しや浮動小数点の誤差による flaky test）。報酬のノイズを減らすためである。
+- 解に固有の識別子名を当てさせるようなタスク（テストが AttributeError・ImportError で落ちる）を除く。イシューの文面からは解けないので、報酬が能力ではなく偶然を測ってしまう。
+- イシューの記述が不明瞭なもの、テストパッチに欠陥があるものを LLM の品質スコアで除く。
+
+**報酬の検証可能性は、環境を作っただけでは保証されない**——検証器（ここではテストスイート）そのものの監査が要る。これは下記の設計軸の「検証可能性」の具体例であり、訓練の段取りの側から見た話は [[agent-training]] に置いた。
+
 ## 設計軸
 
 環境設計を比較・点検するための軸を、上記の系譜から抽出する。
@@ -140,8 +163,11 @@ K3 はこの区別が曖昧になる例でもある——**内製ベンチ（Swa
 - [[agent-safety-and-guardrails]] — サンドボックスの隔離を安全対策として見る側
 - [[agent-loop]] — 環境が訓練する「観測→思考→行動」のループ
 - [[coding-agents]] — 検証が最も速く機械可読な訓練環境（実行フィードバック）
+- [[agent-training]] — 環境で集めた軌跡の使い方（蒸留・RFT・多ターン RL・検証器）
 - [[multi-agent-systems]] — K2.5 の swarm 環境・PARL
 - [[tool-use-and-function-calling]] — K2 のツール合成（環境の前段）
 - [[summaries/2026-kimi-k3]] — 本ページの主たる根拠原典（white-box harness・KG・AET・モック・AgentENV）
 - [[summaries/2025-kimi-k2]] / [[summaries/2026-kimi-k2.5]] / [[summaries/2026-deepseek-v4]] — 系譜の前段
 - [[summaries/2026-code-as-agent-harness]] / [[summaries/2026-externalization]] — 環境・ハーネスの寄与を測る評価の側
+- [[summaries/2024-swe-gym]] — 実行環境つきの公開 SWE 訓練環境
+- [[summaries/2025-swe-rl-long-context]] — SWE-rebench の絞り込み（flaky test の除外）と RL

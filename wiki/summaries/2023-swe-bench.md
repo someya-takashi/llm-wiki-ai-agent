@@ -162,3 +162,5 @@ PR の作成年で分けた結果（Table 7）は、**2023 年の前後でほと
 - [[retrieval-augmented-generation]] — 検索指標の改善と成果の改善が乖離する反例
 - [[summaries/2024-swe-agent]] — 本論文の 7 か月後、同じグループが「エージェントベースのアプローチ」への期待に自ら答えた仕事
 - [[summaries/2023-reflexion]] — 汚染対策としての LeetcodeHardGym（カットオフ後の問題だけで組む）との対比
+- [[summaries/2024-swe-gym]] — SWE-bench の訓練用分割に欠けていた実行環境を用意した訓練環境（SWE-bench と重ならないリポジトリで構築）
+- [[agent-training]] — SWE-Llama の「文脈の分布シフトに脆い SFT」を含む、エージェントの訓練の段取り

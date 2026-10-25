@@ -161,3 +161,5 @@ Agentless は解決率が最高（48%）だが、候補パッチとテストを�
 - [[summaries/2024-swe-agent]] — 「速く成功し、遅く失敗する」の原典
 - [[summaries/2025-multi-agent-research-system]] — 「トークン量が性能を説明する」との対比
 - [[summaries/2023-swe-bench]] — ベンチマークの原論文
+- [[summaries/2025-swe-rl-long-context]] — 本論文が「RL の土台」として論じた SWE エージェントの RL の実例（DeepSWE・SkyRL と同時期）
+- [[agent-training]] — 足場とモデルの相性を訓練の側から見る

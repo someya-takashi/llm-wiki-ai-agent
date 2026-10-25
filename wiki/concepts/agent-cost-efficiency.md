@@ -13,6 +13,7 @@ related:
   - "[[coding-agents]]"
   - "[[agent-environments]]"
   - "[[agent-observability]]"
+  - "[[agent-training]]"
 summaries:
   - "[[summaries/2025-swe-effi]]"
   - "[[summaries/2024-swe-agent]]"
@@ -26,6 +27,8 @@ summaries:
   - "[[summaries/2026-kimi-k3]]"
   - "[[summaries/2025-kimi-k2]]"
   - "[[summaries/2026-agent-orchestration-guide]]"
+  - "[[summaries/2025-swe-rl-long-context]]"
+  - "[[summaries/2024-swe-gym]]"
 updated: 2026-10-25
 ---
 
@@ -133,6 +136,8 @@ updated: 2026-10-25
 
 コストは推論時だけの問題ではない。SWE タスクの強化学習では、1 回のロールアウトごとに環境を準備し、推論し、コードを実行し、テストで検証する。**足場が遅い・高いと、訓練全体の試行回数が頭打ちになる**。SWE-Effi は、DeepSWE が低レイテンシの独自足場を作り、SkyRL が OpenHands を大きく最適化し、SWE-RL が軽量な Agentless-Mini を使ったうえで実行フィードバックを避けた例を挙げ、**高くつく失敗を避ける軽い足場のほうが RL の土台として「進化させやすい」**と主張した。失敗したロールアウトが上限まで走る問題は、推論時と同じく訓練でもコストを押し上げる。Kimi K3 がチェックポイントと再開の速い microVM サンドボックスを大量に作ったのも、この訓練側のコストへの対処である（→ [[agent-environments]]）。
 
+規模の目安として、Golubev らの RL（[[summaries/2025-swe-rl-long-context]]）は H200 の 16 ノードで、1 反復ごとに数百の問題 × 10 本の軌跡（1 本は最大 80 ターン・131k トークン）を走らせ、それを 100 反復以上繰り返した。SWE-Gym（[[summaries/2024-swe-gym]]）も、訓練データの量を律速していたのはタスクの数ではなく**軌跡をサンプリングする計算予算**だったと書いている。訓練側でも**ループは高い**——同じ行動を繰り返す軌跡は文脈の上限まで走るので、RL 論文はそれを捨てずに長さの罰で抑え、SWE-Gym は SFT でループの割合を下げた。推論時に検証器で K 本から選ぶ方法（Best@K）は、精度と引き換えに**コストを K 倍にする**ことも忘れないようにしたい（SWE-Gym の Verified 32.0% は 16 本分のコストでの数字である → [[test-time-compute]]、[[agent-training]]）。
+
 ## 設計論点
 
 - **何に上限をかけるか**。トークン・金額・時間・呼び出し回数のどれで止めるかで、どの失敗が切られるかが変わる。SWE-Effi では、SWE-agent に金額の上限をかけたため、単価の安い GPT-4o-mini だけが 181 回まで呼べた。**上限の単位は、モデルの単価によって公平さが変わる**。
@@ -144,6 +149,7 @@ updated: 2026-10-25
 ## 関連ページ
 
 - [[agent-evaluation]] — 解決率とコストを並べて報告する評価
+- [[agent-training]] — RL のロールアウトのコストと、ループの扱い
 - [[context-engineering]] — Token Snowball と文脈の圧縮
 - [[test-time-compute]] — 計算を足して精度を買う考え方と上限
 - [[llm-inference-optimization]] ・ [[llm-serving-systems]] — 1 回の推論を速く安くする層

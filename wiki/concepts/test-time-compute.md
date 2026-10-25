@@ -10,6 +10,7 @@ related:
   - "[[agent-evaluation]]"
   - "[[llm-inference-optimization]]"
   - "[[agent-cost-efficiency]]"
+  - "[[agent-training]]"
 summaries:
   - "[[summaries/2025-long-cot-survey]]"
   - "[[summaries/2025-deepseek-r1]]"
@@ -23,6 +24,8 @@ summaries:
   - "[[summaries/2026-kimi-k3]]"
   - "[[summaries/2024-deepseekmath]]"
   - "[[summaries/2025-swe-effi]]"
+  - "[[summaries/2024-swe-gym]]"
+  - "[[summaries/2025-swe-rl-long-context]]"
 updated: 2026-10-25
 ---
 
@@ -59,6 +62,7 @@ updated: 2026-10-25
 - **thinking のトグル化**: 第三の形が「同一重みでの切り替え」である。Gemma 4（[[summaries/2026-gemma-4]]）は制御トークン `<|think|>` をシステムターンに置くだけで thinking モードが有効化され、同じチェックポイントが thinking / non-thinking の両方で動く。「常時長考」（R1 系）でも「非思考特化」（K2）でもなく、**計算を積むかどうかの判断をデプロイ側・クエリ側に委ねる**——適応的配分をアプリケーション層で実装できるインターフェースであり、K2.5 の thinking/instant 統合も同じ潮流にある。DeepSeek-V4（[[summaries/2026-deepseek-v4]]）はこれを**多段化**した: Non-think（8K）/ Think High（128K）/ Think Max（384K＋「shortcuts 禁止・全思考過程の明示」を命じる専用システムプロンプト注入）の 3 段を、**モード別の長さペナルティとコンテキスト窓で別々に RL してから単一モデルへ統合**する。効果は単調（HLE 7.7→34.5→37.7）で、「どこまで考えるか」がユーザー向け API の第一級パラメータになった。同モデルの 1M コンテキスト効率化は、垂直スケーリングの物理的天井（思考を書き溜める場所）自体を引き上げる基盤でもある。
 - **推論努力を「訓練する軸」にする**: 第四の形が、努力水準そのものを**別々の専門家として RL してから 1 モデルへ蒸留する**設計である。Kimi K3（[[summaries/2026-kimi-k3]]）の **Reasoning Effort RL** は、問題ごとに初期トークン予算 $b_0(x)$ を紐づけ、$\tau\cdot b_0(x)$ を超える軌跡の報酬を **−1** で上書きする。まず大きな $\tau$ で **max-budget** を訓練し、$\tau$ をアニールして **high/low** の専門家を得る。そして 3 領域 × 3 努力 = **9 専門家を MOPD で統合**する（→ [[reinforcement-learning-from-human-feedback]]）。K2.5 の Toggle・Gemma 4 の `<|think|>`・V4 の reasoning effort（Non-think/High/Max）が「**推論時に**努力を選ぶインターフェース」だったのに対し、K3 は「**訓練時に**努力ごとに最適化された方策を作って畳み込む」——上の length-overfitting（固定予算で訓練すると短い推論に固着してスケールできない）への、努力を分離軸にする形の答えでもある。チャットテンプレートでは thinking-effort を専用トークンでなく**自然言語の option message**として文脈に置き、low/medium/high/max の 4 水準を予約する（→ [[tool-use-and-function-calling]]）。
 - **検証器がボトルネック**: 並列スケーリングの効果は選抜の質で決まる。ルールベース検証（テスト実行・答え合わせ）が使える領域から並列化するのが定跡で、ニューラル検証器は reward hacking のリスクを持ち込む → [[reinforcement-learning-from-human-feedback]]。この論点の古典的な実測が DeepSeekMath（[[summaries/2024-deepseekmath]]）の **Maj@K/Pass@K 分析**である: RL 後のモデルは多数決（Maj@K）では明確に良くなるのに、**Pass@K（K 本中 1 本でも正解が出る率）は RL 前とほぼ重なる**——つまり並列スケーリングの上限（何本引けば正解に届くか）は RL では動いておらず、RL の利得は「完璧な検証器があれば並列サンプリングで代替できた」種類のものだった。訓練時の RL と推論時の並列化＋検証は、部分的に**同じ利得を別の場所で買っている**という見方を与える。
+- **エージェントの検証器は訓練できる**: テストで成否が分かる環境では、成功・失敗のラベルつきの軌跡がたまるので、それで検証器を訓練できる。SWE-Gym（[[summaries/2024-swe-gym]]）は、軌跡を読んで成功確率を出す ORM（Outcome-supervised Reward Model, 最終結果だけを見る報酬モデル）を 32B で訓練し、SWE-bench Verified で 1 本だけの 20.6% を **16 本から選ぶ Best@16 で 32.0%** に上げた。ただし 16 本中に正解がある率（Pass@16）は 42.8% で、**よい候補が出ているのに選べていない部分が約 11 ポイント残る**。Best@K の曲線は K の対数に対しておおむね直線で、上の「$\log N$ でしか伸びない」をエージェントでも確かめた形である。RL で 1 本目を強くした Golubev ら（[[summaries/2025-swe-rl-long-context]]）でも Pass@1 39.0% に対し Pass@10 58.4% と差は大きく、検証器で選ぶ余地は訓練後も残る。検証器の訓練のこつ（教師と自分の軌跡を混ぜる・成功と失敗を同数にする）は [[agent-training]] に置いた。K 本走らせるコストは K 倍になる点にも注意が要る（→ [[agent-cost-efficiency]]）。
 - **明示的探索の実務的困難**: ToT/MCTS 型の木探索はサーベイでは有望株として整理されるが、[[summaries/2025-deepseek-r1]] はトークン生成の指数的探索空間で MCTS の再現を断念しており、スケール時の実装コストは高い。現在の主流は「木を外に作る」より「長い直列の思考の中に探索を畳み込む」方向にある。
 - **評価との接続**: 長出力の推論モデルは貪欲デコードで測ると不安定になり、temperature サンプリング＋pass@1 平均のようなプロトコル更新が要る → [[agent-evaluation]]。
 - **効率化との張力**: 思考の圧縮・スキップ・潜在空間推論（思考をトークンに書かず隠れ状態で行う）はテスト時計算のコストを下げる研究線だが、潜在化した思考は読めなくなる——CoT モニタリング（→ [[agent-safety-and-guardrails]]）とのトレードオフが将来の論点になる。
@@ -71,4 +75,6 @@ updated: 2026-10-25
 - [[multi-agent-systems]] — 並列スケーリングとしてのマルチエージェント
 - [[llm-inference-optimization]] — 同じ推論時の「速くする」側（本ページは「賢くする」側）
 - [[summaries/2025-long-cot-survey]] — 本ページの主要な根拠原典
+- [[agent-training]] — エージェントの検証器（ORM）の訓練と、RL との関係
+- [[summaries/2024-swe-gym]] — SWE エージェントの軌跡で訓練した検証器による Best@K
 - [[summaries/2026-kimi-k3]] — 推論努力を訓練軸にする Reasoning Effort RL（予算ペナルティ・9 専門家の MOPD 統合）の根拠原典

@@ -174,3 +174,5 @@ Table 3 のアブレーション（SWE-bench Lite, GPT-4 Turbo, 既定 18.0%）�
 - [[summaries/2022-react]] — 思考と行動を交互に生成する形式の出どころ
 - [[summaries/2026-meta-harness]] — 手作業だった ACI 設計の自動化を志向する系譜
 - [[summaries/2025-effective-harnesses]] / [[summaries/2026-harness-design]] — 同じ問題を実務側から扱った Anthropic の記録
+- [[summaries/2025-swe-rl-long-context]] — SWE-agent に近い ReAct 型の足場（シェル・edit・submit）の上で、モデルのほうを RL で訓練した研究
+- [[agent-training]] — 足場ではなくモデルを鍛える側
