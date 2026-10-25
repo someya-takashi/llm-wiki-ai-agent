@@ -14,6 +14,7 @@ related:
   - "[[harness-engineering]]"
   - "[[agent-skills]]"
   - "[[model-context-protocol]]"
+  - "[[agent-computer-interface]]"
 summaries:
   - "[[summaries/2023-lost-in-the-middle]]"
   - "[[summaries/2023-swe-bench]]"
@@ -32,7 +33,8 @@ summaries:
   - "[[summaries/2026-managed-agents]]"
   - "[[summaries/2026-dive-into-claude-code]]"
   - "[[summaries/2026-externalization]]"
-updated: 2026-08-04
+  - "[[summaries/2025-writing-effective-tools]]"
+updated: 2026-10-25
 ---
 
 # Context Engineering（コンテキストエンジニアリング）
@@ -102,6 +104,8 @@ LLM（Large Language Model, 大規模言語モデル）の**限られたコン�
 補助的な 2 点も実務で効く。**「最小」は「短い」ではない**——期待する挙動を完全に描き出す最小の情報集合という意味であって、必要な情報は最初に与える。そして**節への区切り**（`<background_information>` / `<instructions>` / `## Tool guidance` 等の XML タグや Markdown 見出し）は推奨されるが、**モデルが高機能になるにつれ書式の重要性は低下しつつある**とも明記されている。進め方の既定は「最良のモデルで最小プロンプトから始め、初期テストで見つかった失敗モードに応じて指示と例を足す」。
 
 **ツールは実行可能な最小集合に絞る**。最頻の失敗モードはツール集合の肥大化で、機能が重なると「どれを使うか」の判断点が曖昧になる。判定基準が覚えやすい——**人間のエンジニアがどのツールを使うべきか断言できないなら、エージェントにそれ以上を期待することはできない** → [[tool-use-and-function-calling]]。
+
+**ツールの応答も注意予算を食う。** [[summaries/2025-writing-effective-tools]] は、応答側の絞り方を具体化した。大きくなりうる応答には**ページネーション・範囲指定・フィルタ・切り詰めを既定値つきで**実装する（Claude Code はツール応答を既定で 25,000 トークンに制限）。詳しさは `response_format` 引数でエージェントに選ばせ、ID が要るときだけ詳細版を返す（Slack 検索の例で 206 → 72 トークン）。切り詰めたときは**絞り込み方や次ページの呼び方を応答に書いて**、次の一手をトークン効率の良い方向へ誘導する。SWE-agent の「ファイルは 100 行の窓、検索は 50 件まで」と同じ発想で、窓には両側に最適点がある（→ [[agent-computer-interface]]）。
 
 ### just-in-time 取得と段階的開示 — 事前に集めず、実行時に引く
 

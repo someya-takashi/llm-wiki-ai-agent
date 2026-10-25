@@ -99,6 +99,8 @@ agent は「**環境フィードバックに基づいてループの中でツー
 
 ## 関連ページ
 
+- [[agent-computer-interface]] — 本原典の ACI 原則を、後続の原典とあわせて集約した概念ページ
+- [[summaries/2025-swe-bench-sonnet]] — 同じ著者（Erik Schluntz）による ACI の具体例（SWE-bench 用の足場とツール定義）
 - [[agent-frameworks]] — 本原典が主要根拠となる概念ページ
 - [[agent-loop]] — agent 定義（ツール＋ループ＋環境フィードバック）の実務版
 - [[tool-use-and-function-calling]] — ACI・ツール形式設計の一次資料

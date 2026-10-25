@@ -157,6 +157,8 @@ Table 3 のアブレーション（SWE-bench Lite, GPT-4 Turbo, 既定 18.0%）�
 
 ## 関連ページ
 
+- [[agent-computer-interface]] — 本論文が提唱した ACI の概念ページ（設計原則・編集インターフェースの比較・アブレーションを集約）
+- [[summaries/2025-swe-bench-sonnet]] — 本論文のフレームワークを土台に、専用コマンド群を汎用 2 ツールへ置き換えた対照的な設計（SWE-bench Verified 49%）
 - [[summaries/2023-lost-in-the-middle]] — ファイルビューアの窓サイズに両側の最適点がある理由の背景
 
 - [[summaries/2023-swe-bench]] — SWE-bench の一次資料。同じグループが 7 か月前に作ったベンチマークで、その論文が「エージェントベースのアプローチに期待している」と書いた宿題に本論文が答えている

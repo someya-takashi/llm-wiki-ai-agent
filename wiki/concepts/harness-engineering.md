@@ -15,6 +15,7 @@ related:
   - "[[agent-safety-and-guardrails]]"
   - "[[agent-skills]]"
   - "[[agent-environments]]"
+  - "[[agent-computer-interface]]"
 summaries:
   - "[[summaries/2026-kimi-k3]]"
   - "[[summaries/2026-externalization]]"
@@ -27,7 +28,9 @@ summaries:
   - "[[summaries/2026-managed-agents]]"
   - "[[summaries/2024-swe-agent]]"
   - "[[summaries/2024-building-effective-agents]]"
-updated: 2026-08-10
+  - "[[summaries/2025-swe-bench-sonnet]]"
+  - "[[summaries/2025-writing-effective-tools]]"
+updated: 2026-10-25
 ---
 
 # Harness Engineering（ハーネス工学）
@@ -166,6 +169,8 @@ updated: 2026-08-10
 
 **この「剥がす」の裏返しが、下記「自動で進化させる」のモデル横断転移で測られている**——[[summaries/2026-agentic-harness-engineering]] は、**飽和から遠いモデルほどハーネスの利得が大きい**（deepseek-v4-flash +10.1 pp 対 GPT-5.4 +2.3 pp）ことを示した。**強いモデルは同じ協調をプロンプトから低コストで再導出するので、ハーネスの限界価値が下がる。** 同じ現象の両側面である。
 
+**「剥がす」の早い実例は、ツールの層でも観察されていた。** Claude 3.5 Sonnet（2024 年後半）の SWE-bench 用の足場（[[summaries/2025-swe-bench-sonnet]]）は、SWE-agent のフレームワークを土台にしながら専用コマンド群を **bash と `str_replace_editor` の汎用 2 ツール**に置き換え、ワークフローも固定せずにモデルへ制御を渡して SWE-bench Verified 49%（当時の SOTA）を出した。同じ足場で Claude 3 Opus 22% → 3.5 Sonnet old 33% → new 49% とモデル差がそのまま出ており、**足場を薄くしてモデル改善を素通しにする**設計の初期の記録になっている。ただし作り込みを捨てたわけではなく、労力はツールの説明文と誤りにくい入力形式へ移った（→ [[agent-computer-interface]]）。
+
 ## 自動で探す — Meta-Harness
 
 **人手設計（作る）→ 仮定の棚卸し（剥がす）に続く第三段階が、ハーネス設計そのものの自動化**である。Meta-Harness（[[summaries/2026-meta-harness]], Stanford/MIT/KRAFTON, 2026）は、コーディングエージェント（Claude Code + Opus-4.6）を **proposer（提案役）** に据え、**過去の全候補ハーネスのソースコード・スコア・実行トレースをファイルシステム経由で無制限に検分**させて、新しいハーネスコード（単一ファイルの Python プログラム）を提案 → 評価 → 記録する外側ループを回す。
@@ -177,6 +182,8 @@ updated: 2026-08-10
 **探索ログの質も記録に値する。** proposer が 6 連続の悪化から「悪化の共通因子は同梱したプロンプト書き換え」という**交絡の診断**を明示的に立てて分離検証しており、**上記「剥がす」で人間がやる 1 部品ずつの検証をエージェントが自律再現している**。原典の脚注は、このワークフローが「**2026 年初頭のコーディングエージェント能力の大幅改善で初めて実用的になった**」と証言する——**[[coding-agents]] の成熟が、自分自身の実行基盤の改善という再帰的な仕事を可能にした記録**である。
 
 **留意点**: TerminalBench-2 では探索と評価が同一の 89 タスクである（過適合は文字列リーク監査で確認）。proposer も Claude Code 1 種でしか検証されていない。
+
+**ツールの層に絞った自動改善**は、Anthropic の実務記事（[[summaries/2025-writing-effective-tools]], 2025-09）が手順として公開している。評価タスクを回し、生のトランスクリプトを Claude Code に渡してツールの実装と説明文を一括で改修させ、**held-out テスト集合で過適合を確かめる**。社内 Slack 用ツールは人手版 67.4% → Claude 最適化版 80.1%、Asana 用は 79.6% → 85.7%。下記 AHE の層別測定で「ツールのみ」が +3.3pt かつ別ベンチマークへ転移したことと合わせ、**ツールはハーネスの中でも自動改善の効果が出やすく、移しやすい層**だと読める。
 
 ## 自動で進化させる — AHE と「反証可能な契約」
 
