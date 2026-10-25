@@ -177,3 +177,4 @@ Table 3 のアブレーション（SWE-bench Lite, GPT-4 Turbo, 既定 18.0%）�
 - [[summaries/2025-swe-rl-long-context]] — SWE-agent に近い ReAct 型の足場（シェル・edit・submit）の上で、モデルのほうを RL で訓練した研究
 - [[agent-training]] — 足場ではなくモデルを鍛える側
 - [[summaries/2024-agentless]] — 対照的な立場の手続き型（ツールを作り込まず、LLM に次の手を決めさせない）。同じ GPT-4o で SWE-agent の 18.3% に対し 32.0%
+- [[summaries/2025-swe-smith]] — 足場に SWE-agent を使い、そのための訓練データを大量に合成した同じグループの後続

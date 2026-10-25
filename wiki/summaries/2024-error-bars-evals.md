@@ -115,3 +115,4 @@ LLM の評価は「一番大きい数字が一番良い」という考え方で�
 - [[summaries/2026-swe-bench-verified-retired]] — 誤差棒では捉えられない偏り（汚染・欠陥のあるテスト）
 - [[summaries/2025-swe-rl-long-context]] — Pass@1 を 10 回の平均で報告した例
 - [[summaries/2023-dpo]] — LLM ジャッジと人間の一致率を、人間同士の一致率と比べて読む手続き
+- [[summaries/2026-swe-lego]] — 1 ポイント未満の改善（カリキュラム）を単一の実行で報告している例
