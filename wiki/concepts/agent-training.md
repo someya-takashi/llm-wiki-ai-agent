@@ -26,6 +26,7 @@ summaries:
   - "[[summaries/2023-toolformer]]"
   - "[[summaries/2025-swe-effi]]"
   - "[[summaries/2024-agentless]]"
+  - "[[summaries/2026-swe-bench-verified-retired]]"
 updated: 2026-10-25
 ---
 
@@ -127,7 +128,7 @@ SWE-Gym が見つけた検証器の訓練のこつは次のとおり。
 | SkyRL-Agent-14B-v0 | Qwen3-14B | 18.0% | 21.6% | なし |
 | SWE-Gym-32B | Qwen2.5-Coder-32B-Instruct | 7.0% | 20.6% | あり |
 
-読み取れることは 2 つある。第一に、**半年で 20% 台から 40% 前後まで上がった**。第二に、**蒸留ありとなしで到達点に大差がない**——教師に頼らない RL でも、強いモデルの蒸留と同じ水準に届くようになった。なお、同じ時期のフロンティアのプロプライエタリモデルや後の世代のモデルは SWE-bench Verified で 60〜80% 台にあり（[[coding-agents]] の評価節）、この表はあくまで「オープンな中規模モデルを訓練でどこまで持ち上げられるか」の記録である。
+読み取れることは 2 つある。第一に、**半年で 20% 台から 40% 前後まで上がった**。第二に、**蒸留ありとなしで到達点に大差がない**——教師に頼らない RL でも、強いモデルの蒸留と同じ水準に届くようになった。なお、同じ時期のフロンティアのプロプライエタリモデルや後の世代のモデルは SWE-bench Verified で 60〜80% 台にあり（[[coding-agents]] の評価節。ただし Verified は 2026-02 に OpenAI が「汚染とテストの欠陥のため、もはや能力を測れない」として報告をやめた → [[summaries/2026-swe-bench-verified-retired]]）、この表はあくまで「オープンな中規模モデルを訓練でどこまで持ち上げられるか」の記録である。
 
 > 注: DeepSWE・SkyRL・SWE-smith・Skywork-SWE・R2E-Gym・SWE-rebench の原典は wiki に未取得で、上の数字は [[summaries/2025-swe-rl-long-context]] を通した二次情報である。Kimi K3 の評価表にある「DeepSWE」はベンチマーク名で、この表のモデルとは別物である。
 
@@ -137,7 +138,7 @@ SWE-Gym が見つけた検証器の訓練のこつは次のとおり。
 - **足場と訓練の相性**。手順の決まった足場（Moatless・Agentless → [[summaries/2024-agentless]]）は素のモデルでも点が高いが、訓練で伸びにくい。汎用の足場（OpenHands・SWE-agent 型）は素のモデルでは弱いが、訓練でよく伸びる（[[summaries/2024-swe-gym]]）。SWE-Effi の「弱いモデルは手順を固定したほうが安定し、強いモデルには制御を渡したほうが伸びる」（[[summaries/2025-swe-effi]]）と合わせると、**訓練でモデルを強くする計画があるなら、最初から汎用の足場で訓練データを作る**ほうが筋がよい（→ [[coding-agents]]）。
 - **何が律速か**。SWE-Gym は訓練軌跡を 491 本の 25%・50%・100% と増やしても飽和せず、タスク数やリポジトリの多様性ではなく**軌跡をサンプリングする計算量**が律速だと結論した。RL の側でも、ロールアウトの速さが訓練の試行回数を決める（→ [[agent-cost-efficiency]]）。
 - **環境の作り方がデータの偏りを決める**。SWE-Gym は依存関係を手で設定して 2,438 件にとどまり、並行研究（Nebius の 2 本の連続したブログ記事、Badertdinov ら・Golubev ら 2024。後者は [[summaries/2025-swe-rl-long-context]] と同じ著者群）は汎用のセットアップスクリプトで 6,415 件を集めたが、セットアップに失敗した（依存の難しい）タスクは捨てている。**自動化して数を取るか、手間をかけて偏りを避けるか**の選択である（→ [[agent-environments]]）。
-- **評価の汚染を分けて見る**。SWE-bench Verified だけで訓練の効果を語ると過大評価になりうる。[[summaries/2025-swe-rl-long-context]] では、第 2 段階の RL の +3.3 ポイントが、訓練データより後に集めた SWE-rebench の月次分割では再現しなかった（→ [[agent-evaluation]]）。
+- **評価の汚染を分けて見る**。SWE-bench Verified だけで訓練の効果を語ると過大評価になりうる。2026-02 には OpenAI が、主要なフロンティアモデルがどれも Verified の正解パッチを記憶していたと報告している（[[summaries/2026-swe-bench-verified-retired]]）。[[summaries/2025-swe-rl-long-context]] では、第 2 段階の RL の +3.3 ポイントが、訓練データより後に集めた SWE-rebench の月次分割では再現しなかった（→ [[agent-evaluation]]）。
 - **報酬が 1 ビットだけであることの副作用**。成功／失敗しか返さない報酬では、「確信がなくても何かを提出する」振る舞いが育ちやすく、途中のどの行動が効いたかも学びにくい。プロセス報酬や途中の検証は、この限界に対する今後の論点として残っている。
 
 ## 関連ページ
@@ -156,3 +157,4 @@ SWE-Gym が見つけた検証器の訓練のこつは次のとおり。
 - [[summaries/2025-deepseek-r1]] — 単一ターンの RL と蒸留の比較
 - [[summaries/2024-deepseekmath]] — GRPO と Maj@K／Pass@K の分析
 - [[summaries/2023-swe-bench]] — SWE-Llama（文脈の分布シフトに脆い SFT）
+- [[summaries/2026-swe-bench-verified-retired]] — 主要なフロンティアモデルが Verified の正解パッチを記憶していたという報告（汚染のない分割で測る理由）

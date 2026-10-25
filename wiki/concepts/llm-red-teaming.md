@@ -21,7 +21,8 @@ summaries:
   - "[[summaries/2025-llamafirewall]]"
   - "[[summaries/2022-instructgpt]]"
   - "[[summaries/2026-kimi-k3]]"
-updated: 2026-08-10
+  - "[[summaries/2026-swe-bench-verified-retired]]"
+updated: 2026-10-25
 ---
 
 # LLM Red Teaming（LLM のレッドチーミング）
@@ -193,6 +194,8 @@ TAP でも Llama-2-Chat-7B だけは 4% にとどまる。著者らは手作り�
 
 なお本 wiki ではこれが**2 度目のパターン**である。[[summaries/2023-nemo-guardrails]] では対話フローの中核機構で gpt-3.5-turbo が 4 モデル中最下位（38% vs text-davinci-003 の 77%）になった。**どちらも「より整合し／より創造的に応じる能力が、限定された役割を果たす系では不利に働く」形**をしているが、原因は違う（NeMo は出力形式の揺れ、PAIR はアラインメント自体）。
 
+**転用例 — 記憶の引き出しで汚染を測る。** 攻撃役の LLM が判定役の評価を見ながら問いかけを改良する構成は、脱獄以外にも使える。OpenAI は SWE-bench Verified の汚染を調べるのに、GPT-5 を引き出し役にして GPT-5.2-Chat・Claude Opus 4.5・Gemini 3 Flash に最大 15 ターン問いかけさせ（システムプロンプト・ユーザープロンプト・応答の事前入力・引き出し方を変える）、判定モデルが毎ターン「タスク固有の新しい情報がどれだけ出たか」を「なし」〜「強」で採点した。「強」の例は、引き出し役が答えを漏らしすぎていないかを別の判定者で確かめ、最後に人手で確認している（[[summaries/2026-swe-bench-verified-retired]]）。3 社のモデルすべてで正解パッチの逐語的な再現が見つかった。**判定器を検証してから使う**という下記の規律が、ここでも「漏らしすぎの検査」という形で入っている。
+
 **(3) 幅を優先し、深さは浅く。** ジェイルブレイクは**最初か 2 回目のクエリ**で見つかることが最も多く、深さを増やすと収穫逓減、$K>50$ では生成ループに落ちて劣化する。並列ストリームは自明に並列化できるので予算は幅へ振る。
 
 ## 攻撃データをどう訓練へ戻すか — hostage negotiator 問題
@@ -363,3 +366,4 @@ hostage negotiator 問題は「攻撃データを**選好データ**として使
 - [[summaries/2022-anthropic-hh]] — レッドチーミングのデータ収集と、hostage negotiator 問題の根拠原典
 - [[summaries/2024-llm-security-privacy-survey]] — 脅威分類カタログの根拠原典
 - [[summaries/2026-kimi-k3]] — サイバー能力の 2 段階評価（Tier1 脆弱性発見・Tier2 エクスプロイト開発）と dual-use の根拠原典
+- [[summaries/2026-swe-bench-verified-retired]] — 攻撃役と判定役の LLM を、ベンチマークの汚染（記憶の引き出し）の検査に転用した例

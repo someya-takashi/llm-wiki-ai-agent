@@ -30,6 +30,7 @@ summaries:
   - "[[summaries/2024-swe-gym]]"
   - "[[summaries/2025-swe-rl-long-context]]"
   - "[[summaries/2024-agentless]]"
+  - "[[summaries/2026-swe-bench-verified-retired]]"
 updated: 2026-10-25
 ---
 
@@ -226,7 +227,7 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 
 
 
-標準は **SWE-bench 系**（実 GitHub イシューの解決率。Verified / Pro / Multilingual）・Terminal Bench（端末操作）・LiveCodeBench（競技・汚染対策つき）など → 詳細は [[agent-evaluation]]。実務上の注意として、同じモデルでもハーネスでスコアが大きく動く（ハーネス差・step 上限・コンテキスト管理の開示が比較の前提）ことと、フロンティアの到達点（2026 年時点で SWE-bench Verified 80 前後 → [[summaries/2026-deepseek-v4]] 表6）に対し、**長時間の自律構築タスクには標準ベンチマークがまだ無い**（Anthropic の記事も定量評価なし）ことが挙げられる。
+標準は **SWE-bench 系**（実 GitHub イシューの解決率。Verified / Pro / Multilingual）・Terminal Bench（端末操作）・LiveCodeBench（競技・汚染対策つき）など → 詳細は [[agent-evaluation]]。実務上の注意として、同じモデルでもハーネスでスコアが大きく動く（ハーネス差・step 上限・コンテキスト管理の開示が比較の前提）ことと、フロンティアの到達点（2026 年時点で SWE-bench Verified 80 前後 → [[summaries/2026-deepseek-v4]] 表6。**ただし Verified は 2026-02 に作成者の OpenAI 自身が報告をやめた**——監査した難問の 59.4% はテストが正しい解を落とし、主要なフロンティアモデルはどれも正解パッチを記憶していた。この水準の数字は汚染とテストの欠陥を含む → [[summaries/2026-swe-bench-verified-retired]]、[[agent-evaluation]]。OpenAI は代わりに SWE-bench Pro を勧める）に対し、**長時間の自律構築タスクには標準ベンチマークがまだ無い**（Anthropic の記事も定量評価なし）ことが挙げられる。
 
 ## 設計論点
 
@@ -256,3 +257,4 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 - [[summaries/2026-dive-into-claude-code]] — Claude Code v2.1.88 のソースレベル解剖。本ページの「設計点」節と「短期の増幅と長期の損耗」節の根拠原典
 - [[agent-memory]] — CLAUDE.md 階層と、埋め込みを使わない記憶検索
 - [[multi-agent-systems]] — subagent の隔離と要約のみの返却
+- [[summaries/2026-swe-bench-verified-retired]] — Verified の数字を比較に使えなくなった理由。代わりは SWE-bench Pro

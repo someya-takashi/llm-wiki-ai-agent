@@ -166,3 +166,4 @@ translation: "[[translations/2024-agentless]]"
 - [[summaries/2024-building-effective-agents]] — workflow と agent の区別
 - [[summaries/2023-swe-bench]] — 評価に使う SWE-bench
 - [[summaries/2025-kimi-k2]] — 「Agentless」設定を評価の条件の 1 つとして使ったモデルレポート
+- [[summaries/2026-swe-bench-verified-retired]] — 本論文が Lite で見つけた「イシューに書いていない関数名をテストが要求する」欠陥が、Verified にも残っていたという監査
