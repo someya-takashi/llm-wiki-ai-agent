@@ -9,6 +9,7 @@ related:
   - "[[context-engineering]]"
   - "[[agent-evaluation]]"
 summaries:
+  - "[[summaries/2026-claude-code-large-codebases]]"
   - "[[summaries/2023-lost-in-the-middle]]"
   - "[[summaries/2023-swe-bench]]"
   - "[[summaries/2024-graphrag]]"
@@ -19,7 +20,7 @@ summaries:
   - "[[summaries/2025-a-mem]]"
   - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2025-llm-reasoning-to-agents]]"
-updated: 2026-08-02
+updated: 2026-10-26
 ---
 
 # Retrieval-Augmented Generation（検索拡張生成）
@@ -85,6 +86,7 @@ RAG には歴史的に **2 つの実装層**があり、混同しやすいので
 - **agentic RAG と agentic memory の境界**: 「いつ・何を検索するかをモデルが決める」検索側の自律化（agentic RAG。Self-RAG や FLARE の系譜——概説）に対し、[[summaries/2025-a-mem]]（A-Mem, 2025）は**保存・組織化の側の自律化**を対置した: 検索がどれだけ賢くても、索引そのものが静的なら知識ベースは育たない。A-Mem は保存時に LLM が意味づけ（キーワード・タグ・文脈説明）を済ませ、記憶間のリンクを判断し、新しい記憶の到着で既存記憶を書き換える（memory evolution）。**「検索の agency」と「索引の agency」は独立した設計軸**であり、後者は本ページの範囲を超えて [[agent-memory]] の領域に入る——両ページの境界線がここにある。
 - **事前に埋め込むか、実行時に引くか（just-in-time）**: RAG の標準形は「クエリを埋め込んで**推論の前に**関連文書を集め、コンテキストへ注入する」——[[summaries/2025-effective-context-engineering]]（Anthropic, 2025）はこれを **embedding-based pre-inference time retrieval** と名指しし、エージェント的アプローチではこれを **just-in-time（JIT）** 戦略で補強する流れがあると整理した。JIT では関連データを事前処理せず、**軽量な識別子（ファイルパス・保存済みクエリ・Web リンク）だけを保持して、実行時にツールで動的に読み込む**。Claude Code が大規模データベースを、的を絞ったクエリと `head` / `tail` で**全体をコンテキストに載せずに**分析するのがその例。これは前項の agentic search と重なるが、力点が違う——agentic search が「**いつ検索するかをモデルが決める**」話なのに対し、JIT は「**そもそも索引を事前に作らず、参照だけ持って必要時に実体を引く**」という**格納側**の設計である。副産物として、**参照のメタデータ自体が信号になる**（`tests/test_utils.py` と `src/core_logic/test_utils.py` は目的が違う。階層・命名規約・タイムスタンプが手がかりを与える）ことと、**progressive disclosure（段階的開示）**——探索を通じて関連コンテキストを層ごとに組み立てる——が挙げられている。
   - トレードオフは明快で、**実行時の探索は事前計算された取得より遅い**。加えて、ツールとヒューリスティクスの設計が悪いとエージェントは行き止まりを追ってコンテキストを浪費する。実務解は**ハイブリッド**で、境界は「内容の動的さ」で引く——Claude Code は `CLAUDE.md` を事前投入しつつ `glob` / `grep` で JIT に引くことで**陳腐化した索引や複雑な構文木の問題を回避**しており、逆に法務・財務のように内容が安定した領域は事前取得寄りが適するとされる。「索引を作るコスト・陳腐化するリスク」と「毎回探索する遅さ」のどちらを払うかの選択と読める → [[context-engineering]]。
+  - **陳腐化の具体像**: [[summaries/2026-claude-code-large-codebases]]（Anthropic, 2026）は、大規模な開発現場で埋め込み索引が失敗する理由を「パイプラインが更新に追いつかない」ことに置く。索引は数時間〜数週間前のコードを反映したままになり、改名済みの関数や削除済みのモジュールを**古いという兆候なしに**返す。Claude Code が索引を作らず grep とファイル読みで辿るのはこのためだが、同記事は代償として「どこを見ればよいかの初期コンテキストが要る」ことも認め、CLAUDE.md の階層・コードベースの地図・LSP（言語サーバーによるシンボル単位の検索）で補う。差分更新で索引の鮮度を保つ選択肢は同記事では検討されておらず、比較は片側からのものである。
 - **知識の置き場所の経済学**: 原典は 626M パラメータで T5-11B（closed-book）を圧倒した。知識はパラメータに焼き込むより索引に置く方が安く、更新可能で、監査できる——[[agent-memory]] の外部記憶設計へ通じる原則。
 - **文書数と合成の粒度**: 検索文書を増やせば単調に良くなるとは限らない（RAG-Token は 10 でピーク）。複数文書の内容を 1 つの答えへ合成する必要があるかどうかで、設計（原典なら Token/Sequence、現代ならプロンプトへの並べ方 → [[context-engineering]]）が変わる。
 - **collapse の監視**: 検索結果が入力によらず似通ってきたら検索が死んでいるサイン。RAG パイプラインのヘルスチェック項目（→ [[agent-evaluation]]）。

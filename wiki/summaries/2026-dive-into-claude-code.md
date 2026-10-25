@@ -291,3 +291,4 @@ CVE は **CVE-2025-59536（CVSS 8.7）・CVE-2026-21852（CVSS 5.3）**（Check 
 - [[summaries/2025-effective-harnesses]] — 長時間タスクのハーネス設計
 - [[summaries/2024-swe-agent]] — ACI（agent-computer interface）の設計。本論文の「ツール面をどう組み立てるか」の先行研究
 - [[summaries/2025-complexity-trap]] — 観測のマスキングを先に、LLM による要約を最後の手段にする混合方式が最も安かった実験。遅延劣化と同じ方向
+- [[summaries/2026-claude-code-large-codebases]] — 同じ Claude Code を利用者が手を入れる側から見た記録。拡張ポイントを作る順序、守らせたいことはフックへ（指針と強制の分離の実務版）

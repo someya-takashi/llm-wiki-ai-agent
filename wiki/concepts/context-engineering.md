@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [コンテキストエンジニアリング, context management, コンテキスト管理, prompt engineering, attention budget, 注意予算, context rot, just-in-time, progressive disclosure, 段階的開示, right altitude, structured note-taking, observation masking, 観測のマスキング, LLM-Summary, trajectory elongation, 軌跡の伸長]
+aliases: [コンテキストエンジニアリング, context management, コンテキスト管理, prompt engineering, attention budget, 注意予算, context rot, just-in-time, progressive disclosure, 段階的開示, right altitude, structured note-taking, observation masking, 観測のマスキング, LLM-Summary, trajectory elongation, 軌跡の伸長, agentic search, codebase map, コードベースの地図]
 tags: [context-engineering, llm-agents, agent-memory]
 related:
   - "[[agent-memory]]"
@@ -17,6 +17,7 @@ related:
   - "[[agent-computer-interface]]"
   - "[[agent-cost-efficiency]]"
 summaries:
+  - "[[summaries/2026-claude-code-large-codebases]]"
   - "[[summaries/2023-lost-in-the-middle]]"
   - "[[summaries/2023-swe-bench]]"
   - "[[summaries/2025-effective-context-engineering]]"
@@ -121,6 +122,8 @@ LLM（Large Language Model, 大規模言語モデル）の**限られたコン�
 副次的な効果が 2 つある。第一に、**参照のメタデータそのものが挙動の信号になる**: `tests` フォルダの `test_utils.py` と `src/core_logic/` の同名ファイルは目的が違い、階層・命名規約・タイムスタンプがすべて「いつどう使うべきか」の手がかりを与える。第二が **progressive disclosure（段階的開示）**——エージェントが探索を通じて関連コンテキストを漸進的に発見し、**理解を層ごとに組み立てながらワーキングメモリには必要なものだけを保つ**。ファイルサイズは複雑さを、命名は目的を、タイムスタンプは関連性を示唆する。
 
 トレードオフも明記されている。**実行時の探索は事前計算された取得より遅い**。さらに適切なツールとヒューリスティクスがなければ、エージェントはツールを誤用し行き止まりを追ってコンテキストを浪費する。現実解は**ハイブリッド**で、Claude Code がその実例——`CLAUDE.md` は素朴に事前投入し、`glob` / `grep` で残りを JIT に取得することで**陳腐化した索引や複雑な構文木の問題を回避**する。内容の動的さが低い領域（法務・財務）ほどハイブリッド寄りが適するとされる。
+
+**大規模コードベースでの運用の記録**として、[[summaries/2026-claude-code-large-codebases]]（Anthropic, 2026）がこの選択の理由をもう一段具体的に述べている。埋め込みの索引は数千人がコミットし続ける現場では更新に追いつかず、2 週間前に名前が変わった関数や消えたモジュールを、古いという兆候なしに返す。agentic search はこの陳腐化を避けるが、**最初にどこを見ればよいかの手がかりがないと働かない**。同記事が挙げる手当ては、どれも「何をコンテキストに入れないか」を事前に決めるものである——ルートの CLAUDE.md はポインタと致命的な落とし穴だけにする（各 200 行程度）、リポジトリのルートでなくサブディレクトリで起動する、テストとリントのコマンドをディレクトリごとに書く、生成物とサードパーティのコードを `permissions.deny` で除外する、トップレベルのフォルダを 1 行ずつ説明した地図をルートに置く、LSP（Language Server Protocol, IDE の「定義へ移動」「参照を検索」を支える言語サーバーとの標準プロトコル）でシンボル単位に辿らせる。最後の LSP は、grep で何千件もヒットする関数名を、**モデルが読む前に**同じシンボルの参照だけへ絞り込む。JIT 取得の弱点（ツールが悪いと行き止まりを追ってコンテキストを浪費する）への、ツール側からの対策と読める。
 
 方向性としては「**賢いモデルに賢く振る舞わせる**」——モデルの能力向上につれ人間による精選を漸進的に減らす、というのが同記事の見立てで、助言は「うまくいく最も単純なことをせよ（do the simplest thing that works）」。
 

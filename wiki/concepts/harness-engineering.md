@@ -18,6 +18,7 @@ related:
   - "[[agent-computer-interface]]"
   - "[[agent-cost-efficiency]]"
 summaries:
+  - "[[summaries/2026-claude-code-large-codebases]]"
   - "[[summaries/2026-kimi-k3]]"
   - "[[summaries/2026-externalization]]"
   - "[[summaries/2026-code-as-agent-harness]]"
@@ -32,7 +33,7 @@ summaries:
   - "[[summaries/2025-swe-bench-sonnet]]"
   - "[[summaries/2025-writing-effective-tools]]"
   - "[[summaries/2025-swe-effi]]"
-updated: 2026-10-25
+updated: 2026-10-26
 ---
 
 # Harness Engineering（ハーネス工学）
@@ -175,6 +176,8 @@ updated: 2026-10-25
 
 **「剥がす」の早い実例は、ツールの層でも観察されていた。** Claude 3.5 Sonnet（2024 年後半）の SWE-bench 用の足場（[[summaries/2025-swe-bench-sonnet]]）は、SWE-agent のフレームワークを土台にしながら専用コマンド群を **bash と `str_replace_editor` の汎用 2 ツール**に置き換え、ワークフローも固定せずにモデルへ制御を渡して SWE-bench Verified 49%（当時の SOTA）を出した。同じ足場で Claude 3 Opus 22% → 3.5 Sonnet old 33% → new 49% とモデル差がそのまま出ており、**足場を薄くしてモデル改善を素通しにする**設計の初期の記録になっている。ただし作り込みを捨てたわけではなく、労力はツールの説明文と誤りにくい入力形式へ移った（→ [[agent-computer-interface]]）。
 
+**「剥がす」は日常の設定ファイルにも当てはまる。** [[summaries/2026-claude-code-large-codebases]]（Anthropic, 2026）は、大企業への Claude Code の導入経験から、**CLAUDE.md・スキル・フックを 3〜6 か月ごとに本格的に見直す**ことを勧める（大きなモデルのリリース後に性能が頭打ちに感じられたときも）。例は 2 つある。「リファクタリングは必ず 1 ファイルずつ」というルールは以前のモデルの脱線を防いだが、複数ファイルの協調的な編集が得意な新しいモデルには制約になる。Perforce のコードベースで `p4 edit` を強制していたフックは、Claude Code が Perforce モードを標準で備えた時点で不要になった。前者はモデルの弱さへの仮定、後者はツールの不足への仮定であり、**仮定が外れる理由はモデルの改善だけではない**。
+
 ## 自動で探す — Meta-Harness
 
 **人手設計（作る）→ 仮定の棚卸し（剥がす）に続く第三段階が、ハーネス設計そのものの自動化**である。Meta-Harness（[[summaries/2026-meta-harness]], Stanford/MIT/KRAFTON, 2026）は、コーディングエージェント（Claude Code + Opus-4.6）を **proposer（提案役）** に据え、**過去の全候補ハーネスのソースコード・スコア・実行トレースをファイルシステム経由で無制限に検分**させて、新しいハーネスコード（単一ファイルの Python プログラム）を提案 → 評価 → 記録する外側ループを回す。
@@ -274,6 +277,8 @@ updated: 2026-10-25
 > **コードベースのうち AI の意思決定ロジックは推定 1.6%、残る 98.4% は運用ハーネスである。**（Tier C ＝ コミュニティ解析からの推定）
 
 **本ページのどの節にも対応物がある**——5 層の compaction（→ [[context-engineering]]）、7 層の権限（→ [[agent-safety-and-guardrails]]）、4 拡張機構のコンテキストコスト階層（→ [[agent-frameworks]]）、CLAUDE.md の 4 階層（→ [[agent-memory]]）、subagent の worktree 隔離（→ [[multi-agent-systems]]）。**設計点としての詳細は [[coding-agents]] に置いた。**
+
+**利用者が手を入れる側の記録**もある。[[summaries/2026-claude-code-large-codebases]] は同じ Claude Code のハーネスを、5 つの拡張ポイント（CLAUDE.md・フック・スキル・プラグイン・MCP サーバー）と 2 つの補助機能（LSP 連携・サブエージェント）として示し、この順に作るよう勧める。「モデルより周りのハーネスが結果を左右する」という主張を大企業への導入経験から述べたもので、数値の裏づけはない。
 
 ## 「meta-harness」の語義に注意
 

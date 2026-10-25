@@ -13,6 +13,7 @@ related:
   - "[[context-engineering]]"
   - "[[harness-engineering]]"
 summaries:
+  - "[[summaries/2026-claude-code-large-codebases]]"
   - "[[summaries/2024-building-effective-agents]]"
   - "[[summaries/2025-effective-harnesses]]"
   - "[[summaries/2026-harness-design]]"
@@ -23,7 +24,7 @@ summaries:
   - "[[summaries/2026-dive-into-claude-code]]"
   - "[[summaries/2026-agentic-harness-engineering]]"
   - "[[summaries/2024-agentless]]"
-updated: 2026-10-25
+updated: 2026-10-26
 ---
 
 # Agent Frameworks（エージェントフレームワークと設計パターン)
@@ -115,6 +116,8 @@ Claude Code は単一の統一された拡張 API を持たず、**4 つの機�
 **段階的なコストの順序づけが意味するのは「安い拡張はコンテキストを使い果たさずに広くスケールでき、高価なものは本当に新しいツール面を必要とする場合のために取っておける」ことである。** 単一の tool-only API を提供する枠組みは、**ゼロコンテキストで済むはずのライフサイクル介入にもツールスキーマのコストを払わせてしまう**。
 
 **代償も明記されている**——**4 機構は、ある統合タスクにどれを使うか決めるときの学習曲線を増やす**。そして組み合わせが創発的な挙動を生む（プラグインが PreToolUse フックでツール入力を修正する、パススコープのルールが会話の途中で遅延ロードされて分類器の挙動を変える等）。**「単一の設定ファイルからは予測が難しい」**。
+
+**導入の現場から見た同じ機構群**が [[summaries/2026-claude-code-large-codebases]]（Anthropic, 2026）にある。同記事は CLAUDE.md を加えた 5 つを「拡張ポイント」と呼び、**CLAUDE.md → フック → スキル → プラグイン → MCP サーバー**の順に作るよう勧める（各層が前の層の上に積み上がるため）。この並びは上の表のコンテキストコストの順（フック ゼロ → スキル 低 → プラグイン 中 → MCP 高）とほぼ重なるが、同記事は理由をコストとしては説明していない。各機構の「よくある誤り」も挙げている——自動で実行すべきことをプロンプトで頼む（フックを使うべき）、再利用できる専門知識を CLAUDE.md に詰め込む（スキルを使うべき）、基本が動く前に MCP を作り始める、など。上の「学習曲線」の代償に対する、実務の側の答えになっている。
 
 ### メタツール — 拡張をツールとして露出する
 

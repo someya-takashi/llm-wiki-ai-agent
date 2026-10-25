@@ -119,3 +119,4 @@ v1（Opus 4.5）の結果: solo 20 分/$9 は見た目それらしいが**ゲー
 - [[summaries/2025-effective-harnesses]] — 直接の前作（本記事はその天井からの続き）
 - [[summaries/2024-building-effective-agents]] — 引用されている「最も単純な解決策から」の原則の出典
 - [[summaries/2025-masft]] — 検証と終了の失敗（早期承認）の研究側の対応物
+- [[summaries/2026-claude-code-large-codebases]] — 「部品はモデルへの仮定」を CLAUDE.md・スキル・フックに当てはめ、3〜6 か月ごとの見直しを勧める導入側の記事

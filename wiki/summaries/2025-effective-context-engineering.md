@@ -156,3 +156,4 @@ needle-in-a-haystack（干し草の山から針を探す）型のベンチマー
 - [[summaries/2025-multi-agent-research-system]] — サブエージェント分業の本番運用報告
 - [[summaries/2026-harness-design]] / [[summaries/2026-managed-agents]] — この記事を参照する後続作。本記事の各論を「陳腐化しうる仮定」として扱う枠組み
 - [[summaries/2023-memgpt]] — ウィンドウ外の記憶を階層管理する研究側の原型
+- [[summaries/2026-claude-code-large-codebases]] — ハイブリッド戦略の理由（埋め込み索引の陳腐化）を大規模コードベースの現場で述べ直し、手がかりの整え方（CLAUDE.md の階層・地図・LSP）を具体化

@@ -1072,3 +1072,15 @@ type: log
 - メモ: 本 wiki の context-engineering はこれまで「ツール結果の消去が最も軽い compaction」（Anthropic の記事）や Claude Code の 5 層 compaction（実装の解剖）を、定量的な比較なしに載せていた。本論文はそれを同じ足場・同じベンチマークでの比較で裏づけた初めての原典で、混合方式は Claude Code の遅延劣化と同じ方向の結論になった。軌跡の伸長は Manus の「失敗の痕跡は消さない」と同じ向きの観察として、批評つき要約の失敗は self-reflection の限界の例として接続した。
 - 批判的視点として記録: SE の領域（観測が長く冗長）に限った結果で、要約の実装は OpenHands 形式の 1 種類だけ。OpenHands での確認と混合方式は 50 問、付録のアブレーションは 150 問の 1 回ずつの実行。解決率の差の多くは有意でなく、「同等」は「差を検出できなかった」という意味でもある。Qwen のコストは API 価格からの事後計算で、Qwen3-32B はキャッシュを区別しない価格のため高めに出ている。
 - **データギャップ**: 並行研究の Xiao ら（「Delete」のベースライン）、Lu ら（要約を使った RL の訓練）、Tang ら（ディープリサーチと CUA でのマスキング）、MEM1、OpenHands の原典は未取得。
+
+## [2026-10-26] ingest | How Claude Code works in large codebases: Best practices and where to start
+
+- 取り込み: `raw/articles/How Claude Code works in large codebases_ Best practices and where to start.md`（Anthropic Applied AI チームの経験に基づく署名なしの記事, 2026-05-14, 連載「Claude Code at scale」の 1 本。クリップ元の URL は `/ja/` だが本文は英語）
+- 作成: [[translations/2026-claude-code-large-codebases]], [[summaries/2026-claude-code-large-codebases]], `raw/assets/2026-claude-code-large-codebases/`（3 点）
+- 更新: [[concepts/harness-engineering]]（「剥がす」に日常の設定ファイルへの適用と 2 つの例、「出荷された実装を見る」に利用者側の記録）, [[concepts/coding-agents]]（`### 大規模コードベースでの運用 — 利用者が手を入れる側の記録` を新設）, [[concepts/context-engineering]]（just-in-time 取得に索引の陳腐化と手がかりの整え方、別名に agentic search 等）, [[concepts/retrieval-augmented-generation]]（陳腐化の具体像）, [[concepts/agent-skills]]（パスに紐づくスキル、3〜6 か月ごとの見直し、プラグイン配布の経路のリスク）, [[concepts/agent-memory]]（CLAUDE.md の書き方の目安と stop フックによる更新の提案）, [[concepts/agent-frameworks]]（拡張ポイントを作る順序とコンテキストコストの階層の対応、よくある誤り）, 逆リンク: [[summaries/2026-dive-into-claude-code]], [[summaries/2026-harness-design]], [[summaries/2025-effective-context-engineering]], [[overview]], [[index]]
+- ユーザーの決定（AskUserQuestion）: (1) 要約は**ハーネス設計を厚く**書く（7 つの部品の役割と「どこに何を置くか」の判断）。(2) 末尾の「Get started with Claude Code for Enterprise」の誘導文と謝辞は翻訳から外す。
+- クリップの状態: 原ページ（英語版。`/ja/` の URL も本文は英語）と照合し、**本文・表に欠落はなかった**。本文画像 3 枚（クリップでは外部 URL）を原ページから保存した。2・3 枚目は原ページにもキャプションがない。3 枚目のチェックリストは文字だけの図なので、翻訳に文言を英語原文のまま書き起こした。「Using `.`ignore files」の分かれた書式は原ページの HTML 自体の書式（`.` と `ignore` が別の `<code>`）で、`.ignore` として訳した。除外した chrome: ファビコン、ロゴ等のサイト UI の SVG。
+- yomiyasu による推敲: [[summaries/2026-claude-code-large-codebases]] を推敲した。主な変更は、間を作るだけの読点を外したこと、「共通の土台」という語を「同じ設定を使える」に言い換えたこと、太字の閉じ記号の直後に空白を入れて表示崩れを直したこと。小見出しのダッシュでつないだ副題は括弧書きに改めた。
+- メモ: 本記事の主張（ハーネスがモデルより結果を左右する、部品はモデルへの仮定で陳腐化する、守らせたいことはフックへ）は、本 wiki がこれまでソースの解剖（Dive into Claude Code）とハーネス論（harness-design、AHE）から得ていた結論と同じ方向で、それを導入の現場の言葉で言い直したものにあたる。記事が勧める部品の作る順序（CLAUDE.md → フック → スキル → プラグイン → MCP）は、Dive into Claude Code が示したコンテキストコストの階層とほぼ重なる（記事自身はコストを理由に挙げていない。本 wiki の整理）。
+- 批判的視点として記録: 提供者自身による成功例だけの報告で、定量データも切り分けもない。「ハーネスがモデルより結果を左右する」は AHE（強いモデルほど利得が小さい）や SWE-Effi（弱いモデルで足場が崩れる）が付けた条件に触れていない。RAG との比較は片側だけで、差分更新による索引の鮮度の維持は検討していない。プラグインのマーケットプレイスによる配布は、悪意あるスキルが組織全体に一度に届く経路にもなる。
+- **データギャップ**: 連載「Claude Code at scale」の他の回（数十万フォルダ規模・git 以外のバージョン管理を扱うと予告）、Claude Code の公式ドキュメント（memory・hooks・skills・plugins・sub-agents）、COBOL モダナイゼーションの記事、Agent Skills のベストプラクティス文書は未取得。
