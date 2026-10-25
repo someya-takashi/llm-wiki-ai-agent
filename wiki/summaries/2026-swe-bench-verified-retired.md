@@ -122,3 +122,4 @@ SWE-bench の問題は、多くのモデル提供者が訓練に使うオープ�
 - [[summaries/2025-swe-bench-sonnet]] — Verified を回したときの運用上の落とし穴（採点系のバグ・隠しテスト）
 - [[summaries/2025-swe-rl-long-context]] — 訓練データより後の SWE-rebench の月次分割で評価した例
 - [[summaries/2023-pair]] / [[summaries/2023-tap]] — 攻撃役 LLM と判定役 LLM の構成の原型
+- [[summaries/2024-error-bars-evals]] — 誤差棒で捉えられるばらつきと、捉えられない偏り（汚染・欠陥のあるテスト）の区別

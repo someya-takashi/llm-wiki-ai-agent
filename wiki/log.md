@@ -1027,3 +1027,15 @@ type: log
 - メモ: 2023 年の SWE-bench 論文は「作成年で分けても解決率に差がない」ことから汚染は大きくないと結論していたが、本記事はフロンティアモデルについてそれを覆した。Agentless（2024）が SWE-bench Lite で見つけた「イシューに書いていない関数名をテストが要求する」欠陥（10.0%）は、人手で検証した Verified にも狭すぎるテストとして残っていた。Golubev らの RL 論文が SWE-rebench の月次分割でも評価していた理由が裏づけられた。汚染の調べ方は、[[concepts/llm-red-teaming]] の PAIR・TAP と同じ「攻撃役の LLM＋判定役の LLM」の構成を記憶の引き出しに使ったもの。
 - 批判的視点として記録: ベンチマークの作成者でありスコアを競う当事者でもある OpenAI の発表（ただし自社の GPT-5.2 の汚染を最初に挙げている）。汚染がスコアを何ポイント押し上げたか、「強」の汚染がタスクの何割で見つかったかは示していない。監査したのは o3 が解けなかった 138 問だけ。推奨する SWE-bench Pro が汚染を受けにくいという根拠のデータは示していない。推論モデルは汚染の調査から外している。
 - **データギャップ**: SWE-bench Verified の公開時の記事（2024-08）、SWE-bench Pro の原典、GDPVal の原典は未取得。
+
+## [2026-10-25] ingest | Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations
+
+- 取り込み: `raw/papers/Adding Error Bars to Evals_ A Statistical Approach to Language Model Evaluations.md`（Evan Miller / Anthropic, arXiv:2411.00640, 2024-11。ar5iv のクリップ。arXiv は v1 のみ）
+- 作成: [[translations/2024-error-bars-evals]], [[summaries/2024-error-bars-evals]]（図のない論文なので assets はなし）
+- 更新: [[concepts/agent-evaluation]]（「指標の整理」に `### スコアの誤差と差の検定` を新設し、指標の表に標準誤差・信頼区間・MDE の行を追加。末尾の R1 の評価プロトコルの段落にも接続）, [[concepts/test-time-compute]]（温度を下げずに再サンプリングで平均する理由）, [[concepts/agent-cost-efficiency]]（試行回数とコストと検出できる差のトレードオフ）, [[summaries/2025-swe-effi]], [[summaries/2024-agentless]], [[summaries/2026-swe-bench-verified-retired]], [[summaries/2025-swe-rl-long-context]]（関連ページに逆リンク）, [[overview]], [[index]]
+- ユーザーの決定（AskUserQuestion）: 評価の統計は**新しい概念ページを作らず、[[concepts/agent-evaluation]] に節を追加**する。
+- クリップの状態: 本文・表・付録 A〜C の欠落はなかった。**著者名と所属の行が欠落**していたので arXiv の PDF から補った（Evan Miller, Anthropic）。**式番号が欠落**しており本文の「式 1〜10」の参照先が分からなかったので、PDF の番号に合わせて翻訳の式に番号を付けた。ar5iv の原ページ（https://ar5iv.labs.arxiv.org/html/2411.00640）は取得時に応答がなく、照合は arXiv の PDF で行った。
+- 原典側の誤記（PDF でも同じ。翻訳では原文のまま残し訳注を付けた）: §2.1 で推定の対象を表す記号（文脈上 μ）が抜けている。表 1 の Dreadnought の HumanEval が 87.7% だが、表 2 は 86.7% で、差の −3.1% は 86.7% と整合する。§3.3 の第 2 の例で、U[1/3,1] を丸めたベルヌーイ分布を p=1/4 と書いているが、直後の期待値 3/4 と分散 3/16 から p=3/4 の誤記とみられる。式 10 と付録 B の $z_B$ は $z_\beta$ の誤記。表 4 のキャプションは「2 つの評価」だが表は 3 つ。§4.2 の「MSGM」は MGSM の誤記。付録 C の `\hat{mu}` は翻訳で `\hat{\mu}` に直した。論文中の数値例（969 問、13.2% → 7.5%、分散の 3 倍・約 5 倍、1/27 など）は検算して一致を確かめた。
+- メモ: 要約と [[concepts/agent-evaluation]] に、原典の式を本 wiki の数値に当てはめた試算を載せた（原典は SWE-bench を扱っていないので、試算であることを明記）。SWE-bench Verified の 500 問で 80% のモデルの 95% 信頼区間は ±3.5 ポイント、確実に検出できる差は原典の例示のパラメータで 4〜8 ポイント。Agentless の 32.0% と AutoCodeRover-v2 の 30.7% の差（Lite 300 問）や、SWE-Effi の 50 問での順位の多くは誤差の範囲。SWE-bench の問題は 12 リポジトリから取られているので、リポジトリ単位のクラスタ化が必要かもしれない（推論）。
+- 批判的視点として記録: 超母集団から無作為に抜き出したという仮定は理想化で、ベンチマークの偏りや汚染は誤差棒に現れない。例の数値は架空（実データは表 4 のクラスタ化の比だけ）。多肢選択・質問応答が中心で、エージェントの評価（長い軌跡・環境のばらつき）には直接触れていない。多重比較を扱っていない。
+- **データギャップ**: エージェントのベンチマークでの誤差・ばらつきを実測した原典（試行の繰り返しによる分散、ハーネスや環境によるばらつき）は wiki にない。

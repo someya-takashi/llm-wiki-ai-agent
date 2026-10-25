@@ -154,3 +154,4 @@ LLM への強化学習（RL）は、DeepSeek-R1 のように数学や一発の�
 - [[summaries/2025-deepseek-r1]] — 単一ターンの RL の代表例
 - [[summaries/2024-deepseekmath]] — GRPO の原典
 - [[summaries/2026-swe-bench-verified-retired]] — 汚染のない分割で評価すべき理由を、Verified の監査で裏づけた報告
+- [[summaries/2024-error-bars-evals]] — Pass@1 を複数回の平均で出すことの統計的な意味（再サンプリングによるばらつきの削減）
