@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [コンテキストエンジニアリング, context management, コンテキスト管理, prompt engineering, attention budget, 注意予算, context rot, just-in-time, progressive disclosure, 段階的開示, right altitude, structured note-taking]
+aliases: [コンテキストエンジニアリング, context management, コンテキスト管理, prompt engineering, attention budget, 注意予算, context rot, just-in-time, progressive disclosure, 段階的開示, right altitude, structured note-taking, observation masking, 観測のマスキング, LLM-Summary, trajectory elongation, 軌跡の伸長]
 tags: [context-engineering, llm-agents, agent-memory]
 related:
   - "[[agent-memory]]"
@@ -37,7 +37,8 @@ summaries:
   - "[[summaries/2025-writing-effective-tools]]"
   - "[[summaries/2025-swe-effi]]"
   - "[[summaries/2024-agentless]]"
-updated: 2026-10-25
+  - "[[summaries/2025-complexity-trap]]"
+updated: 2026-10-26
 ---
 
 # Context Engineering（コンテキストエンジニアリング）
@@ -133,6 +134,18 @@ LLM（Large Language Model, 大規模言語モデル）の**限られたコン�
 
 同記事はチューニングの手順まで書いており、そのまま流用できる: **複雑なエージェントのトレース上でプロンプトを調整し、まず再現率（recall）を最大化して関連情報を取りこぼさないことを確認してから、余計な内容を削って適合率（precision）を上げる方向へ反復する**。いきなり簡潔さを狙うと、後で効く情報を落とす。また「**最も安全で最も軽い形の compaction**」として **ツール結果の消去**が挙げられている——「あるツールが履歴の深いところで呼ばれた後、エージェントが生の結果を再び見る必要がなぜあるだろうか」。要約による圧縮に手を出す前に、まずここから削るのが定石になる。
 
+#### 観測を消すか、要約するか — 同じ条件での比較
+
+ツール結果の消去と LLM による要約のどちらを選ぶべきかは、長く実装の好みとして扱われてきた。SWE-agent は古い観測を置き換え文に替え（[[summaries/2024-swe-agent]]）、OpenHands や Cursor は LLM に履歴を要約させる。The Complexity Trap（[[summaries/2025-complexity-trap]], 2025）は、この 2 つを SWE-agent の同じ足場に載せ、SWE-bench Verified の 500 問・5 つのモデルの構成で比べた。
+
+- **観測のマスキング**（直近 10 ターンより古い観測だけを「Previous 8 lines omitted for brevity.」のような置き換え文に替え、推論と行動の履歴は残す）と、**LLM による要約**（21 ターンごとに古いターンを要約に畳み、直近 10 ターンを残す）は、どちらも素のエージェントよりコストを 5 構成中 4 つで 41〜57% 減らし、解決率は下げなかった。
+- **要約はマスキングを一貫しても有意にも上回らなかった**。最強の Qwen3-Coder 480B では、マスキングが 54.8%・$0.61、要約が 53.8%・$0.64 だった。理屈の上では、コンテキストに上限を作る要約が長い軌跡で有利になるはずだった。
+- 要約が割高になる理由は 2 つある。要約の呼び出しそのもの（総コストの最大 7.2%。毎回違う区間を読むのでキャッシュがほとんど当たらない）と、**軌跡の伸長**（要約を使うとターン数がマスキングより 13〜15% 増える。下の「失敗の痕跡は消さない」を参照）である。
+- マスキングの窓の大きさは足場ごとに違う。SWE-agent で最適な 10 ターンを OpenHands にそのまま使うと解決率が 30% に落ち、58 ターンに広げると戻った。OpenHands は構文エラーで再試行したターンを履歴に残すので、同じターン数でも有用な観測が少ない。
+- 両者を組み合わせ、**ターンを溜める間はマスキングで観測を消し、43 ターン溜まったら要約で上限を作る**混合方式は、マスキング単独より 7%、要約単独より 11% 安かった（50 問での確認）。要約を 21 ターンごとに走らせる素朴な混合は、キャッシュの再利用が崩れてかえって高くついた。
+
+この結果は、上の「最も安全で最も軽い形の compaction」としてのツール結果の消去を、数字で裏づけたものと読める。要約を最後の手段に回す混合方式は、後述の Claude Code の 5 層 compaction の「遅延劣化」（安い層から順に当て、auto-compact は最後）と同じ結論に、実験の側から達している。ただし比べた要約は OpenHands 形式の 1 種類だけで、領域も SE（観測が長く冗長な領域）に限られる。
+
 長時間タスクでは「全履歴の持ち回り」から「**フェーズごとに要約して本質だけ残す**」へ移行する。[[summaries/2025-multi-agent-research-system]]（2025）の本番運用パターン: 完了した作業フェーズを要約して外部メモリへ保存し、コンテキスト限界が近づいたら**クリーンなコンテキストを持つ新しいサブエージェントを生成して引き継ぐ**（handoff）。保存済みの計画は失わずメモリから取り戻す。MemGPT の recursive summary を、マルチエージェントの分業に持ち上げた形と読める。
 
 ### 参照渡し — コンテキストに実体を入れない
@@ -172,6 +185,8 @@ few-shot 例示はコンテキスト積載の古典で、CoT（[[summaries/2022-
 ### 失敗の痕跡は消さない
 
 エラーのトレースを掃除してリトライする衝動は「証拠を消す」ことでもある。Manus は**失敗した行動とスタックトレースをコンテキストに残す**ことを最も効果的な改善の 1 つに挙げる（[[summaries/2025-manus-context-engineering]]）: 失敗を見たモデルは暗黙に事前分布を更新し、同じ誤りを繰り返しにくくなる。[[summaries/2023-reflexion]] が反省文の生成として形式化した「失敗からの文脈内学習」の、最小介入版（消さないだけ）にあたる。エラー回復を「真の agentic な振る舞いの最も明瞭な指標」としながら理想条件のベンチマークでは測られていない、という同記事の批判は [[agent-evaluation]] のギャップ指摘でもある。
+
+**要約は失敗の信号を薄める**という実測もある。The Complexity Trap（[[summaries/2025-complexity-trap]]）では、LLM による要約を使うと、Gemini 2.5 Flash で平均 52 ターン（マスキングは 44、素のエージェントは 50）、Qwen3-Coder 480B でマスキングより 13% 長い軌跡になった。著者らは、要約が本来なら打ち切りを促すはずの失敗の信号を覆い隠し、エージェントに続けさせると解釈している。要約に「行き詰まっていないか」の反省を足した版は、軌跡がさらに約 13% 伸び、解決率は上がらなかった。生の失敗を残す Manus の方針と、同じ向きの観察である。
 
 ### 長時間タスク — 3 手法の使い分け
 
@@ -296,4 +311,5 @@ few-shot 例示はコンテキスト積載の古典で、CoT（[[summaries/2022-
 - [[agent-skills]] — 段階的開示の主体。スキルをいつ・どれだけロードするか
 - [[summaries/2026-externalization]] — 記憶・スキル・プロトコルの予算競合、budget-aware routing、minimal sufficiency、tool sprawl の根拠原典
 - [[harness-engineering]] — コンテキスト管理を 1 つの層として含む、ハーネス全体の設計
+- [[summaries/2025-complexity-trap]] — 観測のマスキングと LLM による要約を同じ条件で比べ、要約が上回らないこと・軌跡の伸長・混合方式を示した実測
 - [[summaries/2024-agentless]] — 階層的な位置の特定（木構造 → スケルトン → 該当コード）で、文脈を絞るほど精度も費用も良くなった実測

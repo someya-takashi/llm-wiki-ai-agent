@@ -22,7 +22,8 @@ summaries:
   - "[[summaries/2023-swe-bench]]"
   - "[[summaries/2026-agentic-harness-engineering]]"
   - "[[summaries/2026-dive-into-claude-code]]"
-updated: 2026-10-25
+  - "[[summaries/2025-complexity-trap]]"
+updated: 2026-10-26
 ---
 
 # Agent-Computer Interface（エージェント–コンピュータインターフェース, ACI）
@@ -159,6 +160,7 @@ ACI が単なる言い換えでないことを示す、この領域で最も引�
 
 - [[tool-use-and-function-calling]] — ツール呼び出しの仕組みと系譜
 - [[coding-agents]] — ACI が実証された応用領域、編集失敗の連鎖
+- [[summaries/2025-complexity-trap]] — SWE-agent の古い観測の折り畳みを LLM による要約と比べた実測。残す窓の大きさは足場の実装（再試行のターンを履歴に残すか）で変わる
 - [[harness-engineering]] — ツールを含むハーネス全体の設計と自動改善
 - [[context-engineering]] — ツール応答のトークン効率
 - [[model-context-protocol]] — MCP サーバーとしてのツール提供

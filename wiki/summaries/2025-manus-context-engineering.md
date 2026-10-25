@@ -88,3 +88,4 @@ Manus の創業時の選択は「オープンソース基盤で end-to-end の a
 - [[llm-inference-optimization]] — KV cache 経済のインフラ側
 - [[agent-loop]] — 「行動→観測→追記」ループの実務形
 - [[summaries/2023-memgpt]] / [[summaries/2025-effective-harnesses]] / [[summaries/2026-meta-harness]] — 「ファイルシステム＝外部記憶」への独立の収束
+- [[summaries/2025-complexity-trap]] — LLM による要約が失敗の信号を覆い隠し、軌跡を長引かせるという実測。「失敗の痕跡は消さない」と同じ方向

@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [コスト効率, cost efficiency, エージェントのコスト, トークン経済, token economics, 予算, budget, futility detection, 不毛さの検知, Token Snowball, トークンの雪だるま, expensive failures, 高くつく失敗, EuTB, EuCB, SWE-Effi]
+aliases: [コスト効率, cost efficiency, エージェントのコスト, トークン経済, token economics, 予算, budget, futility detection, 不毛さの検知, Token Snowball, トークンの雪だるま, expensive failures, 高くつく失敗, EuTB, EuCB, SWE-Effi, observation masking, 観測のマスキング, trajectory elongation, 軌跡の伸長]
 tags: [agent-cost-efficiency, agent-evaluation, context-engineering, test-time-compute, llm-agents]
 related:
   - "[[agent-evaluation]]"
@@ -33,6 +33,7 @@ summaries:
   - "[[summaries/2024-error-bars-evals]]"
   - "[[summaries/2025-swe-smith]]"
   - "[[summaries/2026-swe-lego]]"
+  - "[[summaries/2025-complexity-trap]]"
 updated: 2026-10-26
 ---
 
@@ -66,6 +67,7 @@ updated: 2026-10-26
 | [[summaries/2025-manus-context-engineering]] | 入力:出力トークン比 **100:1**、キャッシュの有無で単価 **10 倍**、1 タスク平均 50 ツール呼び出し | — |
 | [[summaries/2026-harness-design]] | 単独 $9・20 分 に対し、ハーネス v1 $200・6 時間、v2 $124.70・3 時間 50 分 | 同じプロンプトでの比較 |
 | [[summaries/2026-kimi-k3]] | BrowseComp で 91.2% を **$2.03/タスク** | 他モデルとの散布図 |
+| [[summaries/2025-complexity-trap]] | Qwen3-Coder 480B の SWE-agent で 1 件 **$1.29 → $0.61**（古い観測を置き換え文に替えるだけ）。要約の呼び出しは総コストの最大 7.2% | 履歴を何も削らない素のエージェント |
 
 ## コストはどこから来るか
 
@@ -80,6 +82,8 @@ updated: 2026-10-26
 ### (2) 1 回あたりの入力 — Token Snowball
 
 多くの足場は、応答と観測をそのまま次のプロンプトに付け足す。すると**進展がなくても呼び出しのたびに入力が伸び**、コストは回数に対して 2 乗に近い形で増える。SWE-Effi はこれを **Token Snowball（トークンの雪だるま）**と名付けた。文脈が古い情報で散らかるとモデルが手がかりを見失い、往復がさらに増える悪循環にもなる。精度の側から同じ現象を見たのが SWE-bench 原論文の「文脈を増やすと解決率が下がる」である（→ [[context-engineering]]）。
+
+この雪だるまを止める効果は大きい。The Complexity Trap（[[summaries/2025-complexity-trap]]）では、SWE-agent のトークンの約 84% が観測で、古い観測を置き換え文に替えるだけでコストが 5 構成中 4 つで半分前後になり、解決率は下がらなかった。LLM による要約も同程度に減らすが、マスキングより安くはならなかった。どちらの戦略にも効き始めるまでのウォームアップ期間（マスキングは 10 ターン、要約は 31 ターン）があり、中央値 15 ターンで終わる構成では要約はほとんど発動しなかった。
 
 ### (3) 出力と思考
 
@@ -104,6 +108,7 @@ updated: 2026-10-26
 - **呼び出しの深さと実行時間の上限**。エージェント同士がループ状に呼び合ったり無限にリトライしたりする暴走に備える（[[summaries/2026-agent-orchestration-guide]]）。
 - **回復の回数制限**。Claude Code は出力上限のエスカレーションを 1 ターン 3 回、reactive compaction を 1 ターン 1 回に制限している（[[summaries/2026-dive-into-claude-code]]）。
 - **ループ検出**。Reflexion の AlfWorld 実験は「同じ行動と同じ応答が 3 回を超える」か「30 行動を超える」を失敗とみなした（→ [[self-reflection]]）。
+- **要約で失敗を隠さない**。LLM による要約を使うと軌跡がマスキングより 13〜15% 長くなり、節約の一部が消えた（[[summaries/2025-complexity-trap]]）。要約が失敗の信号を覆い隠し、打ち切るべき試行を続けさせると著者らは解釈している（→ [[context-engineering]]）。
 - **予算超過を失敗として数える評価**。Kimi K2.5 は上限を超えた試行を切り詰めでなく失敗として扱うと評価条件に明記した（[[summaries/2026-kimi-k2.5]]）。
 
 ## 「トークンを使うほど良くなる」との関係
@@ -130,6 +135,7 @@ updated: 2026-10-26
 | 手段 | 何を減らすか | 原典 |
 |---|---|---|
 | 古い観測の折り畳み・compaction・段階ごとのリセット | 1 回あたりの入力（Token Snowball） | [[summaries/2024-swe-agent]]、[[summaries/2026-dive-into-claude-code]] → [[context-engineering]] |
+| 古い観測を置き換え文に替え、要約は最後の手段にする（混合方式でさらに 7〜11% 減） | 1 回あたりの入力、要約の呼び出し代 | [[summaries/2025-complexity-trap]] → [[context-engineering]] |
 | プレフィックスを安定させ、追記だけにする | キャッシュミス（単価 10 倍） | [[summaries/2025-manus-context-engineering]] → [[llm-serving-systems]] |
 | 大きな観測はファイルに置いて参照だけ渡す | 1 回あたりの入力 | [[summaries/2025-manus-context-engineering]] |
 | 探索をサブエージェントに隔離し、要約だけ返す | メインの文脈の伸び（ただし総トークンは増える） | [[summaries/2025-multi-agent-research-system]] → [[multi-agent-systems]] |
@@ -168,3 +174,4 @@ updated: 2026-10-26
 - [[summaries/2024-error-bars-evals]] — 試行回数（コスト）と、検出できる差の大きさのトレードオフ
 - [[summaries/2025-swe-smith]] — 1 件あたりのコストが上限に依存すること、訓練データ作りの費用（5 万件で 1,360 ドル）
 - [[summaries/2026-swe-lego]] — ターン（逐次）と並列の本数のレイテンシの違い
+- [[summaries/2025-complexity-trap]] — 観測のマスキングと LLM による要約のコスト比較、要約の呼び出し代と軌跡の伸長

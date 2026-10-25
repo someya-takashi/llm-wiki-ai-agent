@@ -38,6 +38,7 @@ updated: 2026-10-25
   - MemGPT の main context 3 分割（不変の規則／更新される要点／流れる履歴）と閾値駆動の退避が区画化の原型。本番運用のパターン（フェーズ要約・handoff・参照渡し）は [[summaries/2025-multi-agent-research-system]] が記録。
   - Kimi K2.5（[[summaries/2026-kimi-k2.5]], 2026）は「溢れてから削る」reactive な切り詰め（Summary / Discard-all 等）に対し、分解時点でコンテキストを分割する **context sharding**（Agent Swarm）を対置し、同一モデル比較で精度・効率の優位を示した。
   - 本番製品側の 6 原則は Manus（[[summaries/2025-manus-context-engineering]], 2025）が開示: **KV cache ヒット率を最重要指標**とする追記専用設計（入出力比 100:1・キャッシュ有無で単価 10 倍）、ツールは削除せずロジットマスク、ファイルシステム＝復元可能な外部化メモリ、todo.md の復唱、失敗トレースの保持、few-shot の轍の回避——コンテキスト設計と推論経済を 1 つの問題として扱う視点の原点。
+  - 「要約という複雑さは割に合うのか」を同じ条件で測ったのが The Complexity Trap（[[summaries/2025-complexity-trap]], 2025）。SWE-agent・SWE-bench Verified の 5 つのモデルの構成で、**古い観測を置き換え文に替えるだけの観測のマスキング**が、OpenHands や Cursor が使う **LLM による要約**と同等以上の解決率で、コストも同等以下だった（どちらも素のエージェントの半分前後）。要約は失敗の信号を覆い隠して軌跡を 13〜15% 長引かせ、要約の呼び出しはキャッシュがほとんど当たらない。マスキングを先に、要約を最後の手段にする混合方式がさらに 7〜11% 安く、Claude Code の 5 層 compaction の「遅延劣化」と同じ結論を実験の側から裏づけた。
 
 ### 2. 知識の接続
 
