@@ -975,3 +975,10 @@ type: log
 - メモ: 2 本は ACI の系譜で連続している。SWE-bench 記事の著者 Erik Schluntz は [[summaries/2024-building-effective-agents]] の共著者で、同記事の ACI 原則の具体例にあたる。ツール記事は SWE-bench 記事を「ツール説明文の改善で SOTA に届いた例」として引く。**SWE-agent の「専用ツールを作り込む」路線と Claude 3.5 Sonnet の「汎用 2 ツールで制御を渡す」路線は逆に見えるが、フィードバックの簡潔さ・誤りの構造的な防止・説明文で使い方を教える点では一致し、どちらを選ぶかはモデルの強さで決まる**と整理した（[[harness-engineering]] の「剥がす」と同じ軸）。編集インターフェース（全体書き直し・diff・行範囲・一意一致の `str_replace`）の比較表を新ページに置いた。
 - 批判的視点として記録: SWE-bench 記事にはアブレーションがなく、足場の最小化とツール説明文の改善とモデル改善の寄与を切り分けられない。ツール記事は原則ごとの効果量がなく、社内評価で再現不可、名前空間や応答書式の効き方はモデル依存と記事自身が認めている。どちらも提供元の自己報告。49% は 2025-01 時点の値で陳腐化している。
 - **データギャップ**: Claude Code の Edit ツールの公式仕様、MCP のツールアノテーション仕様、Anthropic のツール評価 cookbook は未取得。ツール設計の原則ごとの効果を今のモデルで測った公開データは wiki にない。
+
+## [2026-10-25] ingest | SWE-agent（ar5iv 版を別版として登録）
+
+- 取り込み: `raw/papers/SWE-agent_ Agent-Computer Interfaces Enable Automated Software Engineering.md`（ar5iv の HTML 版を Web Clipper で保存したもの。arXiv:2405.15793）
+- 更新: [[summaries/2024-swe-agent]]（原典表記に別版の行を追加）
+- メモ: SWE-agent は 2026-08-02 に PDF 版（v3, 118 ページ）から取り込み済み（[[translations/2024-swe-agent]] 3,563 行・図 22 枚）。今回は同じ論文の ar5iv 版が置かれた。**ユーザーの決定（AskUserQuestion）により raw に置くだけとし**、翻訳・要約本文・概念ページは変更していない。PDF 版との照合（表の数値やプロンプト文字列の抽出誤りの有無、ar5iv が arXiv のどの版を表示しているか）は行っていない。
+- クリップの状態（参考に把握した範囲）: 1,202 行、見出し 47、画像リンク 7、インライン SVG 160。付録 D の 4 例（requests-2317・pylint-5859・sympy-21614・django-14411）がすべて含まれている。前回の翻訳では pylint と sympy の 2 例を要約のみにしたので、後で完全収録する場合はこの別版が底本に使える。

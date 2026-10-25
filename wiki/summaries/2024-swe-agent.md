@@ -15,6 +15,7 @@ translation: "[[translations/2024-swe-agent]]"
 
 > 原典: [[translations/2024-swe-agent]] ・ `raw/papers/SWE-agent- Agent-Computer Interfaces Enable Automated Software Engineering.pdf`
 > 著者・年・会議: John Yang, Carlos E. Jimenez ほか（Princeton Language and Intelligence, Princeton University）/ NeurIPS 2024 / arXiv:2405.15793
+> 別版: `raw/papers/SWE-agent_ Agent-Computer Interfaces Enable Automated Software Engineering.md`（ar5iv の HTML 版を Web Clipper で保存したもの。2026-10-25 に追加）。翻訳と本ページは PDF 版にもとづいており、この別版とは照合していない。
 
 ## 一言まとめ
 
