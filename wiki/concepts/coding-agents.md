@@ -14,6 +14,7 @@ related:
   - "[[multi-agent-systems]]"
   - "[[harness-engineering]]"
   - "[[agent-computer-interface]]"
+  - "[[agent-cost-efficiency]]"
 summaries:
   - "[[summaries/2023-swe-bench]]"
   - "[[summaries/2024-swe-agent]]"
@@ -24,6 +25,7 @@ summaries:
   - "[[summaries/2025-llamafirewall]]"
   - "[[summaries/2026-dive-into-claude-code]]"
   - "[[summaries/2026-managed-agents]]"
+  - "[[summaries/2025-swe-effi]]"
 updated: 2026-10-25
 ---
 
@@ -181,6 +183,14 @@ SWE-agent の軌跡分析は、コーディングエージェントの失敗の�
 1. **速度の自己申告を成果指標にしない。** 19% 対 +20% の乖離は、**主観的な速さの感覚が測定と逆を向きうる**ことを示す。ベロシティを測るなら実測する。
 2. **複雑度と技術的負債を継続的に測る。** 初速のスパイクは 3 か月で消え、複雑度は残る。**導入の効果は 1 か月では評価できない。**
 3. **エージェントに大域的な文脈が無いことを前提に設計する。** 規約の集約（CLAUDE.md 等）・重複検出・レビュー段の分離は、**アーキテクチャの構造的な限界に対する緩和であって、モデルが賢くなれば消える問題ではない**。
+
+## 手続き型とエージェント型 — 足場の 2 つの流儀
+
+GitHub のイシュー解決の足場は、**エージェント型（agentic）**と**手続き型（procedural）**に分けられる（[[summaries/2025-swe-effi]] が引くサーベイの分類）。エージェント型は LLM が自分で計画し、ツールを選んでループを回す（SWE-agent、OpenHands）。手続き型は、決まった手順の決まった箇所で LLM を呼ぶ固定パイプラインである——**Agentless** は階層的に編集箇所を特定し、候補パッチを複数作り、テスト結果で 1 つ選ぶ。**AutoCodeRover** は抽象構文木にもとづくツールで疑わしい関数を特定してから、パッチを生成して選ぶ。
+
+SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B、Qwen3-32B）で SWE-bench Verified の 50 問にかけ、**足場の良し悪しはモデルとの相性で決まる**ことを示した。エージェント型の SWE-agent と OpenHands は、Qwen3-32B ではそれぞれ 28%・34% だが、GPT-4o-mini では 10%・11.9% に落ち、SWE-agent は入力 810 万トークン超を使った。手続き型の AutoCodeRover はどのモデルでも安定して競争力があり、Agentless は解決率首位（Qwen3-32B で 48%）だがテストを大量に回すので CPU 時間が重い。**弱いモデルでは手順を固定したほうが安定し、強いモデルには制御を渡したほうが伸びる**——[[agent-computer-interface]] の「作り込むか、最小にするか」と同じ軸が、足場の流儀でも現れている。最小構成の極には、bash 1 ツール・約 100 行の **Mini-SWE-Agent** もある。どちらの流儀でも、**失敗した試行は成功の数倍の資源を使う**（→ [[agent-cost-efficiency]]）。
+
+> 注: Agentless・AutoCodeRover・OpenHands の原典は wiki に未取得で、上の記述は SWE-Effi を通した二次情報である。
 
 ## 評価
 

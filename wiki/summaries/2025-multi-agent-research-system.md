@@ -127,6 +127,7 @@ Claude の Research 機能——リードエージェントが並列サブエー
 
 ## 関連ページ
 
+- [[summaries/2025-swe-effi]] — 「トークン量が性能を説明する」と対照的に、同じ構成の中では失敗した試行ほど多くのトークンを使うと示した論文（→ [[agent-cost-efficiency]]）
 - [[summaries/2025-writing-effective-tools]] — 本原典の「ツールテスト用エージェント」を評価駆動のツール改善手順として一般化した記事（→ [[agent-computer-interface]]）
 - [[summaries/2026-ai-scientist]] — 「知識の集約」に対する「知識の生成」側のリサーチエージェント（→ [[research-agents]]）
 

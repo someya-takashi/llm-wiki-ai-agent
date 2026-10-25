@@ -12,6 +12,7 @@ related:
   - "[[test-time-compute]]"
   - "[[context-engineering]]"
   - "[[harness-engineering]]"
+  - "[[agent-cost-efficiency]]"
 summaries:
   - "[[summaries/2025-effective-context-engineering]]"
   - "[[summaries/2026-sakana-fugu]]"

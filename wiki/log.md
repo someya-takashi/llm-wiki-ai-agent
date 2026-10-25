@@ -982,3 +982,14 @@ type: log
 - 更新: [[summaries/2024-swe-agent]]（原典表記に別版の行を追加）
 - メモ: SWE-agent は 2026-08-02 に PDF 版（v3, 118 ページ）から取り込み済み（[[translations/2024-swe-agent]] 3,563 行・図 22 枚）。今回は同じ論文の ar5iv 版が置かれた。**ユーザーの決定（AskUserQuestion）により raw に置くだけとし**、翻訳・要約本文・概念ページは変更していない。PDF 版との照合（表の数値やプロンプト文字列の抽出誤りの有無、ar5iv が arXiv のどの版を表示しているか）は行っていない。
 - クリップの状態（参考に把握した範囲）: 1,202 行、見出し 47、画像リンク 7、インライン SVG 160。付録 D の 4 例（requests-2317・pylint-5859・sympy-21614・django-14411）がすべて含まれている。前回の翻訳では pylint と sympy の 2 例を要約のみにしたので、後で完全収録する場合はこの別版が底本に使える。
+
+## [2026-10-25] ingest | SWE-Effi: Re-Evaluating Software AI Agent System Effectiveness Under Resource Constraints
+
+- 取り込み: `raw/papers/SWE-Effi_ Re-Evaluating Software AI Agent System Effectiveness Under Resource Constraints.md`（Zhiyu Fan ほか / Huawei Canada・CUHK 深圳・King’s College London・Queen’s University, arXiv:2509.09853, 2025-09。`raw/papers/` 配置だが中身は ar5iv クリップ＝ケース A）
+- 作成: [[translations/2025-swe-effi]], [[summaries/2025-swe-effi]], **[[concepts/agent-cost-efficiency]]（新設）**, `raw/assets/2025-swe-effi/`（fig1〜fig7）
+- 更新: [[concepts/agent-evaluation]], [[concepts/coding-agents]]（`## 手続き型とエージェント型 — 足場の 2 つの流儀` を新設）, [[concepts/context-engineering]]（Token Snowball）, [[concepts/test-time-compute]], [[concepts/agent-environments]]（RL のロールアウトのコスト）, [[concepts/harness-engineering]]（「弱いモデルほどハーネスが効く」への逆向きの事例）, [[concepts/multi-agent-systems]]（related のみ）, [[summaries/2024-swe-agent]], [[summaries/2025-multi-agent-research-system]], [[overview]], [[index]]
+- ユーザーの決定（AskUserQuestion）: **コストの概念ページ `agent-cost-efficiency` を新設**。既存ページへの分散でなく、wiki 各所に散らばっていたコストの数字（Research 機能のチャット比 15 倍・エージェント一般で約 4 倍、Claude Code のエージェントチーム約 7 倍、SWE-agent の 1 件 $1.59、Claude 3.5 Sonnet の数百ターン・10 万トークン超、Manus の入力:出力 100:1 とキャッシュ単価 10 倍、ハーネス設計の $9 対 $200、K3 の $2.03/タスク）を集約した。コストを主題とする一次資料はまだ本論文だけである点をページに明記した。
+- クリップの状態: (1) **図 7 点（Figure 1 の 3 パネル、Figure 2〜7）の画像がすべて欠落**し、キャプションだけが残っていた。**ar5iv の原ページにも画像がなかった**（描画されていない図）ので、arXiv の PDF を取得し、PyMuPDF でキャプションの位置を手がかりに切り出した。Figure 5〜7 は凡例が図の上にテキストとして置かれていて、初回はそれを本文段落と誤認して上端を切っていたため、凡例を含む範囲で切り直した。Figure 3 は上の余白を詰めた。すべて Read で確認済み。(2) **脚注 1（「AI システム」の定義）・2（コストは付録 7.1）の本文が欠落**していたので ar5iv から復元した。(3) 表 1 の太字がクリップで失われていたので ar5iv に合わせて戻した。**原典では EuCB 列の太字が最大値でない 37.0（AutoCodeRover＋Qwen3-32B）に付いている**（同列の Agentless＋Qwen3-32B は 47.1）。原典側の不整合として訳注に記録し、太字は原典のままにした。
+- メモ: SWE-agent 論文の「速く成功し、遅く失敗する」（解決は中央値 $1.21・12 ステップ、失敗は平均 $2.52・21 ステップ）を、別チームが 5 足場 × 3 モデルで追試した形になっている（失敗は成功の 4 倍超）。Research 機能の「性能分散の 80% をトークン量が説明する」とは、構成をまたぐ比較か、同じ構成の中での結果別の比較かの違いとして整理した。
+- 批判的視点として記録: 50 問で 1 問が 2 ポイントにあたり細かい順位は誤差の範囲／試行の繰り返しとばらつきがない／SWE-agent だけ金額予算 $1 で止めており、単価の安い GPT-4o-mini だけが 181 回まで呼べた（著者らも付録で認める）／モデルは 2025 年時点の安価な 3 種のみ／正規化推論時間は GPT-4o-mini の回帰式を全モデルに当てるのでモデルごとの速度差も消える／並列処理の無効化で Agentless が実運用より遅く見える。
+- **データギャップ**: Agentless・AutoCodeRover・OpenHands・Mini-SWE-Agent・SWE-RL・DeepSWE・SkyRL の各原典は未取得で、[[concepts/coding-agents]] の手続き型の記述は本論文経由の二次情報である。手続き型の足場の原典として Agentless（arXiv:2407.01489）を次の候補とした。

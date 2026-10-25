@@ -11,12 +11,14 @@ related:
   - "[[coding-agents]]"
   - "[[multi-agent-systems]]"
   - "[[tool-use-and-function-calling]]"
+  - "[[agent-cost-efficiency]]"
 summaries:
   - "[[summaries/2026-kimi-k3]]"
   - "[[summaries/2025-kimi-k2]]"
   - "[[summaries/2026-kimi-k2.5]]"
   - "[[summaries/2026-deepseek-v4]]"
-updated: 2026-08-10
+  - "[[summaries/2025-swe-effi]]"
+updated: 2026-10-25
 ---
 
 # Agent Environments（エージェントの訓練環境）
@@ -118,6 +120,8 @@ updated: 2026-08-10
 | **タスク合成** | タスクの分布をどう制御するか | K2 のツール合成／K3 の KG 合成（粒度 × 網羅） |
 | **サンドボックスの隔離と再開性** | 探索を安全に許し、中断から再開できるか | AgentENV の microVM ＋ 漸進チェックポイント／DSec の 4 基盤 |
 | **報酬設計** | reward hacking をどう防ぐか | K3 の予算ペナルティ（冗長性・過剰思考）／K2.5 PARL の r_finish（spurious parallelism 対策） |
+
+**環境と足場の速さは、訓練の試行回数を直接決める。** SWE タスクの RL では、1 回のロールアウトごとに環境の準備・推論・コード実行・テストが走る。SWE-Effi（[[summaries/2025-swe-effi]]）は、DeepSWE が低レイテンシの独自足場を作り、SkyRL が OpenHands を大きく最適化し、SWE-RL が軽量な Agentless-Mini を使ったうえで実行フィードバックを避けた例を挙げ、**行き詰まった試行が予算の上限まで走る「高くつく失敗」は、推論時だけでなく RL の失敗ロールアウトのコストも押し上げる**と指摘した。AgentENV のチェックポイントと再開の速さ（上記 (5)）は、この訓練側のコストへの対処でもある（→ [[agent-cost-efficiency]]）。
 
 ## 訓練する環境と測る環境は別物
 

@@ -9,6 +9,7 @@ related:
   - "[[multi-agent-systems]]"
   - "[[agent-evaluation]]"
   - "[[llm-inference-optimization]]"
+  - "[[agent-cost-efficiency]]"
 summaries:
   - "[[summaries/2025-long-cot-survey]]"
   - "[[summaries/2025-deepseek-r1]]"
@@ -21,7 +22,8 @@ summaries:
   - "[[summaries/2026-deepseek-v4]]"
   - "[[summaries/2026-kimi-k3]]"
   - "[[summaries/2024-deepseekmath]]"
-updated: 2026-08-10
+  - "[[summaries/2025-swe-effi]]"
+updated: 2026-10-25
 ---
 
 # Test-Time Compute（テスト時計算）
@@ -48,7 +50,7 @@ updated: 2026-08-10
 
 - **エージェントループ自体がテスト時計算**: 観測→思考→行動の反復（→ [[reasoning-and-planning]]）、Reflexion の再試行、いずれも推論時に計算を積んで成功率を買う構造である。
 - **マルチエージェントは並列スケーリングの一形態**: 複数エージェントの並列試行・debate・集約は並列スケーリングの構図そのものであり、[[summaries/2025-multi-agent-research-system]] の「性能分散の 80% はトークン使用量が説明する」という実測は、**マルチエージェントの効果の正体がテスト時計算の追加**であることを示した → [[multi-agent-systems]]。同記事の「Sonnet 3.7 のトークン予算を倍にするより Sonnet 4 へ上げる方が効く」は、テスト時計算とモデル能力が**乗算的**であることの実務データ。
-- **コストは線形に、精度は対数的にしか伸びない**: $\log N$ スケーリングと 15 倍のトークン経済（同記事）を併せると、テスト時計算は「高価値タスクに選択的に投じる」資源であり、常時最大化する類のものではない。
+- **コストは線形に、精度は対数的にしか伸びない**: $\log N$ スケーリングと 15 倍のトークン経済（同記事）を併せると、テスト時計算は「高価値タスクに選択的に投じる」資源であり、常時最大化する類のものではない。SWE-Effi（[[summaries/2025-swe-effi]]）は、SWE-bench のリーダーボードでトークンを大量に使って解決率をわずかに上げる傾向を「解決率 1% のために 5 倍のコストを払う価値はあるか」と問い直し、予算のもとでの解決を測る指標を提案した。同論文は、**同じ構成の中では失敗した試行ほど多くのトークンを使う**ことも示しており、計算を足すべき場面と止めるべき場面を見分けることが要る（→ [[agent-cost-efficiency]]）。
 
 ## 設計論点
 

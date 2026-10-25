@@ -158,6 +158,7 @@ Table 3 のアブレーション（SWE-bench Lite, GPT-4 Turbo, 既定 18.0%）�
 
 ## 関連ページ
 
+- [[summaries/2025-swe-effi]] — 本論文の「速く成功し、遅く失敗する」を、別チームが 5 足場 × 3 モデルで追試した論文（失敗は成功の 4 倍超）。→ [[agent-cost-efficiency]]
 - [[agent-computer-interface]] — 本論文が提唱した ACI の概念ページ（設計原則・編集インターフェースの比較・アブレーションを集約）
 - [[summaries/2025-swe-bench-sonnet]] — 本論文のフレームワークを土台に、専用コマンド群を汎用 2 ツールへ置き換えた対照的な設計（SWE-bench Verified 49%）
 - [[summaries/2023-lost-in-the-middle]] — ファイルビューアの窓サイズに両側の最適点がある理由の背景

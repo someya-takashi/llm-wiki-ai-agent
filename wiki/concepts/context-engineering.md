@@ -15,6 +15,7 @@ related:
   - "[[agent-skills]]"
   - "[[model-context-protocol]]"
   - "[[agent-computer-interface]]"
+  - "[[agent-cost-efficiency]]"
 summaries:
   - "[[summaries/2023-lost-in-the-middle]]"
   - "[[summaries/2023-swe-bench]]"
@@ -34,6 +35,7 @@ summaries:
   - "[[summaries/2026-dive-into-claude-code]]"
   - "[[summaries/2026-externalization]]"
   - "[[summaries/2025-writing-effective-tools]]"
+  - "[[summaries/2025-swe-effi]]"
 updated: 2026-10-25
 ---
 
@@ -90,6 +92,8 @@ LLM（Large Language Model, 大規模言語モデル）の**限られたコン�
 **第二に、「検索が良くなる」と「成果が良くなる」は別である。**[[summaries/2023-lost-in-the-middle]] は retriever-reader 構成で **reader が retriever の recall より遥か手前で飽和する**ことを示し（20→50 文書で GPT-3.5 は約 1.5%、Claude は約 1% しか伸びない）、SWE-bench はコード領域で **recall と成果が逆向きに動く**ところまで測った。→ [[retrieval-augmented-generation]]
 
 **第三に、対処は「減らす」と「並べ替える」の 2 つに集約される。**畳む（SWE-bench の ±15 行、SWE-agent の観測の折り畳み）・切り詰める（ranked list truncation）・先頭寄りに寄せる（再ランキング）・末尾に置き直す（[[summaries/2025-manus-context-engineering]] の todo.md）。**いずれも「情報を足す」の逆方向**である。
+
+**同じ現象をコストの側から見たのが Token Snowball である。** SWE-Effi（[[summaries/2025-swe-effi]], 2025）は、多くの足場が応答と観測をそのまま次のプロンプトに付け足すため、**進展がなくても呼び出しのたびに入力が数千トークンずつ伸びる**ことを示し、これを Token Snowball（トークンの雪だるま）と呼んだ。文脈が古い情報で散らかるとモデルが手がかりを見失い、往復が増えてさらに入力が伸びる悪循環になる。SWE-agent＋GPT-4o-mini は 1 タスクで平均 810 万トークン超の入力を使って解決率 10% だった。精度の側の「文脈を増やすと解決率が下がる」と、コストの側の「文脈が伸びると高くつき、しかも解けない」は、同じ設計上の欠陥の両面である（→ [[agent-cost-efficiency]]）。
 
 一次資料の**原因調査**も押さえておく価値がある。[[summaries/2023-lost-in-the-middle]] は 4 つの容疑者を順に消していく——**decoder-only だから**ではない（encoder-decoder も**訓練長を超えると** U 字になる）、**クエリが後ろにあるから**だけでもない（クエリを前後に置くと合成検索はほぼ完璧化するが**推論を伴う QA は変わらない**）、**instruction tuning のせい**でもない（素のベースモデルも U 字）、そして **7B は recency のみで 13B・70B から U 字が出る**（primacy 側は規模とともに現れる）。**機構的な説明は与えられておらず、著者ら自身が「予備的」と呼んでいる**——この現象は 2025 年時点でも原理が解けていない。
 

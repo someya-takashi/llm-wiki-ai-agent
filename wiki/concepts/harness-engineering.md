@@ -16,6 +16,7 @@ related:
   - "[[agent-skills]]"
   - "[[agent-environments]]"
   - "[[agent-computer-interface]]"
+  - "[[agent-cost-efficiency]]"
 summaries:
   - "[[summaries/2026-kimi-k3]]"
   - "[[summaries/2026-externalization]]"
@@ -30,6 +31,7 @@ summaries:
   - "[[summaries/2024-building-effective-agents]]"
   - "[[summaries/2025-swe-bench-sonnet]]"
   - "[[summaries/2025-writing-effective-tools]]"
+  - "[[summaries/2025-swe-effi]]"
 updated: 2026-10-25
 ---
 
@@ -168,6 +170,8 @@ updated: 2026-10-25
 結語が本ページの性格を要約している——**「ハーネスの面白い組み合わせ空間はモデル改善で縮まず、移動する」**。
 
 **この「剥がす」の裏返しが、下記「自動で進化させる」のモデル横断転移で測られている**——[[summaries/2026-agentic-harness-engineering]] は、**飽和から遠いモデルほどハーネスの利得が大きい**（deepseek-v4-flash +10.1 pp 対 GPT-5.4 +2.3 pp）ことを示した。**強いモデルは同じ協調をプロンプトから低コストで再導出するので、ハーネスの限界価値が下がる。** 同じ現象の両側面である。
+
+**ただし「弱いモデルほどハーネスが効く」には逆向きの事例もある。** SWE-Effi（[[summaries/2025-swe-effi]]）では、作り込んだエージェント型の足場（SWE-agent、OpenHands）が、Qwen3-32B では 28%・34% なのに、GPT-4o-mini では 10%・11.9% に崩れ、SWE-agent は入力 810 万トークン超を使った。一方、手順を固定した手続き型の AutoCodeRover はどのモデルでも安定していた。**ハーネスの利得はモデルの弱さだけでなく、ハーネスとモデルの噛み合わせで決まる**——弱いモデルに自律的な制御を渡すと、利得どころかコストだけが膨らむことがある（→ [[agent-cost-efficiency]]、[[coding-agents]]）。
 
 **「剥がす」の早い実例は、ツールの層でも観察されていた。** Claude 3.5 Sonnet（2024 年後半）の SWE-bench 用の足場（[[summaries/2025-swe-bench-sonnet]]）は、SWE-agent のフレームワークを土台にしながら専用コマンド群を **bash と `str_replace_editor` の汎用 2 ツール**に置き換え、ワークフローも固定せずにモデルへ制御を渡して SWE-bench Verified 49%（当時の SOTA）を出した。同じ足場で Claude 3 Opus 22% → 3.5 Sonnet old 33% → new 49% とモデル差がそのまま出ており、**足場を薄くしてモデル改善を素通しにする**設計の初期の記録になっている。ただし作り込みを捨てたわけではなく、労力はツールの説明文と誤りにくい入力形式へ移った（→ [[agent-computer-interface]]）。
 
