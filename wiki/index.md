@@ -334,3 +334,4 @@ ingest / query で新規ページを作るたびに必ずここへ追記する�
 ## Questions
 
 - [[questions/gemma-4-effective-parameters]] — Gemma 4 E2B/E4B の総 5B/8B と実効 2.3B/4.5B の差はなぜ生まれるか。per-layer embeddings の仕組みと、MoE と対比した「容量と実効コストの分離」の整理。
+- [[questions/swe-bench-evaluation-history]] — SWE-bench（2023）から Verified の報告停止（2026-02）までの、コード修正能力の測り方の流れを新入社員向けに解説。道具立てで点数が動くこと、ベンチマークの練習場化、誤差・コスト・答えの覗き見・汚染という測定の疑い、残る課題と点数を見るときのチェックリスト。

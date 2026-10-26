@@ -1095,3 +1095,12 @@ type: log
 
 - 更新: [[summaries/2024-swe-agent]]
 - yomiyasu による推敲: ユーザーの指示で、既存の要約 [[summaries/2024-swe-agent]] を推敲した（ingest 時はスキーマ更新前だったため未推敲）。主な変更は、本文と節見出しのダッシュを外したこと（見出しは「:」に統一）、比喩や硬い語（「措定」「舐める」「枯渇させる」「畳む」「土台」など）の言い換え、主語と述語の補い、「失敗が積むほど」の誤りの修正。数値・表・図・リンクは変えていない。
+
+## [2026-10-27] query | SWE-bench 以降のコード修正能力の評価の流れ（新入社員向け解説）
+
+- 質問（2026-10-26）: SWE-bench 以降、LLM エージェントのコード修正能力を評価する研究の時系列の流れ・発展・課題を、新入社員のエンジニア向けに専門用語を控えて解説してほしい。最後に yomiyasu で推敲。
+- 参照: [[summaries/2023-swe-bench]], [[summaries/2024-swe-agent]], [[summaries/2024-agentless]], [[summaries/2025-swe-bench-sonnet]], [[summaries/2024-error-bars-evals]], [[summaries/2024-swe-gym]], [[summaries/2025-swe-smith]], [[summaries/2025-swe-rl-long-context]], [[summaries/2025-complexity-trap]], [[summaries/2025-swe-effi]], [[summaries/2026-swe-lego]], [[summaries/2026-swe-bench-verified-retired]], [[concepts/agent-evaluation]], [[concepts/coding-agents]]
+- 作成: [[questions/swe-bench-evaluation-history]]（用語集、2023→2024→訓練→測定への疑いの 4 段の流れ、12 行の年表、残る 5 つの課題、点数を見るときのチェックリスト）。index を更新。
+- yomiyasu による推敲: 下書きを推敲した（読み手は informed と指定）。主な変更は、間を作るだけの読点の除去、評価の前置き「ここで大事なのは」を述語へ移したこと、比喩の「掛け算で効きます」の言い換え。推敲後に、「測り方そのものへの疑い」の節の冒頭を「2025 年から」→「2024 年末から」に直した（節内の Error Bars が 2024-11 のため）。
+- メモ: 「500 問・解決率 50% で 95% の誤差幅はおよそ ±4.4 ポイント」は wiki の原典にない本記事での概算（1.96 × √(0.25/500)）で、本文にもそう明記した。
+- **データギャップ**: SWE-bench Pro、SWE-rebench、SWE-bench Multilingual の原典は未取得で、記事ではそれぞれ名前と概要だけに触れている。
