@@ -162,3 +162,4 @@ SWE エージェントの訓練は、強いモデルの軌跡の SFT（蒸留）
 - [[summaries/2026-swe-bench-verified-retired]] — Verified のもう 1 つの問題（汚染とテストの欠陥）
 - [[summaries/2024-error-bars-evals]] — 小さな差を誤差と区別する統計
 - [[summaries/2025-swe-rebench]] — 実データの出どころにしたデータセットの原論文
+- [[summaries/2026-swe-prime]] — エラーの手のマスクを「意味的な区間」の単位に広げ、Git ハッキングをした軌跡も選別で除いた後続

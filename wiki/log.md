@@ -1128,3 +1128,15 @@ type: log
 - メモ: 本論文は、本 wiki で SWE-Effi（弱いモデルは手順を固定）と SWE-Gym（固定手順の足場は訓練で伸びにくい）が示してきた「手続き型か、エージェント型か」に、「固定手順でモデルを鍛え、自由な足場で使う」という順序の答えを出した。同じ Qwen2.5-72B からエージェント型のまま RFT と多ターン RL で 39.0% にした [[summaries/2025-swe-rl-long-context]] とは別の道で、比べると Kimi-Dev（48.6%）は Claude 3.7 Sonnet の軌跡を SFT に使っている点が違う。SWE-rebench の v2 が「本データセットを直接使った研究」として挙げていたのが本論文である。
 - 批判的視点として記録: 評価はほぼ SWE-bench Verified だけで、汚染の対策は中間訓練から SWE-bench のリポジトリを除いたことにとどまる（Verified は 2026-02 に報告停止、2025-09 以前の Docker イメージでは `git log` で正解が読めた）。60.4% は 40×40 の実行で選んだ数字で、エージェントの 1 回の試行（48.6%）と計算量が大きく違う。図 5 の右端（5,016 本）では pass@1 が RL 48.6・SFT 約 48・MT 約 46・Base 約 36 で、中間訓練だけで差の大半が説明できる（本 wiki の図の読み取り）。本文の「RL は 2²³ トークンで Base の最高 pass@1 に届く」は、図から読む限り pass@1 では約 33% 対 36% でわずかに届いていない（pass@2・3 なら上回る）。比較の多くが 1 回の実行で、誤差の幅がない。出発点は Qwen2.5-72B-Instruct・DeepSeek-R1・Claude 3.7 の出力に頼る蒸留を含む。エージェントとしての 48.6% は、表 2 の Devstral-Small（24B、53.6%）や gpt-oss-20b（60.7%）より低い。
 - **データギャップ**: Kimi k1.5（RL アルゴリズムの出どころ）、SWE-SWISS、SWE-RL（Llama3-SWE-RL）、R2E-Gym、DeepSWE、SWE-bench-Live、OpenHands の原典は未取得。
+
+## [2026-10-28] ingest | SWE-Prime（Zheng ほか, 中山大学・Huawei Cloud・重慶大学, arXiv:2608.27449）
+
+- 取り込み: `raw/papers/SWE-Prime_ Fewer Trajectories, Better Performance.md`（ar5iv → Obsidian Web Clipper、v1。arXiv にも v1 しかない）
+- 作成: [[translations/2026-swe-prime]], [[summaries/2026-swe-prime]], `raw/assets/2026-swe-prime/`（図 5 点）
+- 更新: [[concepts/agent-training]]（蒸留で何をまねさせるかの段落、「成功軌跡の中の失敗した手までまねる」の行に区間単位の選別を追記）, [[concepts/coding-agents]]（訓練データの側で繰り返しを減らす試み）, [[concepts/agent-evaluation]]（設定を評価用の問題で選んだ例）, 逆リンク: [[summaries/2025-swe-rebench]], [[summaries/2026-swe-lego]], [[summaries/2025-swe-smith]], [[summaries/2026-swe-bench-verified-retired]], [[summaries/2024-error-bars-evals]], [[overview]], [[index]]
+- ユーザーの決定（AskUserQuestion）: 要約は**選別の手法（2 段の基準）と、実験結果・評価上の注意を同じくらいの厚さ**で書く。
+- クリップの状態: 1 節の「軌跡の観点」の説明に続く 5 項目の箇条書き（問題解決のパターン、ツール呼び出しの成功率、連続した冗長、Git ハッキング、結果の質）が丸ごと欠けていたので、arXiv の HTML 版から復元した。脚注 1〜5（データセットとモデルの URL）も HTML 版から補った。図 1・2 は HTML 版から保存し、図 3・4・5 は HTML 版にも画像がなかったので arXiv の PDF からキャプションの位置を手がかりに切り出した。数式 2 つは LaTeX の配列を 1 行の式に整えた（中身は同じ）。付録はない。参考文献は訳していない。
+- yomiyasu による推敲: [[summaries/2026-swe-prime]] を推敲した。主な変更は、間を作るだけの読点の除去。推敲の前の事実の確認で、「第 1 段だけで成功軌跡すべてと同等か上回った（6 つ中 4 つ）」が表 1 と合わない（上回ったのは 6 つ中 2 つ）ことに気づいて直した。図 5 のキャプションの「ターン数は SFT でどれも増え」も、GLM-4.7-Flash の Verified が例外なので直した。
+- メモ: 本論文は、本 wiki でこれまで「蒸留の伸びしろは軌跡の量と多様性で決まる」（SWE-smith・SWE-Lego）としてきた流れに、「量より選び方」という向きの結果を加えた。候補の軌跡の教師は SWE-Lego と同じ Qwen3-Coder-480B で、SWE-Lego のエラーの手のマスクを、エラーのない無関係な探索まで含む「意味的な区間」の単位に広げたものにあたる。Git ハッキングの軌跡を訓練データから除く規則は、SWE-Lego が評価環境の問題として指摘したことを訓練データの側に持ち込んだもの。
+- 批判的視点として記録: 選別の設定（保持率 10%・しきい値 7）は Qwen3-Coder × SWE-bench Verified の解決率で選んでおり、主結果の表の同じ組み合わせ（53.2%・50.2%）は調整時の値そのもの。区間を切って採点した LLM の名前・プロンプト・採点の一貫性が書かれていない。すべて 1 回の実行で誤差の幅がなく（本 wiki の試算で Verified 50% 前後なら ±4.4、Pro 30% 前後なら ±3.3 ポイント）、GLM-4.7-Flash の Verified（+10.0）以外の差（2〜4 ポイント）はその幅に入りうる。改善を素のモデル比の相対値（最大 +140.2%）で示している。2026-02 に報告が停止された Verified を主な評価に使い、そのことに触れていない（Pro も併用）。ランダム 10% が素のモデルを下回る理由（学習のステップ数の違いなど）は分析されていない。
+- **データギャップ**: SWE-bench Pro の原典、OpenHands、R2E-Gym、SWE-Factory、「Watch Every Step!」（ステップ単位の過程の改善）など区間・ステップ単位の教師信号の先行研究の原典は未取得。
