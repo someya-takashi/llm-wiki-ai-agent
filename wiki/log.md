@@ -1149,3 +1149,14 @@ type: log
 - あわせて直した点: [[concepts/reinforcement-learning-from-human-feedback]] の年の見出しは「2022: 古典的 RLHF: …」とコロンが重なったので「2022 年 古典的 RLHF: …」に整えた。節の位置を指す語の誤り 3 か所（[[concepts/retrieval-augmented-generation]] の「下記」→「上記」、[[concepts/agent-safety-and-guardrails]] の「後述」→「前述」、[[concepts/agent-loop]] の「上の」→「下の」）、英単語の混入 1 か所（RLHF の「striking」→「目を引く」）、[[concepts/positional-encoding]] の脱字（「ぶん表現力」→「そのぶん表現力」）。
 - 残した確認事項: [[concepts/agent-skills]] の「スキルは現実になる」、[[concepts/agent-safety-and-guardrails]] の「AgentENV は『隔離＋再開性』を微細に測る」、[[concepts/agent-loop]] の「統一性を表面固有の最適化と引き換えにしている」、[[concepts/reasoning-and-planning]] の R1 の段落の「段を変えた」は、意味を読み切れなかったため原文のまま残した。[[concepts/model-context-protocol]] の「tool poisoning などを含む」は、4 つの攻撃者カテゴリと 16 のシナリオのどちらに掛かるか決められず、どちらとも読める形にした。
 - 本 log の過去の記録にある節見出し名（「—」を含むもの）は、当時の記録としてそのまま残した。
+
+## [2026-10-28] ingest | R2E-Gym（Jain・Singh ほか, UC Berkeley・ANU, arXiv:2504.07164）
+
+- 取り込み: `raw/papers/R2E-Gym_ Procedural Environments and Hybrid Verifiers for Scaling Open-Weights SWE Agents.md`（ar5iv → Obsidian Web Clipper、v1。arXiv にも v1 しかない）
+- 作成: [[translations/2025-r2e-gym]], [[summaries/2025-r2e-gym]], `raw/assets/2025-r2e-gym/`（図 23 点）
+- 更新: [[concepts/agent-environments]]（SWE の訓練環境の表に R2E-Gym の行、イシューのないコミットからタスクを作る段落）, [[concepts/agent-training]]（検証器の表に R2E-Gym の行、テストの検証器と ORM が別の理由で頭打ちになる段落と、ORM を報酬に使うときの偏りの読み、到達点の表の注を一次情報に更新）, [[concepts/test-time-compute]]（2 種類の検証器の組み合わせと、テスト側に計算を足す選択）, [[concepts/coding-agents]]（モデルを訓練する節に R2E-Gym）, 逆リンク: [[summaries/2024-swe-gym]], [[summaries/2026-swe-lego]], [[summaries/2025-kimi-dev]], [[summaries/2025-swe-smith]], [[summaries/2025-swe-rebench]], [[overview]], [[index]]
+- クリップの状態: ar5iv 経由のクリップには、図 1 の (b)(c) とキャプション、表 1 の本体（円グラフの画像に表 1 のキャプションが付いていた）、図 3 の表（思考の有無・実データ対合成データ）、図 4〜6・図 14 の 2 枚目以降、図 16 の (b)〜(f)、脚注 2〜5 と † が欠け、付録のコードは 1 行ずつ分断されていた。arXiv の HTML 版 v1 を取得して底本にし、本文と付録 A〜E をすべて訳した。Listing 14 個は HTML に埋め込まれた base64 のソースから復元した（クリップでは Listing 5 の冒頭行と Listing 7 の題の行が落ちていた）。図 10〜12 は SVG の箱図なので文字で起こした。取得失敗なし。参考文献と謝辞は訳していない。
+- 原典内の食い違い（翻訳の訳注に記録）: 本文の「表 2」「図 3」「図 5（右）」が表 1・図 2・図 8 を指す。思考ありの成績が図 3 で 34.4%、本文で 34.2%。図 8 の棒（42.7%・43.8%）と本文（42.8%・43.7%）。部分集合の件数が本文 4,578、付録 4,538。図 7 のキャプション a) が実行なしの検証器を「実行ベース」と書いている。
+- 要約ページは yomiyasu で推敲した（太字の閉じ位置の修正、間を作るだけの読点の除去、上位 n の絞り込みが効いた理由を著者らの推測として書き直した。verify: meaning_risk=2、いずれも意図した変更）。
+- 本 wiki の読み・計算として要約に書いたもの: 500 問・解決率 51% の標準誤差 約 2.2 ポイント、上位 n の有無（1.2 ポイント差）と Agentless のテストとの差（2.2 ポイント差）は確かとは言いにくいこと、設計の比較がすべて評価用の Verified の上で行われ n の値も非開示であること、Pass@1 34.4% は温度 0 の 1 回の値で図 14 の K=1 は 32.0% であること、ORM が自己申告に引きずられる偏りは RL の報酬にすると reward hacking につながりうること。
+- **データギャップ**: DeepSWE、SkyRL、Skywork-SWE、SWE-RL（Llama3-SWE-RL）、OpenHands、R2E（ICML 2024, 本論文の前身）、CodeT（毒性のあるテストの出どころ）の原典は未取得。

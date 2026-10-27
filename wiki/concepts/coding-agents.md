@@ -37,6 +37,7 @@ summaries:
   - "[[summaries/2025-complexity-trap]]"
   - "[[summaries/2025-swe-rebench]]"
   - "[[summaries/2025-kimi-dev]]"
+  - "[[summaries/2025-r2e-gym]]"
   - "[[summaries/2026-swe-prime]]"
 updated: 2026-10-28
 ---
@@ -231,7 +232,7 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 
 ## モデルを訓練する: 足場の外側の改善
 
-ここまでの節はモデルを固定して足場とツールを工夫する話だった。2024 年末から、**オープンなモデルそのものを SWE エージェントとして訓練する**研究が続いている。SWE-Gym（[[summaries/2024-swe-gym]]）は、実行環境つきのタスク 2,438 件の上で強いモデルの成功軌跡を集め、Qwen2.5-Coder-32B を SWE-bench Verified で 7.0% → 20.6%（検証器で 16 本から選ぶと 32.0%）にした。Golubev ら（[[summaries/2025-swe-rl-long-context]]）は、教師モデルを使わず、自分の成功軌跡での SFT（RFT）と多ターンの強化学習だけで Qwen2.5-72B を 11.4% → 39.0% にした。同時期の DeepSWE-32B（42.2%）・SWE-agent-LM-32B（40.2%）なども含め、**オープンな中規模モデルは 2025 年夏に Verified 40% 前後まで来た**。
+ここまでの節はモデルを固定して足場とツールを工夫する話だった。2024 年末から、**オープンなモデルそのものを SWE エージェントとして訓練する**研究が続いている。SWE-Gym（[[summaries/2024-swe-gym]]）は、実行環境つきのタスク 2,438 件の上で強いモデルの成功軌跡を集め、Qwen2.5-Coder-32B を SWE-bench Verified で 7.0% → 20.6%（検証器で 16 本から選ぶと 32.0%）にした。Golubev ら（[[summaries/2025-swe-rl-long-context]]）は、教師モデルを使わず、自分の成功軌跡での SFT（RFT）と多ターンの強化学習だけで Qwen2.5-72B を 11.4% → 39.0% にした。R2E-Gym（[[summaries/2025-r2e-gym]], 2025-04）は、イシューのないコミットからも環境を作って 8,135 件に増やし、同じ Qwen2.5-Coder-32B を 34.4% にした。テストと ORM を組み合わせて 26 本から選ぶと 51.0% になる。同時期の DeepSWE-32B（42.2%）・SWE-agent-LM-32B（40.2%）なども含め、**オープンな中規模モデルは 2025 年夏に Verified 40% 前後まで来た**。
 
 2025 年後半から 2026 年初めにかけて、**データを大量に作る**方向が続いた。SWE-smith（[[summaries/2025-swe-smith]]）は環境を先に作ってテストを壊すバグを合成し（5 万件）、Claude 3.7 Sonnet の軌跡で SWE-agent-LM-32B を 40.2% にした。SWE-Lego（[[summaries/2026-swe-lego]]）は実際の PR と合成バグを混ぜ、**強化学習なしの SFT だけで** Qwen3-32B を 52.6%（検証器で 16 本から選ぶと 58.8%）にした。同じ規模で RL を使ったモデルと並ぶ水準である。ただし SWE-Lego は、古い SWE-bench Verified の環境では `git log` で正解を覗けたことも示しており、この時期の数字の比較には注意が要る（→ [[agent-evaluation]]）。
 
@@ -289,4 +290,5 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 - [[summaries/2026-swe-lego]] — SFT だけで RL に並んだ SWE モデルと、Git ハッキング
 - [[summaries/2025-swe-rebench]] — 全自動で集めた訓練データと、汚染のない同条件のリーダーボード
 - [[summaries/2025-kimi-dev]] — 手続き型で鍛えたモデルをエージェント型の出発点にする（Agentless 60.4% → SFT だけでエージェント 48.6%）
+- [[summaries/2025-r2e-gym]] — コミットから訓練環境を作り、テストと ORM を組み合わせて候補を選ぶ（SFT 34.4% → 26 本から 51.0%）
 - [[summaries/2026-swe-prime]] — 成功軌跡を選び直して SFT し、繰り返しとターン数を減らした研究

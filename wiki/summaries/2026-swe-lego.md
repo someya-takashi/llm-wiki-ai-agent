@@ -163,3 +163,4 @@ SWE エージェントの訓練は、強いモデルの軌跡の SFT（蒸留）
 - [[summaries/2024-error-bars-evals]] — 小さな差を誤差と区別する統計
 - [[summaries/2025-swe-rebench]] — 実データの出どころにしたデータセットの原論文
 - [[summaries/2026-swe-prime]] — エラーの手のマスクを「意味的な区間」の単位に広げ、Git ハッキングをした軌跡も選別で除いた後続
+- [[summaries/2025-r2e-gym]] — 生成型の検証器の比較相手にした R2E-Gym-Verifier-14B の原論文

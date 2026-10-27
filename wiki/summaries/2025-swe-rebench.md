@@ -178,3 +178,4 @@ SWE-bench（[[summaries/2023-swe-bench]]）以降、コーディングエージ�
 - [[questions/swe-bench-evaluation-history]] — SWE-bench 以降の評価の流れの解説
 - [[summaries/2025-kimi-dev]] — 前身の SWE-bench-extra を訓練に使った研究（v2 が本データセットの利用例として挙げる）
 - [[summaries/2026-swe-prime]] — 本データセットの OpenHands の成功軌跡 32,161 本から 10% を選び直して SFT した研究
+- [[summaries/2025-r2e-gym]] — PR ではなくコミットから、半手動で環境を作る並行の方式
