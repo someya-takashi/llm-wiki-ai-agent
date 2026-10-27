@@ -42,7 +42,7 @@ LLM への強化学習（RL）は、DeepSeek-R1 のように数学や一発の�
 
 ### データ
 
-公開データセット SWE-rebench（約 3,400 リポジトリ・21,336 タスク）から、次の基準で **7,249 タスク**に絞った。
+公開データセット SWE-rebench（約 3,400 リポジトリ・21,336 タスク → [[summaries/2025-swe-rebench]]）から、次の基準で **7,249 タスク**に絞った。
 
 - 解に固有の識別子名を当てさせるようなタスク（テストが AttributeError・ImportError で落ちる）を除く。
 - 変更ファイル 7 個まで・500 行未満に限る。
@@ -157,3 +157,4 @@ LLM への強化学習（RL）は、DeepSeek-R1 のように数学や一発の�
 - [[summaries/2024-error-bars-evals]] — Pass@1 を複数回の平均で出すことの統計的な意味（再サンプリングによるばらつきの削減）
 - [[summaries/2026-swe-lego]] — RL を使わず SFT だけで同じ水準に届いた研究（失敗した手のマスクも共通）
 - [[summaries/2025-swe-smith]] — RL ではなく RFT で訓練した、同時期の SWE モデル（SWE-agent-LM-32B）
+- [[summaries/2025-swe-rebench]] — 本論文が訓練と評価に使ったデータセットと月次分割の原論文（同じ著者群）

@@ -132,3 +132,4 @@ SWE エージェントの訓練データ作りを、SWE-bench とは**逆の順�
 - [[summaries/2025-swe-rl-long-context]] — SWE-rebench（実際の PR を自動で集める方式）で RL を回した研究
 - [[summaries/2024-swe-agent]] — 足場として使った SWE-agent
 - [[summaries/2023-swe-bench]] — 逆の順序で作られた評価用ベンチマーク
+- [[summaries/2025-swe-rebench]] — タスクを先に集めて環境を自動で作る、逆の順序の方式の原論文

@@ -1104,3 +1104,15 @@ type: log
 - yomiyasu による推敲: 下書きを推敲した（読み手は informed と指定）。主な変更は、間を作るだけの読点の除去、評価の前置き「ここで大事なのは」を述語へ移したこと、比喩の「掛け算で効きます」の言い換え。推敲後に、「測り方そのものへの疑い」の節の冒頭を「2025 年から」→「2024 年末から」に直した（節内の Error Bars が 2024-11 のため）。
 - メモ: 「500 問・解決率 50% で 95% の誤差幅はおよそ ±4.4 ポイント」は wiki の原典にない本記事での概算（1.96 × √(0.25/500)）で、本文にもそう明記した。
 - **データギャップ**: SWE-bench Pro、SWE-rebench、SWE-bench Multilingual の原典は未取得で、記事ではそれぞれ名前と概要だけに触れている。
+
+## [2026-10-28] ingest | SWE-rebench（Badertdinov・Golubev ほか, Nebius, NeurIPS 2025）
+
+- 取り込み: `raw/papers/SWE-rebench_ An Automated Pipeline for Task Collection and Decontaminated Evaluation of Software Engineering Agents.md`（ar5iv → Obsidian Web Clipper、arXiv:2505.20411 v1）
+- 作成: [[translations/2025-swe-rebench]], [[summaries/2025-swe-rebench]], `raw/assets/2025-swe-rebench/`（図 2 点）
+- 更新: [[concepts/agent-environments]]（SWE-rebench の行の「作り方は原典に記載がない」を実際の方法に置き換え、全自動化の段落を追加）, [[concepts/agent-evaluation]]（汚染のないリーダーボードの運営方針と結果、5 回の実行の SEM と問題数から来る誤差の区別）, [[concepts/agent-training]]（二次情報の注記から SWE-rebench を外し、RL 向けの改良を追記）, [[concepts/coding-agents]]（訓練データの自動収集と、Qwen2.5-Coder の失敗の例）, 逆リンク: [[summaries/2025-swe-rl-long-context]], [[summaries/2024-swe-gym]], [[summaries/2026-swe-lego]], [[summaries/2026-swe-bench-verified-retired]], [[summaries/2025-swe-smith]], [[summaries/2024-agentless]], [[summaries/2024-error-bars-evals]], [[overview]], [[index]]
+- ユーザーの決定（AskUserQuestion）: 要約は**データセット（収集の仕組み）とベンチマーク（評価）を同じくらいの厚さ**で書く。
+- クリップの状態: `raw/` のクリップは **v1（2025-05）で、付録 B.2 のプロンプトの途中で切れていた**（付録 B.3〜M が欠落）。3.2 節の「中心となる原則」の箇条書き 3 項目も丸ごと欠けていた。ar5iv の再取得はタイムアウトしたため、arXiv の HTML 版 **v2（2025-11-04）** を取得して底本にし、本文と付録 A〜M をすべて訳した。v2 で加わったのは、付録 B.5（検証で落ちる失敗の型）、付録 F の第 2 段落（変更ファイル数ごとの DeepSeek-V3-0324 の解決率。数値は HTML の数式から復元）、3.3 節の DeepSeek の 2 版についての一文、4 節の言語の限界の書き換え、付録 A の最後の一文、寄与 3 の脚注の一文。付録のプロンプト・データ例・システムプロンプト・軌跡（計 34 のリスティング）は、原ページの各リスティングに埋め込まれた原文（base64）から字下げごと復元し、訳さずに収録した。図 1・図 2 は v2 の HTML から保存した。参考文献一覧は訳していない。
+- yomiyasu による推敲: [[summaries/2025-swe-rebench]] を推敲した。主な変更は、間を作るだけの読点の除去、太字の閉じ記号の直後への空白の追加、「書式エラーのループに入って」の言い換え。推敲の確認中に、「失敗ログで直させるだけで多くが動く」が原典の数字（18 件中 8 件）より強い言い方だったので、数字どおりに直した。
+- メモ: 本論文は 2026-02 の Verified の報告停止（[[summaries/2026-swe-bench-verified-retired]]）より 9 か月早く、日付で汚染を管理する評価を運営していた。[[agent-environments]] で SWE-Gym の付録が「並行研究」として挙げていた Nebius の自動収集（SWE-bench Extra）を全自動化・大規模化したもので、同じ著者群の RL 論文 [[summaries/2025-swe-rl-long-context]] が使ったデータセットと月次分割の出どころでもある。環境構築に Agentless の固定手順を使い、対話型エージェントより安いことを 18 タスクで確かめている点は、[[summaries/2024-agentless]] の考え方がコード修正以外にも使える例。
+- 批判的視点として記録: Verified と rebench の差は問題の分布の違いと切り分けられていない（全モデルが一様に下がること自体は「rebench のほうが難しい」でも説明がつく。DeepSeek-V3 の 2 版の差や Llama 同士の順位の入れ替わりのような相対的な変化のほうが強い手がかり）。報告される SEM は 5 回の実行の揺れだけで、問題数から来る誤差を含まない（294 問・20% で標準誤差約 2.3 ポイント、本 wiki の試算）。表 1 の時期別の問題数は書かれていない。品質ラベルの精度は低く、イシューの明確さはファインチューニングしても素のモデルから改善しなかった（79% 対 80%）。環境を作れたのはリポジトリの 31% で、セットアップの難しいプロジェクトは系統的に抜ける。関数呼び出しを使わない固定の足場は、別の足場で力を出すモデルに不利になりうる。Python のみ。
+- **データギャップ**: SWE-rebench のリーダーボードのその後の結果（2025 年 5 月以降の月次分割とフロンティアモデル）、SWE-bench Extra（Nebius のブログ記事）、Kimi-Dev（本データセットを直接使った研究として v2 が挙げる、arXiv:2509.23045）、DeepSWE、SkyRL、R2E-Gym、SWE-bench Pro の原典は未取得。

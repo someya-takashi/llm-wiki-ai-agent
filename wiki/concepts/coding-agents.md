@@ -35,7 +35,8 @@ summaries:
   - "[[summaries/2025-swe-smith]]"
   - "[[summaries/2026-swe-lego]]"
   - "[[summaries/2025-complexity-trap]]"
-updated: 2026-10-26
+  - "[[summaries/2025-swe-rebench]]"
+updated: 2026-10-28
 ---
 
 # Coding Agents（コーディングエージェント）
@@ -232,6 +233,8 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 
 訓練したモデルに残る弱点として、SWE-smith は**同じ行動の繰り返し**を挙げる。SWE-agent-LM-32B の軌跡の 25% 超に長さ 10 以上の繰り返し（多くは検索せずにファイルの別の部分を表示し続ける）があり、Claude 3.7 Sonnet では 4% 未満だった。足場で繰り返しを抑えても解決率は上がらず、繰り返しは難しい問題に当たったときの症状だと解釈されている。
 
+こうした訓練の土台になるデータの集め方も自動化が進んだ。SWE-rebench（[[summaries/2025-swe-rebench]]）は、実際の PR からインストール手順の推測とテストの確認まで人手なしで行い、3,468 リポジトリの 21,336 件を公開した（→ [[agent-environments]]）。
+
 訓練で使うツールは小さい。RL 論文のエージェントはシェル・行範囲指定の edit・submit の 3 つだけで、SWE-agent の ACI（→ [[agent-computer-interface]]）に近い。素のモデルの失敗の多くは**ツール呼び出しの書式違反とループ**で、訓練でまず直るのもこの 2 つである（SWE-Gym では SFT でループに陥る軌跡の割合が下がった）。訓練の段取り（蒸留・RFT・多ターン RL・検証器）と落とし穴は [[agent-training]] にまとめた。
 
 ## 評価
@@ -246,7 +249,7 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 
 
 
-標準は **SWE-bench 系**（実 GitHub イシューの解決率。Verified / Pro / Multilingual）・Terminal Bench（端末操作）・LiveCodeBench（競技・汚染対策つき）など → 詳細は [[agent-evaluation]]。実務上の注意として、同じモデルでもハーネスでスコアが大きく動く（ハーネス差・step 上限・コンテキスト管理の開示が比較の前提）ことと、フロンティアの到達点（2026 年時点で SWE-bench Verified 80 前後 → [[summaries/2026-deepseek-v4]] 表6。**ただし Verified は 2026-02 に作成者の OpenAI 自身が報告をやめた**——監査した難問の 59.4% はテストが正しい解を落とし、主要なフロンティアモデルはどれも正解パッチを記憶していた。この水準の数字は汚染とテストの欠陥を含む → [[summaries/2026-swe-bench-verified-retired]]、[[agent-evaluation]]。OpenAI は代わりに SWE-bench Pro を勧める）に対し、**長時間の自律構築タスクには標準ベンチマークがまだ無い**（Anthropic の記事も定量評価なし）ことが挙げられる。
+標準は **SWE-bench 系**（実 GitHub イシューの解決率。Verified / Pro / Multilingual）・Terminal Bench（端末操作）・LiveCodeBench（競技・汚染対策つき）など → 詳細は [[agent-evaluation]]。実務上の注意として、同じモデルでもハーネスでスコアが大きく動く（ハーネス差・step 上限・コンテキスト管理の開示が比較の前提）ことと、フロンティアの到達点（2026 年時点で SWE-bench Verified 80 前後 → [[summaries/2026-deepseek-v4]] 表6。**ただし Verified は 2026-02 に作成者の OpenAI 自身が報告をやめた**——監査した難問の 59.4% はテストが正しい解を落とし、主要なフロンティアモデルはどれも正解パッチを記憶していた。この水準の数字は汚染とテストの欠陥を含む → [[summaries/2026-swe-bench-verified-retired]]、[[agent-evaluation]]。OpenAI は代わりに SWE-bench Pro を勧める）に対し、**長時間の自律構築タスクには標準ベンチマークがまだ無い**（Anthropic の記事も定量評価なし）ことが挙げられる。汚染を避ける方法としては、モデルの公開より後に作られたイシューだけで、全モデルを同じ足場で測る SWE-rebench のリーダーボードがある（[[summaries/2025-swe-rebench]]）。そこでは、コード生成のベンチマークで強い Qwen2.5-Coder-32B が 3% 前後にとどまり、ツールの実行結果を自分ででっち上げたり書式エラーを繰り返したりしていた。**コードを書く力と、決まった形式でツールを使い続ける力は別物**である。
 
 ## 設計論点
 
@@ -280,3 +283,4 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 - [[summaries/2026-swe-bench-verified-retired]] — Verified の数字を比較に使えなくなった理由。代わりは SWE-bench Pro
 - [[summaries/2025-swe-smith]] — 環境を先に作ってバグを合成する訓練データと SWE-agent-LM-32B
 - [[summaries/2026-swe-lego]] — SFT だけで RL に並んだ SWE モデルと、Git ハッキング
+- [[summaries/2025-swe-rebench]] — 全自動で集めた訓練データと、汚染のない同条件のリーダーボード

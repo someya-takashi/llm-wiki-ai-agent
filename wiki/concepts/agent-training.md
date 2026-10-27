@@ -29,7 +29,8 @@ summaries:
   - "[[summaries/2026-swe-bench-verified-retired]]"
   - "[[summaries/2025-swe-smith]]"
   - "[[summaries/2026-swe-lego]]"
-updated: 2026-10-26
+  - "[[summaries/2025-swe-rebench]]"
+updated: 2026-10-28
 ---
 
 # Agent Training（エージェントの訓練）
@@ -155,14 +156,14 @@ SWE-Gym が見つけた検証器の訓練のこつは次のとおり。
 
 **2026 年初めの続き**（[[summaries/2026-swe-lego]] の表 7 から）：SFT だけの SWE-Lego-Qwen3-32B が 52.6%（検証器で 16 本から選ぶと 58.8%）、SFT の SWE-Mirror-LM-32B が 52.2%、継続事前学習＋SFT＋RL の CWM-32B が 53.9%、8B でも SWE-Lego-Qwen3-8B が 42.2% に達した。**オープンな中規模モデルは半年でさらに 10 ポイント以上伸び、SFT だけでも RL と同じ水準に届いている**。ただし SWE-Lego は、2025 年 9 月 3 日より前の SWE-bench Verified の Docker イメージでは `git log` で正解を覗けたことを示しており（自分たちの 32B で 57.6% 対 52.6%）、この時期の他のモデルの数字には 2〜5 ポイントの水増しが含まれている可能性がある。
 
-> 注: DeepSWE・SkyRL・Skywork-SWE・R2E-Gym・SWE-rebench の原典は wiki に未取得で、上の数字は [[summaries/2025-swe-rl-long-context]] と [[summaries/2026-swe-lego]] を通した二次情報である（SWE-smith は 2026-10-26 に取り込んだ → [[summaries/2025-swe-smith]]）。Kimi K3 の評価表にある「DeepSWE」はベンチマーク名で、この表のモデルとは別物である。
+> 注: DeepSWE・SkyRL・Skywork-SWE・R2E-Gym の原典は wiki に未取得で、上の数字は [[summaries/2025-swe-rl-long-context]] と [[summaries/2026-swe-lego]] を通した二次情報である（SWE-smith は 2026-10-26、SWE-rebench は 2026-10-28 に取り込んだ → [[summaries/2025-swe-smith]]、[[summaries/2025-swe-rebench]]）。Kimi K3 の評価表にある「DeepSWE」はベンチマーク名で、この表のモデルとは別物である。
 
 ## 設計論点
 
 - **教師に頼るか、自力で育てるか**。蒸留は安く強い（R1 の 72.6 対 47.0、SWE-Gym の 491 本で 3 倍）が、教師の能力と利用条件に縛られる。自力の RL は高い（H200 ノード 16 台・100 反復超）が、出発点のモデルがある程度解ける（72B で 11%）なら教師なしで蒸留と同じ水準に届く。実際の大規模モデルの訓練（DeepSeek-V4・Kimi K3）は、**専門家を RL で育て、それを 1 体に蒸留する**という両方の組み合わせに収束している（→ [[reinforcement-learning-from-human-feedback]]）。
 - **足場と訓練の相性**。手順の決まった足場（Moatless・Agentless → [[summaries/2024-agentless]]）は素のモデルでも点が高いが、訓練で伸びにくい。汎用の足場（OpenHands・SWE-agent 型）は素のモデルでは弱いが、訓練でよく伸びる（[[summaries/2024-swe-gym]]）。SWE-Effi の「弱いモデルは手順を固定したほうが安定し、強いモデルには制御を渡したほうが伸びる」（[[summaries/2025-swe-effi]]）と合わせると、**訓練でモデルを強くする計画があるなら、最初から汎用の足場で訓練データを作る**ほうが筋がよい（→ [[coding-agents]]）。
 - **何が律速か**。SWE-Gym は訓練軌跡を 491 本の 25%・50%・100% と増やしても飽和せず、タスク数やリポジトリの多様性ではなく**軌跡をサンプリングする計算量**が律速だと結論した。RL の側でも、ロールアウトの速さが訓練の試行回数を決める（→ [[agent-cost-efficiency]]）。
-- **環境の作り方がデータの偏りを決める**。SWE-Gym は依存関係を手で設定して 2,438 件にとどまり、並行研究（Nebius の 2 本の連続したブログ記事、Badertdinov ら・Golubev ら 2024。後者は [[summaries/2025-swe-rl-long-context]] と同じ著者群）は汎用のセットアップスクリプトで 6,415 件を集めたが、セットアップに失敗した（依存の難しい）タスクは捨てている。**自動化して数を取るか、手間をかけて偏りを避けるか**の選択である（→ [[agent-environments]]）。
+- **環境の作り方がデータの偏りを決める**。SWE-Gym は依存関係を手で設定して 2,438 件にとどまり、並行研究（Nebius の 2 本の連続したブログ記事、Badertdinov ら・Golubev ら 2024。後者は [[summaries/2025-swe-rl-long-context]] と同じ著者群）は汎用のセットアップスクリプトで 6,415 件を集めたが、セットアップに失敗した（依存の難しい）タスクは捨てている。**自動化して数を取るか、手間をかけて偏りを避けるか**の選択である（→ [[agent-environments]]）。その並行研究を全自動化した SWE-rebench（[[summaries/2025-swe-rebench]]）は 21,336 件まで増やしたが、動く環境を作れたのはリポジトリの 31% だった。また、RL の報酬が「タスクの欠陥」でなく「エージェントの力不足」だけを反映するように、差分の取り方・テストの走らせ方・依存関係の凍結を SWE-bench の方法から直し、イシューの明確さやテストの正しさを LLM に予測させたラベルを各タスクに付けている。
 - **評価の汚染を分けて見る**。SWE-bench Verified だけで訓練の効果を語ると過大評価になりうる。2026-02 には OpenAI が、主要なフロンティアモデルがどれも Verified の正解パッチを記憶していたと報告している（[[summaries/2026-swe-bench-verified-retired]]）。[[summaries/2025-swe-rl-long-context]] では、第 2 段階の RL の +3.3 ポイントが、訓練データより後に集めた SWE-rebench の月次分割では再現しなかった（→ [[agent-evaluation]]）。
 - **報酬が 1 ビットだけであることの副作用**。成功／失敗しか返さない報酬では、「確信がなくても何かを提出する」振る舞いが育ちやすく、途中のどの行動が効いたかも学びにくい。プロセス報酬や途中の検証は、この限界に対する今後の論点として残っている。
 
@@ -185,3 +186,4 @@ SWE-Gym が見つけた検証器の訓練のこつは次のとおり。
 - [[summaries/2026-swe-bench-verified-retired]] — 主要なフロンティアモデルが Verified の正解パッチを記憶していたという報告（汚染のない分割で測る理由）
 - [[summaries/2025-swe-smith]] — 環境を先に作ってバグを合成する訓練データ（5 万件）と RFT、アブレーション（バグの種類・イシュー文・難しさ・リポジトリ数）
 - [[summaries/2026-swe-lego]] — SFT だけで RL に並ぶ。実データと合成データの混合、エラーマスキング、カリキュラム、半解決の軌跡、生成型の検証器
+- [[summaries/2025-swe-rebench]] — 実際の PR から環境づくりまで全自動で集めた RL 向けデータセット（21,336 件、品質ラベル付き）
