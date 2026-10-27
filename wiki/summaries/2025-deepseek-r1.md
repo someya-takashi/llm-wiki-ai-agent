@@ -118,3 +118,4 @@ R1 が生成した 80 万サンプルで Qwen/Llama の 1.5B〜70B を **SFT だ
 - [[summaries/2025-swe-rl-long-context]] — 単一ターンの RL を多ターンのエージェント（SWE）に広げた後続
 - [[agent-training]] — 蒸留と RL の使い分けをエージェントの訓練で見る
 - [[translations/2025-deepseek-r1]] — 全文翻訳
+- [[summaries/2025-kimi-dev]] — R1 の長い推論の軌跡を、SWE のコールドスタートの教師に使った例

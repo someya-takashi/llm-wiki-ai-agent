@@ -133,3 +133,4 @@ SWE エージェントの訓練データ作りを、SWE-bench とは**逆の順�
 - [[summaries/2024-swe-agent]] — 足場として使った SWE-agent
 - [[summaries/2023-swe-bench]] — 逆の順序で作られた評価用ベンチマーク
 - [[summaries/2025-swe-rebench]] — タスクを先に集めて環境を自動で作る、逆の順序の方式の原論文
+- [[summaries/2025-kimi-dev]] — 本論文の 5,016 本の軌跡で、Agentless で鍛えた 72B をエージェントに適応させた研究（48.6%）

@@ -166,3 +166,4 @@ Agentless は解決率が最高（48%）だが、候補パッチとテストを�
 - [[summaries/2024-agentless]] — 本論文が測った手続き型の足場 Agentless の原典（位置の特定 → 修復 → パッチの検証）
 - [[summaries/2024-error-bars-evals]] — 50 問で検出できる差の大きさを計算する式（例示のパラメータでは 13〜26 ポイント）
 - [[summaries/2025-complexity-trap]] — Token Snowball への対処として、古い観測を消すだけでコストが半分前後になることを示した実測
+- [[summaries/2025-kimi-dev]] — 手続き型とエージェント型を、モデルとの相性ではなく訓練の段階として並べた研究

@@ -176,3 +176,4 @@ SWE-bench（[[summaries/2023-swe-bench]]）以降、コーディングエージ�
 - [[summaries/2024-error-bars-evals]] — 問題数から来る誤差の考え方
 - [[summaries/2026-swe-bench-verified-retired]] — Verified の汚染とテストの欠陥を直接確かめた後の報告
 - [[questions/swe-bench-evaluation-history]] — SWE-bench 以降の評価の流れの解説
+- [[summaries/2025-kimi-dev]] — 前身の SWE-bench-extra を訓練に使った研究（v2 が本データセットの利用例として挙げる）
