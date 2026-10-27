@@ -160,3 +160,4 @@ translation: "[[translations/2026-swe-prime]]"
 - [[summaries/2025-kimi-dev]] — 公開の軌跡で軽く SFT して適応させる、別の方向の研究
 - [[summaries/2024-error-bars-evals]] — 1 回の実行で数ポイントの差を読むときの誤差
 - [[summaries/2026-swe-bench-verified-retired]] — 評価に使った Verified の問題点
+- [[summaries/2024-openhands]] — 選び直した軌跡を生んだ足場、OpenHands の原論文

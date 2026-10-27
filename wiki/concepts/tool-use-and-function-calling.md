@@ -30,7 +30,8 @@ summaries:
   - "[[summaries/2026-kimi-k3]]"
   - "[[summaries/2025-swe-bench-sonnet]]"
   - "[[summaries/2025-writing-effective-tools]]"
-updated: 2026-10-25
+  - "[[summaries/2024-openhands]]"
+updated: 2026-10-28
 ---
 
 # Tool Use and Function Calling（ツール利用とツール呼び出し）
@@ -72,6 +73,10 @@ function calling が「**どう宣言するか**」の話なのに対し、そ�
 同じ「トークナイザレベルで書式を規定する」設計のオープンな実例が Gemma 4（[[summaries/2026-gemma-4]]）の制御トークン群である。関数宣言は `<|tool>declaration:...<tool|>`、呼び出しは `<|tool_call>call:...<tool_call|>`、思考トレースは `<|channel>thought ...<channel|>` と、**それぞれ専用の制御トークンで区画化**され、引数内の文字列すら `<|"|>` で括られる。ターン管理（`<|turn>user` / `<turn|>`）や thinking の有効化（`<|think|>`）まで含めて語彙に焼き込まれており、「関数呼び出しはプロンプト規約でなくトークナイザの仕様」という現代の実装形を、公開重みモデルの書式表（テクニカルレポート表11）として確認できる。
 
 3 例目が DeepSeek-V4 の **DSML**（[[summaries/2026-deepseek-v4]]）で、こちらは**書式の構文自体を JSON から XML 型へ変えた**点が特徴的である。`<|DSML|invoke name="$TOOL_NAME">` の中に `<|DSML|parameter name="..." string="true|false">値</|DSML|parameter>` を並べる形式で、文字列はそのまま・その他の型は JSON 値として渡し `string` 属性で区別する。動機は実測に基づいており、「**XML フォーマットはエスケープ失敗を効果的に緩和し、ツール呼び出しエラーを減らす**」という（JSON では引数内の引用符・改行のエスケープ崩れが定番の失敗源）。K2 が enforcer（制約付きデコード）で書式エラーを**強制的に防ぐ**のに対し、DSML は**エスケープが崩れにくい構文を選ぶ**という予防側の解であり、宣言言語（K2 の TypeScript）・制御トークン（Gemma 4）・呼び出し構文（DSML）という 3 つの設計変数がそれぞれ独立に最適化されている現状がわかる。
+
+### 行動をコードにする: CodeAct と OpenHands
+
+JSON の関数呼び出しとは別の流儀として、**行動そのものを実行可能なコードにする**設計がある。OpenHands（[[summaries/2024-openhands]], ICLR 2025）は同じ著者の CodeAct を引き継ぎ、エージェントの行動を「Python のコードを実行する」「bash コマンドを実行する」「ブラウザ操作の専用言語（BrowserGym）を実行する」の 3 つにほぼ絞った。著者らの主張は 2 つある。1 つは、プログラミング言語の行動ならどんな道具も Python 関数や REST API として呼べるので、**事前に宣言した道具の範囲に縛られない**こと。もう 1 つは、使える API がなければ**エージェントが自分で関数を書いて道具を作れる**ことである。逆向きの互換もあり、Python 関数として定義した道具は JSON の関数呼び出しのエージェントにも渡せる。代償は、任意のコードを実行させるので、Docker のサンドボックスのような隔離が前提になることである（→ [[agent-safety-and-guardrails]]）。道具を足す基準も示しており、**LLM が自分でコードを書いて簡単にはできないもの**（行を指定した編集など）と**外部のモデルを呼ぶもの**（音声認識・画像の読み取り）だけを道具にする。pandas で CSV を読むような、モデルがすでに知っている操作は道具にしない。
 
 ### ツール利用能力の製造: 大規模データ合成
 
@@ -115,6 +120,8 @@ function calling が「**どう宣言するか**」の話なのに対し、そ�
 - **並列ツール呼び出し**: 複数の独立な検索・取得を逐次に発行するのは、エージェントの体感速度を最も悪化させる要因のひとつ。Anthropic Research は「サブエージェント 3〜5 体の並列生成 × 各エージェント 3 つ以上のツールの並列呼び出し」の 2 段の並列化で、複雑なクエリの所要時間を**最大 90% 削減**した（[[summaries/2025-multi-agent-research-system]]）。function calling の API 設計（複数呼び出しの同時発行）が性能に直結する例である。
 
 ## 関連ページ
+
+- [[summaries/2024-openhands]] — 行動を Python・bash・ブラウザ操作のコードにする CodeAct の設計と、道具を足す基準
 
 - [[agent-computer-interface]] — ツールの中身と形の設計（ACI の本体）
 - [[coding-agents]] — ACI が実証された応用領域

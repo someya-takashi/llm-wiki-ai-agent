@@ -39,6 +39,7 @@ summaries:
   - "[[summaries/2025-kimi-dev]]"
   - "[[summaries/2025-r2e-gym]]"
   - "[[summaries/2026-swe-prime]]"
+  - "[[summaries/2024-openhands]]"
 updated: 2026-10-28
 ---
 
@@ -224,7 +225,9 @@ GPT-4o で SWE-bench Lite 32.0%（1 件 $0.70）と、同じモデルの SWE-age
 
 SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B、Qwen3-32B）で SWE-bench Verified の 50 問にかけ、**足場の良し悪しはモデルとの相性で決まる**ことを示した。エージェント型の SWE-agent と OpenHands は、Qwen3-32B ではそれぞれ 28%・34% だが、GPT-4o-mini では 10%・11.9% に落ち、SWE-agent は入力 810 万トークン超を使った。手続き型の AutoCodeRover はどのモデルでも安定して競争力があり、Agentless は解決率首位（Qwen3-32B で 48%）だがテストを大量に回すので CPU 時間が重い。**弱いモデルでは手順を固定したほうが安定し、強いモデルには制御を渡したほうが伸びる**。[[agent-computer-interface]] の「作り込むか、最小にするか」と同じ軸が、足場の流儀でも現れている。最小構成の極には bash 1 ツール・約 100 行の **Mini-SWE-Agent** もある。どちらの流儀でも、**失敗した試行は成功の数倍の資源を使う**（→ [[agent-cost-efficiency]]）。
 
-> 注: AutoCodeRover・OpenHands・Mini-SWE-Agent の原典は wiki に未取得で、これらの記述は SWE-Effi と Agentless を通した二次情報である。
+> 注: AutoCodeRover・Mini-SWE-Agent の原典は wiki に未取得で、これらの記述は SWE-Effi と Agentless を通した二次情報である。OpenHands の原典は 2026-10-28 に取り込んだ（[[summaries/2024-openhands]]）。
+
+**エージェント型の足場の代表が OpenHands** である（[[summaries/2024-openhands]], ICLR 2025、旧称 OpenDevin）。行動と観測の時系列（イベントストリーム）を中心に、行動を Python・bash・ブラウザ操作のコードとして出す CodeActAgent と、タスクごとの Docker のサンドボックスで行動を実行するランタイムを組み合わせた。編集の道具と手本の軌跡は SWE-agent から取り入れている。論文の時点（2024 年半ば）の成績は、claude-3.5-sonnet で SWE-bench Lite 26.0%（1 問 1.10 ドル）で、Agentless・gpt-4o の 27.3% と並ぶ水準だった。同じ CodeActAgent がシステムプロンプトを変えずに GPQA（52.0%）やウェブ操作（WebArena 15.3%、専門エージェントへの委任経由）でも専門エージェントに近い成績を出したことを、著者らは汎用性の根拠にしている。その後は訓練データを集める足場としても広く使われた。SWE-Gym の汎用の足場、R2E-Gym の足場、SWE-Prime が選び直した SWE-rebench の公開軌跡は、どれも OpenHands かそれをもとにした足場によるものである。
 
 **足場の流儀は訓練での伸び方も変える。** SWE-Gym（[[summaries/2024-swe-gym]]）は同じ Qwen2.5-Coder を 2 つの足場で訓練した。手順の決まった Moatless Tools では、素の 32B が SWE-bench Lite で 19.0% と高いが、自分の成功軌跡で訓練しても 19.7% で頭打ちになった。汎用の OpenHands では素の 32B が 3.0% しか解けないが、強いモデルの成功軌跡 491 本で SFT すると 15.3% になった。**手順を固定した足場は素のモデルを助けるが、訓練で伸ばす余地も狭める**。これは上の「弱いモデルには手順を固定したほうが安定する」と表裏の関係である。
 
@@ -290,5 +293,6 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 - [[summaries/2026-swe-lego]] — SFT だけで RL に並んだ SWE モデルと、Git ハッキング
 - [[summaries/2025-swe-rebench]] — 全自動で集めた訓練データと、汚染のない同条件のリーダーボード
 - [[summaries/2025-kimi-dev]] — 手続き型で鍛えたモデルをエージェント型の出発点にする（Agentless 60.4% → SFT だけでエージェント 48.6%）
+- [[summaries/2024-openhands]] — イベントストリーム・CodeAct・Docker のランタイムからなるエージェント型の足場の一次資料
 - [[summaries/2025-r2e-gym]] — コミットから訓練環境を作り、テストと ORM を組み合わせて候補を選ぶ（SFT 34.4% → 26 本から 51.0%）
 - [[summaries/2026-swe-prime]] — 成功軌跡を選び直して SFT し、繰り返しとターン数を減らした研究

@@ -1160,3 +1160,14 @@ type: log
 - 要約ページは yomiyasu で推敲した（太字の閉じ位置の修正、間を作るだけの読点の除去、上位 n の絞り込みが効いた理由を著者らの推測として書き直した。verify: meaning_risk=2、いずれも意図した変更）。
 - 本 wiki の読み・計算として要約に書いたもの: 500 問・解決率 51% の標準誤差 約 2.2 ポイント、上位 n の有無（1.2 ポイント差）と Agentless のテストとの差（2.2 ポイント差）は確かとは言いにくいこと、設計の比較がすべて評価用の Verified の上で行われ n の値も非開示であること、Pass@1 34.4% は温度 0 の 1 回の値で図 14 の K=1 は 32.0% であること、ORM が自己申告に引きずられる偏りは RL の報酬にすると reward hacking につながりうること。
 - **データギャップ**: DeepSWE、SkyRL、Skywork-SWE、SWE-RL（Llama3-SWE-RL）、OpenHands、R2E（ICML 2024, 本論文の前身）、CodeT（毒性のあるテストの出どころ）の原典は未取得。
+
+## [2026-10-28] ingest | OpenHands（Wang ほか, UIUC・CMU・All Hands AI ほか, arXiv:2407.16741, ICLR 2025）
+
+- 取り込み: `raw/papers/OpenHands_ An Open Platform for AI Software Developers as Generalist Agents.md`（ar5iv → Obsidian Web Clipper）
+- 作成: [[translations/2024-openhands]], [[summaries/2024-openhands]], `raw/assets/2024-openhands/`（図 4 点）
+- 更新: [[concepts/coding-agents]]（エージェント型の足場の代表としての段落、二次情報の注を更新）, [[concepts/agent-frameworks]]（イベントストリームの抽象化、表 1 の自己評価の注意、LLM をモック化した結合テスト）, [[concepts/tool-use-and-function-calling]]（行動をコードにする CodeAct の節と、道具を足す基準）, [[concepts/agent-evaluation]]（評価の費用と、モック化した結合テストとの 2 段の運用、成功率とコストの並記）, 逆リンク: [[summaries/2024-swe-agent]], [[summaries/2024-swe-gym]], [[summaries/2025-r2e-gym]], [[summaries/2025-swe-effi]], [[summaries/2025-complexity-trap]], [[summaries/2026-swe-prime]], [[overview]], [[index]]
+- クリップの状態: ar5iv 経由のクリップは図 1〜5 の画像を含んでいたが、表 1〜7 がすべて 1 行に平坦化され（表 1 の ✔／✗ が列と対応しない）、脚注 1〜5 の本文が欠け、付録 I〜K のコードが 1 行ずつ分断されていた。arXiv の HTML 版 v3（最新版）を底本にし、表を組み直し、脚注を復元し、Listing 6 個を HTML に埋め込まれた base64 のソースから復元した。ロゴ画像 2 点は除外。取得失敗なし。参考文献と著者の貢献の節は訳していない（付録 A〜K はすべて訳した）。
+- 原典内の食い違い（翻訳の訳注に記録）: gpt-4o-mini の SWE-bench Lite が表 3 で 6.3%、表 4 で 7.0%。GPQA の専門家の人間が表 6 で 81.3%、表 7 で 81.2%。表 3 の gpt-4 の行はセルが 1 つ欠けている。BioCoder の出典表記が表 4 と本文で違う。付録 D の "base commands"。
+- 要約ページは yomiyasu で推敲した（太字が表示されない箇所の修正、間を作るだけの読点の除去、「土台」の言い換え。verify: meaning_risk=1）。「版」は version の定着した訳語として残した。
+- 本 wiki の読み・計算として要約に書いたもの: GAIA（53 問）の標準誤差 約 6.4 ポイント、GPQA diamond（198 問）で約 3.5 ポイント。「同じエージェントで全分野」は WebArena が委任経由で GAIA が GPTSwarm なので範囲が限られること。gpt-3.5-turbo では ToolQA 2.3% などと崩れ、汎用性はモデルの力に頼っていること。
+- **データギャップ**: CodeAct（行動をコードにする設計の原論文）、BrowserGym、AutoCodeRover、Mini-SWE-Agent、GPTSwarm、OpenHands のその後の版（CodeActAgent の後継やコンテキストの要約機能）の原典は未取得。

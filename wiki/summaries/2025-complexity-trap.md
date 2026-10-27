@@ -208,3 +208,4 @@ Gemini 2.5 Flash で、OpenHands の上でも SWE-bench Verified の 50 問で�
 - [[summaries/2023-lost-in-the-middle]] — 長いコンテキストが負債になる根拠
 - [[summaries/2025-swe-effi]] — Token Snowball と、失敗した試行が高くつくこと
 - [[summaries/2024-error-bars-evals]] — 対応のある差の検定
+- [[summaries/2024-openhands]] — LLM による履歴の要約を使う足場の 1 つ、OpenHands の原論文

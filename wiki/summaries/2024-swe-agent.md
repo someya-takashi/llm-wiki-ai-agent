@@ -179,3 +179,4 @@ Table 3 のアブレーション（SWE-bench Lite, GPT-4 Turbo, 既定 18.0%）�
 - [[summaries/2024-agentless]] — 対照的な立場の手続き型（ツールを作り込まず、LLM に次の手を決めさせない）。同じ GPT-4o で SWE-agent の 18.3% に対し 32.0%
 - [[summaries/2025-swe-smith]] — 足場に SWE-agent を使い、そのための訓練データを大量に合成した同じグループの後続
 - [[summaries/2025-complexity-trap]] — 本論文の古い観測の折り畳みを、LLM による要約と同じ条件で比べた後続。マスキングが要約と同等以上で、コストは半分前後
+- [[summaries/2024-openhands]] — 本論文の編集の道具と手本の軌跡を取り入れ、どのエージェントからも使える Python の道具のライブラリとして配った基盤
