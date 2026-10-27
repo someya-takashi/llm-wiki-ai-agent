@@ -97,3 +97,4 @@ LangChain・LlamaIndex・CrewAI・Swarm・GUI Agent（Claude Computer Use）・A
 - [[llm-agents]] — 領域全体の総論（本サーベイは 2 年後の別視点の総論）
 - [[summaries/2023-llm-agents-survey]] — 同種の包括サーベイ（brain/perception/action 版）
 - [[summaries/2025-masft]] — §V-B が引く MAST 研究の一次原典
+- [[summaries/2023-llm4se-survey]] — ソフトウェア工学の側から LLM の応用を整理した別のサーベイ（1,009 本・112 タスク）

@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [トランスフォーマー, decoder-only, attention, linear attention, DeltaNet, Mamba, MLA, scaling law, スケーリング則, Chinchilla, 非埋め込み FLOPs, exact attention, 厳密 attention, 近似 attention, FlashAttention]
+aliases: [トランスフォーマー, decoder-only, attention, linear attention, DeltaNet, Mamba, MLA, scaling law, スケーリング則, Chinchilla, 非埋め込み FLOPs, exact attention, 厳密 attention, 近似 attention, FlashAttention, encoder-only, encoder-decoder, エンコーダのみ, エンコーダ–デコーダ, code LLM]
 tags: [transformer-architecture, llm-foundations]
 related:
   - "[[mixture-of-experts]]"
@@ -26,7 +26,8 @@ summaries:
   - "[[summaries/2025-kimi-linear]]"
   - "[[summaries/2021-switch-transformers]]"
   - "[[summaries/2021-roformer]]"
-updated: 2026-08-11
+  - "[[summaries/2023-llm4se-survey]]"
+updated: 2026-10-28
 ---
 
 # Transformer Architecture（トランスフォーマーアーキテクチャ）
@@ -38,6 +39,8 @@ updated: 2026-08-11
 GPT-2 以来の標準形は **decoder-only**（デコーダのみ）構成である（[[summaries/2026-gpt2-to-kimi3]] が実装コード付きで解説）: トークン埋め込み＋位置埋め込み → 同一構造のブロック × N 層 → 最終正規化 → LM head（隠れ状態を語彙のロジットへ写像）。各ブロックは **attention**（系列内の他トークンから情報を集める）と **MLP**（位置ごとの変換）を、**残差接続**（入力に出力を足し込む）で包んだもの。GPT-2 は 12 層・12 ヘッド・埋め込み 768 で 124M パラメータ、Kimi K3（2026）は 2.8T である。**7 年で 22,580 倍**にスケールしたが、この骨格自体はほぼ変わっていない。
 
 この骨格には、attention 自体が持てない要素である**位置情報**がひとつ外付けされている。self-attention は入力の並べ替えに対して同変であり、そのままでは語順を見ていない。そこで位置符号化を注入するのだが、その注入先が (1) 入力ベクトルに足す（絶対位置埋め込み）、(2) attention スコアに足す（相対バイアス）、(3) query/key を回転させる（**RoPE** = Rotary Position Embedding, → [[summaries/2021-roformer]]）のどれであるかによって、システムとの相性が大きく変わる。現代モデルがほぼ例外なく (3) を採るのは精度の差ではなく、**追加パラメータも $N\times N$ のバイアス行列も要らず、$q$/$k$ に分離できるので linear attention・KV cache・カーネル融合のすべてと両立する**からである。系譜と拡張（YaRN・p-RoPE・部分 RoPE）、および MLA との衝突は [[positional-encoding]] に独立させた（2026-08-03）。
+
+decoder-only が標準になったのは、生成を中心に使われるようになってからである。コード向けの LLM の系譜（[[summaries/2023-llm4se-survey]]）では、3 つの型が用途で使い分けられてきた。入力全体を双方向に読んで固定長の表現を作る**エンコーダのみ**（CodeBERT など。コード検索や脆弱性の判定のような分類・検索向き）、入力を表現に圧縮して別の系列を出す**エンコーダ–デコーダ**（CodeT5 など。コードの要約や修復のような系列変換向き）、そして**デコーダのみ**（Codex・StarCoder・Code Llama）である。同サーベイは、ChatGPT 以降はモデルが大きくなり、デコーダのみが主流になりつつあるとまとめている。
 
 自己回帰生成では、過去トークンの key/value を **KV cache** に保存して再計算を避ける。この cache は系列長 O(N) で成長し、長コンテキストではメモリ帯域のボトルネックになる。以降のアーキテクチャ発展の大半は、この「**推論時の記憶をどう持つか**」への応答である → [[llm-inference-optimization]]。
 
@@ -153,3 +156,4 @@ transformer 側から見た要点は 3 つ。**(1) 置き場所は FFN 層**: FF
 - [[summaries/2026-gpt2-to-kimi3]] — 本ページの主要な根拠原典
 - [[summaries/2025-kimi-linear]] — KDA・DPLR 制約・3:1 ハイブリッドの一次資料（K3 の KDA の前身）
 - [[summaries/2026-kimi-k3]] — KDA の下限つき減衰・全ランクゲート・NoPE、Block AttnRes、SiTU-GLU、Per-Head Muon の根拠原典
+- [[summaries/2023-llm4se-survey]] — コード向けの LLM のエンコーダのみ・エンコーダ–デコーダ・デコーダのみの使い分け

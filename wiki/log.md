@@ -1193,3 +1193,14 @@ type: log
 - 要約ページは yomiyasu で推敲した（太字が表示されない箇所の修正、間を作るだけの読点の除去、「効く」「きれいな比較」の言い換え。verify: meaning_risk=0）。
 - 本 wiki の読み・計算として要約に書いたもの: アブレーションの差（0.6〜1.4 ポイント）は 500 問の標準誤差 約 2.2 ポイントより小さいこと。他手法の値は基盤モデル・文脈の上限・ステップの上限が違う報告値の引用であること。道具を外す比較は訓練時と違う条件で動かす比較であること。推論時の手順だけ（GPT-5.1 が判断）で 58.4% なので、SFT はその判断をほぼ取り込んだと読めること。MemGPT の自己管理を訓練で重みに入れた形、SWE-Master の「小さいモデルでは要約が効かない」への答えという位置づけ。
 - **データギャップ**: SWE-Compressor（Context as a Tool）、Context Folding、ReSum、AgentDiet、SWE-Pruner、LLMLingua、SWE-bench Pro・Multilingual の原典は未取得。
+
+## [2026-10-28] ingest | A Survey on Large Language Models for Software Engineering（Zhang ほか, 南京大学ほか, arXiv:2312.15223 v2）
+
+- 取り込み: `raw/papers/A Survey on Large Language Models for Software Engineering.md`（ar5iv → Obsidian Web Clipper、v2 の本文）
+- 作成: [[translations/2023-llm4se-survey]], [[summaries/2023-llm4se-survey]], `raw/assets/2023-llm4se-survey/`（図 6 点）
+- 更新: [[concepts/coding-agents]]（「前史: コード片を入出力とする LLM4SE」の節を新設）, [[concepts/agent-evaluation]]（エージェント以前のデータ漏れと、汚染のない評価データの 3 つの作り方）, [[concepts/transformer-architecture]]（コード向け LLM の 3 つの型）, [[concepts/llm-red-teaming]]（コード向け LLM への敵対的・バックドア・模倣攻撃）, [[concepts/parameter-efficient-fine-tuning]]（コード向け LLM の PEFT と継続学習）, 逆リンク: [[summaries/2023-swe-bench]], [[summaries/2024-agentless]], [[summaries/2025-llm-reasoning-to-agents]], [[overview]], [[index]]
+- クリップの状態: クリップは v2（2024-09-08、「1009 本に更新」）の本文だったが、表 I〜VI が HTML のまま平坦化し、図 1〜6 の画像がなかった（HTML 版でもベクタ図で画像なし。ar5iv は 503）。arXiv の HTML 版 v2 を底本にし、図 1〜6 は PDF v2 からキャプション位置を境界に切り出した（付録 B の分類図 4 ページは PDF ではすべて「Fig. 3」、HTML の番号に合わせて図 3〜6）。表 III・V は結合セルのずれを PDF と照合して組み直した。本文 I〜VII と付録 A・B をすべて訳し、参考文献は訳していない。翻訳は 3 つの範囲に分けて並行で作り、結合時に回答の囲みと脚注の書式をそろえた。
+- 原典内の食い違い（翻訳の訳注に記録）: 応用研究「947 本」に対し表 V の合計は 840 本、選別の記述からは 948 本。図 1 の合計 1,008 本と本文の 1,009 本。下流タスク 16 と 15。表 II の行の値がモデル名とずれている（CodeBERT が ICML・Google など。PDF も同じ）。表 I の ICPC の正式名称と TOSEM の種別。表 IV の CoLSBERT の重複。VI 章の「3 つの方向」が 2 つ、模倣攻撃の「4 段階」が 3 つ。
+- 要約ページは yomiyasu で推敲した（間を作るだけの読点の除去、表示されない太字の修正。verify: meaning_risk=0）。
+- 本 wiki の読み・確認として要約に書いたもの: SWE-bench は付録 B の分類図の「コード生成」の欄に [612] として載るだけで本文では論じておらず、SWE-agent・Agentless・OpenHands は参考文献にもない（参考文献の一覧を検索して確認）。対象が 2024 年 8 月までなのにエージェントがほぼ入っていないので、「エージェント以前の LLM4SE の地図」として位置づけた。表 VI の BLEU 77〜80% と完全一致 16〜22% の差を、SWE-bench が実行で採点する理由と結びつけた。
+- **データギャップ**: CodeBERT・CodeT5・Codex（HumanEval）・StarCoder・Code Llama の原論文、AlphaRepair、CodeXGLUE、EvalGPTFix、RepairAgent、AgentCoder、同時期の LLM4SE サーベイ（Hou ほか、Fan ほか）は未取得。

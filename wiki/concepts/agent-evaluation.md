@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [エージェント評価, LLM-as-a-judge, agent benchmarks, エージェントベンチマーク]
+aliases: [エージェント評価, LLM-as-a-judge, agent benchmarks, エージェントベンチマーク, data leakage, データ漏れ, Defects4J, EvalGPTFix]
 tags: [agent-evaluation, llm-agents]
 related:
   - "[[agent-computer-interface]]"
@@ -58,6 +58,7 @@ summaries:
   - "[[summaries/2026-swe-prime]]"
   - "[[summaries/2024-openhands]]"
   - "[[summaries/2026-swe-master]]"
+  - "[[summaries/2023-llm4se-survey]]"
 updated: 2026-10-28
 ---
 
@@ -148,6 +149,8 @@ LLM（Large Language Model, 大規模言語モデル）エージェントの能�
 - **採点系のバグがスコアに混ざる。** 失敗と判定されたタスクを調べると、モデルは正しく振る舞ったのに、環境セットアップの問題やインストール用パッチの二重適用で落ちていたものがあった。**失敗例を人が読まない限り、評価インフラの不具合はモデルの弱さに見える。**
 - **隠しテストは「成功の思い込み」を生む。** モデルは採点用テストを見られないので、失敗しているのに成功したと思い込む。誤った抽象度での修正（応急処置）と、問題は解いたが元のテストに合わない解の 2 種類がある。後者は「正しい解が採点で落ちる」という**検証器側の限界**でもある。
 - **コストのばらつきが大きい。** 12 ステップで解ける例がある一方、成功例の多くは数百ターン・10 万トークン超を要した。**解決率だけでなく 1 タスクあたりのターン数とトークンを併記しないと、実用上の比較にならない。**
+
+**エージェント以前から、コードの評価は漏れを抱えていた。** LLM4SE のサーベイ（[[summaries/2023-llm4se-survey]], v2 2024-09）は、データ漏れを LLM4SE の中心の課題に挙げている。プログラム修復の標準ベンチマーク Defects4J のコードの一部は、CodeT5・CodeBERT・UniXcoder の訓練に使われた CodeSearchNet に含まれていた。ChatGPT は LeetCode の問題番号を言うだけで問題文と解答を返した。同サーベイは汚染のない評価データの出どころとして、(1) HumanEval のように人手で新しく書く、(2) EvalGPTFix のように訓練の締め切り後に公開されたものを使う、(3) 企業内の非公開プロジェクトを使う、の 3 つを挙げ、モデルが答えを記憶しているだけかを確かめる技術も要るとした。(2) は下の SWE-rebench の月次分割、(1) と公開方法の工夫は SWE-bench Verified の退役後の議論（下記）につながっている。
 
 **訓練の効果を測るときは、汚染のない分割を並べる。** SWE-bench でモデルを*訓練*する研究が増えると、訓練データと評価データの重なりがいっそう問題になる。SWE-Gym（[[summaries/2024-swe-gym]]）は SWE-bench と重ならないリポジトリだけで訓練環境を組み、Golubev らの RL 論文（[[summaries/2025-swe-rl-long-context]]）は SWE-bench Verified に加えて、**訓練データに含まれない SWE-rebench の最新の月次分割（2025 年 5・6 月）** でも評価した。その結果、文脈を 131k に広げた第 2 段階の RL は Verified では +3.3 ポイントだったが、月次分割ではほぼ横ばい（5 月は 36.5 → 35.0）だった。**同じ改善が汚染のない分割で再現するかを見ないと、訓練の効果を過大に読む**。SWE-bench 論文の「訓練日より後の PR から新しいインスタンスを作れる」という設計（上記）を、実際に使った例でもある（→ [[agent-training]]）。
 
@@ -365,3 +368,4 @@ Meta-Harness が「ハーネスも評価対象になる」と示したのに続�
 - [[summaries/2025-swe-rebench]] — 新しい問題だけで、全モデルを同じ足場で 5 回ずつ測るリーダーボード（Verified との比較）
 - [[summaries/2026-swe-prime]] — データ選別の設定を評価用の問題で選んだ例と、1 回の実行の 2〜4 ポイントの差
 - [[summaries/2026-swe-master]] — Git コマンドの禁止で Git ハッキングを防ぐ方式と、Git を許したときの比較
+- [[summaries/2023-llm4se-survey]] — コードの評価のデータ漏れ（Defects4J と CodeSearchNet）と、汚染のない評価データの 3 つの作り方

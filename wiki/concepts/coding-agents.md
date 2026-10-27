@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [コーディングエージェント, coding agent, autonomous coding, SWE-agent, Claude Code, ACI, agent-computer interface]
+aliases: [コーディングエージェント, coding agent, autonomous coding, SWE-agent, Claude Code, ACI, agent-computer interface, LLM4SE, LLM for software engineering, プログラム修復, program repair]
 tags: [coding-agents, llm-agents]
 related:
   - "[[agent-loop]]"
@@ -42,6 +42,7 @@ summaries:
   - "[[summaries/2024-openhands]]"
   - "[[summaries/2026-swe-master]]"
   - "[[summaries/2026-swe-mem]]"
+  - "[[summaries/2023-llm4se-survey]]"
 updated: 2026-10-28
 ---
 
@@ -211,6 +212,14 @@ SWE-agent の軌跡分析はコーディングエージェントの失敗の形�
 2. **複雑度と技術的負債を継続的に測る。** 初速のスパイクは 3 か月で消え、複雑度は残る。**導入の効果は 1 か月では評価できない。**
 3. **エージェントに大域的な文脈が無いことを前提に設計する。** 規約の集約（CLAUDE.md 等）・重複検出・レビュー段の分離は、**アーキテクチャの構造的な限界に対する緩和であって、モデルが賢くなれば消える問題ではない**。
 
+## 前史: コード片を入出力とする LLM4SE
+
+コーディングエージェントが SE の中心に来る前の状況は、LLM4SE（LLM をソフトウェア工学に使う研究）のサーベイ（[[summaries/2023-llm4se-survey]], Zhang ら, v2 2024-09）にまとまっている。2024 年 8 月までの論文 1,009 本を集めると、コード向けの LLM は CodeBERT（エンコーダのみ）・CodeT5（エンコーダ–デコーダ）から Codex・StarCoder・Code Llama（デコーダのみ）へと移り、応用研究はコード生成（155 本）・脆弱性の検出（76 本）・プログラム修復（66 本）・テスト生成（46 本）に集中していた。
+
+当時の主流は、**関数やコード片を入力し、コード片やラベルを出力する**形だった。プログラム修復の流れも、LLM の下流タスクとしての「バグのあるコードからの翻訳」から、修復用のファインチューニング、バグのある行をマスクして埋めさせる zero-shot の穴埋め（AlphaRepair）、修正テンプレートとの組み合わせへと進んだが、どれも**修正すべき場所が与えられている**前提である。評価も BLEU のような文字列の一致が多く、同サーベイが引く比較では BLEU 77〜80% に対して完全一致は 16〜22% だった。同サーベイは SWE-bench を付録の分類図に番号で載せるだけで、エージェントは「エージェントによる生成」「修復のエージェント」として 1 行ずつ触れるにとどまる。
+
+本ページの以降の節が扱うのは、この前提を外した世界である。エージェントは、リポジトリの中から直す場所を自分で探し、編集し、テストを走らせ、実際のイシューを実行で採点されるようになった（[[summaries/2023-swe-bench]] → [[summaries/2024-swe-agent]]）。同サーベイが今後の課題に挙げた「汚染のない評価データ」と「LLM を既存の手順の部品にする」は、それぞれ SWE-rebench の月次分割と Agentless の固定パイプライン（下記）として具体化した。
+
 ## 手続き型とエージェント型: 足場の 2 つの流儀
 
 GitHub のイシュー解決の足場は、**エージェント型**（agentic）と**手続き型**（procedural）に分けられる（[[summaries/2025-swe-effi]] が引くサーベイの分類）。エージェント型は LLM が自分で計画し、ツールを選んでループを回す（SWE-agent、OpenHands）。手続き型は決まった手順の決まった箇所で LLM を呼ぶ固定パイプラインで、[[agent-frameworks]] の用語では agent ではなく **workflow** にあたる。**AutoCodeRover** は抽象構文木にもとづくツールで疑わしい関数を特定してから、パッチを生成して選ぶ。
@@ -302,3 +311,4 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 - [[summaries/2026-swe-prime]] — 成功軌跡を選び直して SFT し、繰り返しとターン数を減らした研究
 - [[summaries/2026-swe-master]] — オープンウェイトの教師の蒸留と実環境の RL で 32B を 61.4% にした公開の事後学習。LSP による意味での探索
 - [[summaries/2026-swe-mem]] — 文脈の管理を訓練し、32K の上限で 4B を 43.4%、30B を 60.2% にした
+- [[summaries/2023-llm4se-survey]] — エージェント以前の LLM4SE の全体地図（2024 年 8 月までの 1,009 本、コード向け LLM 62 個、SE の 112 タスク）

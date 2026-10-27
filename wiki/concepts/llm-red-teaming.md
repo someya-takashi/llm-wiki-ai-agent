@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [レッドチーミング, red teaming, red-teaming, jailbreak, ジェイルブレイク, prompt injection, プロンプトインジェクション, 脅威モデル, threat model, PAIR, TAP, GCG, adversarial attack, 敵対的攻撃]
+aliases: [レッドチーミング, red teaming, red-teaming, jailbreak, ジェイルブレイク, prompt injection, プロンプトインジェクション, 脅威モデル, threat model, PAIR, TAP, GCG, adversarial attack, 敵対的攻撃, adversarial attack on code models, imitation attack, 模倣攻撃]
 tags: [llm-red-teaming, agent-safety-and-guardrails, llm-agents, alignment]
 related:
   - "[[agent-safety-and-guardrails]]"
@@ -22,7 +22,8 @@ summaries:
   - "[[summaries/2022-instructgpt]]"
   - "[[summaries/2026-kimi-k3]]"
   - "[[summaries/2026-swe-bench-verified-retired]]"
-updated: 2026-10-25
+  - "[[summaries/2023-llm4se-survey]]"
+updated: 2026-10-28
 ---
 
 # LLM Red Teaming（LLM のレッドチーミング）
@@ -38,6 +39,7 @@ updated: 2026-10-25
 - **prompt injection（プロンプトインジェクション）**: エージェントが読む外部データ（Web ページ・文書・ツール出力）に埋め込まれた指示が、本来の指示を乗っ取る。分類は **goal hijacking**（元の目標を差し替えて特定の出力を出させる）と **prompt leaking**（システムプロンプト自体を再現させる）、そして**アプリ統合型 LLM が外部の汚染テキストを読む「間接インジェクション」**（HOUYI・P2SQL 等）。**検索やブラウジングを行うエージェントの最も現実的な脅威**であり、[[computer-use-agents]]（画面全部が入力）・[[retrieval-augmented-generation]]（検索結果をコンテキストへ戻す）・[[tool-use-and-function-calling]]（ツール出力の取り込み）のすべてに及ぶ。
 - **jailbreaking（ジェイルブレイク）**: 安全制約を回避してモデルに禁止内容を生成させる。プロンプトのパターンは pretending（ロールプレイ）・attention shifting（物語生成へ注意そらし）・privilege escalation（制約を破らせる）で、代表は **DAN**（Do Anything Now）。→ 下記「2 つの失敗モード」
 - **backdoor / data poisoning（バックドア・データポイズニング）**: 訓練データやプロンプトに毒・隠れトリガーを仕込み、良性入力では正常・トリガー入力で異常動作させる。同サーベイの知見として、**LLM のバックドア化は固定能力の分類器より難しい**（どうプロンプトされてもトリガーで発動しつつ他タスクへの影響を最小化する必要がある）ことと、モデルを外部から取り込む**供給網が攻撃面**になることが重要。
+- **コード向けの LLM への攻撃**: LLM4SE のサーベイ（[[summaries/2023-llm4se-survey]]）は、コード向けの LLM への攻撃を 3 つに分けて整理している。意味の同じコードに変数名の置き換えのような小さな変更を加えて誤判定させる**敵対的攻撃**（ALERT・CodeAttack）、関数名に `_aux` のような接尾辞を付けるといった目立たないトリガーを訓練データに仕込む**バックドア攻撃**（BADCODE・CodePoisoner）、API への問い合わせの結果で中規模のモデルを訓練して能力を盗み出す**模倣攻撃**である。脆弱性の検出で脆弱なコードを「安全」と判定させる、コード検索で悪意のあるコードを上位に出す、といった被害の形は、コードを書いて取り込むエージェントにもそのまま当てはまる。
 - **プライバシー攻撃**: 勾配漏洩（TAG・LAMP。連合学習の共有勾配から訓練データを復元）・メンバーシップ推論（MIA。あるサンプルが訓練データにあったかを判定、shadow training が原型）・**PII 漏洩**（記憶＝memorization による逐語抽出。Carlini らの GPT-2 抽出、ProPILE）。エージェントが会話履歴や PII をファイルへ蓄える設計（[[context-engineering]] の外部化・[[agent-memory]]）は、この漏洩面を運用側へも広げる。
 
 ## なぜジェイルブレイクは消えないのか: 2 つの失敗モード
@@ -367,3 +369,4 @@ hostage negotiator 問題は「攻撃データを**選好データ**として使
 - [[summaries/2024-llm-security-privacy-survey]] — 脅威分類カタログの根拠原典
 - [[summaries/2026-kimi-k3]] — サイバー能力の 2 段階評価（Tier1 脆弱性発見・Tier2 エクスプロイト開発）と dual-use の根拠原典
 - [[summaries/2026-swe-bench-verified-retired]] — 攻撃役と判定役の LLM を、ベンチマークの汚染（記憶の引き出し）の検査に転用した例
+- [[summaries/2023-llm4se-survey]] — コード向けの LLM への敵対的攻撃・バックドア攻撃・模倣攻撃の整理

@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [PEFT, パラメータ効率のよいファインチューニング, LoRA, Low-rank Adapter, 低ランクアダプタ, QLoRA, アダプタ, adapter, prompt tuning, prefix tuning, IA3, BitFit, 全結合層アダプタ, フルファインチューニング, full finetuning]
+aliases: [PEFT, パラメータ効率のよいファインチューニング, LoRA, Low-rank Adapter, 低ランクアダプタ, QLoRA, アダプタ, adapter, prompt tuning, prefix tuning, IA3, BitFit, 全結合層アダプタ, フルファインチューニング, full finetuning, catastrophic forgetting, 破滅的忘却, continual learning]
 tags: [parameter-efficient-fine-tuning, model-quantization, llm-foundations]
 related:
   - "[[model-quantization]]"
@@ -11,7 +11,8 @@ summaries:
   - "[[summaries/2023-qlora]]"
   - "[[summaries/2024-efficientqat]]"
   - "[[summaries/2025-llm-quantization-explained]]"
-updated: 2026-08-02
+  - "[[summaries/2023-llm4se-survey]]"
+updated: 2026-10-28
 ---
 
 # Parameter-Efficient Fine-Tuning（パラメータ効率のよいファインチューニング）
@@ -114,6 +115,8 @@ QLoRA が示した最も一般性のある結果は、**「推論のための 4 
 - **フィッシャー情報に基づく重みへのマスクの学習**
 - 上記の組み合わせ
 
+コード向けの LLM での使われ方は、LLM4SE のサーベイ（[[summaries/2023-llm4se-survey]]）にまとまっている。アダプタ・プレフィックス・LoRA を 2 つのモデルと 4 つのコードのタスクで比べた実証研究、コードの基本的な性質をよく表す下位の層を凍結して上位の層だけを更新する方法、多言語のコード検索と要約をアダプタで改善する方法などである。同サーベイは、新しいデータで訓練すると前の知識を失う破滅的忘却への対策（代表的な例を再生する継続学習など）を、PEFT と並ぶ合わせ込みの課題として挙げている。
+
 QLoRA 論文は「**LoRA のアダプタが 16 ビットの完全なファインチューニングの性能に到達できる**ことを示す」に留め、他の PEFT 手法とのトレードオフの探究は今後の課題としている。また §8 で「これらの手法が大きなモデルへスケールするかどうかは不明である。多くの結果がその頑健性を確立しているので LoRA を用いたが、**他のアダプタがより良い性能をもたらすかもしれない**」と述べており、**LoRA が最良だと主張してはいない**点は押さえておくべきである。
 
 ## データ側の知見: 量より適合性
@@ -140,3 +143,4 @@ PEFT で何を訓練するかの前に、**何のデータで訓練するか**�
 - [[llm-inference-optimization]] — 訓練でなく推論側のメモリと速度
 - [[summaries/2023-qlora]] — 本ページの主要な根拠
 - [[summaries/2024-efficientqat]] — Q-PEFT の「マージで FP16 へ戻る」問題を指摘し、終始低ビットのまま訓練・出荷する道を示した論文
+- [[summaries/2023-llm4se-survey]] — コード向けの LLM での PEFT と継続学習の研究の整理

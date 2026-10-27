@@ -165,3 +165,4 @@ PR の作成年で分けた結果（Table 7）は、**2023 年の前後でほと
 - [[summaries/2024-swe-gym]] — SWE-bench の訓練用分割に欠けていた実行環境を用意した訓練環境（SWE-bench と重ならないリポジトリで構築）
 - [[agent-training]] — SWE-Llama の「文脈の分布シフトに脆い SFT」を含む、エージェントの訓練の段取り
 - [[summaries/2026-swe-bench-verified-retired]] — 作成年で分ける当時の汚染の検査が、2026 年のフロンティアモデルでは成り立たなかったという報告
+- [[summaries/2023-llm4se-survey]] — 2024 年 8 月までの LLM4SE のサーベイ。SWE-bench を付録の分類図に番号で載せるだけで、主流はコード片を入出力とする研究だった

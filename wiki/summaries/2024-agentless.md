@@ -170,3 +170,4 @@ translation: "[[translations/2024-agentless]]"
 - [[summaries/2024-error-bars-evals]] — 32.0% 対 30.7%（300 問）のような差が誤差の範囲かを判断する、標準誤差と対応のある比較
 - [[summaries/2025-swe-rebench]] — Agentless の固定手順の考え方を、インストール手順の自動生成に応用した例
 - [[summaries/2025-kimi-dev]] — Agentless の形式を「訓練の型」に使い、エージェントの出発点にした後続（Verified 60.4%）
+- [[summaries/2023-llm4se-survey]] — 同時期の LLM4SE のサーベイ。プログラム修復の 5 段階の変遷と、「LLM を既存の手順の部品にする」という提言
