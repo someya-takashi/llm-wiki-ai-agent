@@ -155,3 +155,4 @@ SWE-agent が示した ACI（Agent-Computer Interface, エージェント向け�
 - [[summaries/2025-swe-effi]] — OpenHands を含む足場をモデルごとに比べた研究
 - [[summaries/2025-complexity-trap]] — OpenHands が使う LLM による履歴の要約と、観測のマスキングの比較
 - [[summaries/2024-agentless]] — 同時期の、ツールもループも持たない手続き型の対極
+- [[summaries/2026-swe-mem]] — OpenHands を足場に、履歴の区間を要約に置き換える記憶の道具を足して訓練した研究

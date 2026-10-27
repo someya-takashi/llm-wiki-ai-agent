@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [コンテキストエンジニアリング, context management, コンテキスト管理, prompt engineering, attention budget, 注意予算, context rot, just-in-time, progressive disclosure, 段階的開示, right altitude, structured note-taking, observation masking, 観測のマスキング, LLM-Summary, trajectory elongation, 軌跡の伸長, agentic search, codebase map, コードベースの地図]
+aliases: [コンテキストエンジニアリング, context management, コンテキスト管理, prompt engineering, attention budget, 注意予算, context rot, just-in-time, progressive disclosure, 段階的開示, right altitude, structured note-taking, observation masking, 観測のマスキング, LLM-Summary, trajectory elongation, 軌跡の伸長, agentic search, codebase map, コードベースの地図, selective compression, 区間を選ぶ圧縮, Context Folding, SWE-Compressor, summary-based context manager]
 tags: [context-engineering, llm-agents, agent-memory]
 related:
   - "[[agent-memory]]"
@@ -39,7 +39,9 @@ summaries:
   - "[[summaries/2025-swe-effi]]"
   - "[[summaries/2024-agentless]]"
   - "[[summaries/2025-complexity-trap]]"
-updated: 2026-10-26
+  - "[[summaries/2026-swe-master]]"
+  - "[[summaries/2026-swe-mem]]"
+updated: 2026-10-28
 ---
 
 # Context Engineering（コンテキストエンジニアリング）
@@ -148,6 +150,15 @@ LLM（Large Language Model, 大規模言語モデル）の**限られたコン�
 - 両者を組み合わせ、**ターンを溜める間はマスキングで観測を消し、43 ターン溜まったら要約で上限を作る**混合方式は、マスキング単独より 7%、要約単独より 11% 安かった（50 問での確認）。要約を 21 ターンごとに走らせる素朴な混合は、キャッシュの再利用が崩れてかえって高くついた。
 
 この結果は上の「最も安全で最も軽い形の compaction」としてのツール結果の消去を、数字で裏づけたものと読める。要約を最後の手段に回す混合方式は、後述の Claude Code の 5 層 compaction の「遅延劣化」（安い層から順に当て、auto-compact は最後）と同じ結論に、実験の側から達している。ただし比べた要約は OpenHands 形式の 1 種類だけで、領域も SE（観測が長く冗長な領域）に限られる。
+
+#### 規則で圧縮するか、モデルに選ばせるか
+
+The Complexity Trap の方式はどれも、「N ターン前より古い」「21 ターンごと」という**固定の規則**で発動する。内容の重要さや作業の区切りは見ない。2026 年の 2 本が、この点の両側を測った。
+
+- **規則のままでは小さいモデルに効かなかった**。SWE-Master（[[summaries/2026-swe-master]], 2026-02）は、m ターンごとに古いターンを自然言語の要約にまとめ、直近の k ターン以上を生のまま残す方式を作った。ウェブ検索で好成績の「過去のツール応答をすべて捨てる」方式（Condenser）は、読んだファイルやエラーログが後で必要になるコーディングには向かない、という判断からである。強いモデル（MiniMax-M2.1・GLM-4.7）では、解決率を保ったまま入力トークンが 36〜42% 減り、1 ターンの文脈の最大長はほぼ半分になった（ターン数は増えた）。ところが自分たちの 32B のモデルでは、効率も解決率も改善しなかった。
+- **圧縮の判断を訓練すると、小さいモデルでも効いた**。SWE-MeM（[[summaries/2026-swe-mem]], 2026-06）は、圧縮する区間・要約・残りの作業を引数にした道具をエージェントに持たせ、**いつ・どこを・どう圧縮するかをモデル自身に訓練で学ばせた**。文脈の上限を 32K に絞ったまま、Qwen3-4B を SWE-bench Verified で 43.4%、Qwen3-Coder-30B-A3B を 60.2% にした。閾値で全体を要約する方式（総トークンが素のエージェントの約 2 倍）やサブタスクを畳む Context Folding（ステップ数が約 2 倍）と違い、総トークンは素のエージェントより少なかった（94.7%）。ステップ数は 23.5% 増えたが、The Complexity Trap の「要約すると軌跡が伸びる」の範囲に収まる。
+
+読み方として、要約の効き目は「要約するかどうか」より**「どの区間を、いつ」を誰が決めるか**に左右される。規則で決めるなら、まず観測のマスキング（上記）が安く確実である。区間の選択を任せるなら、その判断をモデルが学んでいる必要がある。SWE-MeM のアブレーションでは、区間の選択を全体の要約に替えると 0.8 ポイント、能動的な発動を閾値に替えると 1.0 ポイント下がった。差は小さく、1 回の評価では確かとは言えないが、方向は一貫している。
 
 長時間タスクでは「全履歴の持ち回り」から「**フェーズごとに要約して本質だけ残す**」へ移行する。[[summaries/2025-multi-agent-research-system]]（2025）の本番運用パターンでは、完了した作業フェーズを要約して外部メモリへ保存し、コンテキスト限界が近づいたら**クリーンなコンテキストを持つ新しいサブエージェントを生成して引き継ぐ**（handoff）。保存済みの計画は失わずメモリから取り戻す。MemGPT の recursive summary を、マルチエージェントの分業に持ち上げた形と読める。
 
@@ -316,3 +327,5 @@ few-shot 例示はコンテキスト積載の古典で、CoT（[[summaries/2022-
 - [[harness-engineering]] — コンテキスト管理を 1 つの層として含む、ハーネス全体の設計
 - [[summaries/2025-complexity-trap]] — 観測のマスキングと LLM による要約を同じ条件で比べ、要約が上回らないこと・軌跡の伸長・混合方式を示した実測
 - [[summaries/2024-agentless]] — 階層的な位置の特定（木構造 → スケルトン → 該当コード）で、文脈を絞るほど精度も費用も良くなった実測
+- [[summaries/2026-swe-master]] — 固定間隔の要約によるコンテキスト管理。強いモデルでは入力トークンを 4 割前後減らし、32B では効かなかった
+- [[summaries/2026-swe-mem]] — 圧縮する区間と時機をモデルに選ばせる記憶の道具を訓練し、32K の上限で総トークンも減らした

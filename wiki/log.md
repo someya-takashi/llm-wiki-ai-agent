@@ -1171,3 +1171,25 @@ type: log
 - 要約ページは yomiyasu で推敲した（太字が表示されない箇所の修正、間を作るだけの読点の除去、「土台」の言い換え。verify: meaning_risk=1）。「版」は version の定着した訳語として残した。
 - 本 wiki の読み・計算として要約に書いたもの: GAIA（53 問）の標準誤差 約 6.4 ポイント、GPQA diamond（198 問）で約 3.5 ポイント。「同じエージェントで全分野」は WebArena が委任経由で GAIA が GPTSwarm なので範囲が限られること。gpt-3.5-turbo では ToolQA 2.3% などと崩れ、汎用性はモデルの力に頼っていること。
 - **データギャップ**: CodeAct（行動をコードにする設計の原論文）、BrowserGym、AutoCodeRover、Mini-SWE-Agent、GPTSwarm、OpenHands のその後の版（CodeActAgent の後継やコンテキストの要約機能）の原典は未取得。
+
+## [2026-10-28] ingest | SWE-Master（Song・Huang・Sun ほか, 中国人民大学・BOSS 直聘, arXiv:2602.03411）
+
+- 取り込み: `raw/papers/SWE-Master_ Unleashing the Potential of Software Engineering Agents via Post-Training.md`（ar5iv → Obsidian Web Clipper）
+- 作成: [[translations/2026-swe-master]], [[summaries/2026-swe-master]], `raw/assets/2026-swe-master/`（図 16 点）
+- 更新: [[concepts/agent-training]]（オープンウェイトの教師の蒸留、落とし穴の表に「打ち切られた軌跡を報酬 0 にすると崩れる」「インフラの失敗」、難しさの表、2026 年前半の到達点、残り予算の通知）, [[concepts/agent-computer-interface]]（探索インターフェースとしての LSP の節を新設）, [[concepts/test-time-compute]]（実行せずにテストの報告を予測する SWE-World での選別）, [[concepts/context-engineering]]（固定間隔の要約が小さいモデルで効かなかった結果）, [[concepts/agent-environments]]（Git コマンドの禁止と履歴の削除の比較、実行環境と推論サーバーの分離）, [[concepts/agent-evaluation]]（Git を許したときの比較）, [[concepts/coding-agents]]（モデルを訓練する節）, 逆リンク: [[summaries/2025-r2e-gym]], [[summaries/2026-swe-lego]], [[summaries/2025-swe-rl-long-context]], [[summaries/2026-claude-code-large-codebases]], [[summaries/2025-complexity-trap]], [[summaries/2024-swe-gym]], [[summaries/2025-swe-rebench]], [[overview]], [[index]]
+- クリップの状態: ar5iv 経由のクリップは図 9 とそのキャプション、付録 B（LSP の軌跡を選別するプロンプト）がまるごと欠け、表 1・4〜6・8〜10 が平坦化し、図 1〜8・11・12 の画像がなかった（HTML 版でも画像ではない）。arXiv の HTML 版 v2 を底本にして本文と付録 A・B をすべて訳した。図 1〜8・11・12 は PDF v2 からキャプション位置を境界に切り出し、図 9（2 枚）・10・13〜15 は HTML の画像を保存した。付録 A.3 のツール呼び出し例 8 つと付録 B のプロンプトは、HTML に埋め込まれた base64 の原文から字下げごと復元し、原文のまま収録した。取得失敗なし。参考文献は訳していない。
+- 原典内の食い違い（翻訳の訳注に 13 項目を記録）: SWE-World の正解率と適合率が本文と表 2 で入れ替わっている。図 12 のキャプションはエントロピーに触れるが図は 2 枚だけ。SFT のデータ「約 6 万件」と表 1 の最終的な軌跡数の合計 12,567 本が合わない。表 3 の SFT の TTS@8 の行が「SFT+RL」。表 4 と表 10 で LSP の機能の構成が違う。図 1 の R2E-Gym 51.0% と表 3 の 49.4%、など。
+- 要約ページは yomiyasu で推敲した（間を作るだけの読点の除去、「効いた」「効く」「きれいな比較」の言い換え。verify: meaning_risk=1。推敲のあとに足した限界の 1 項目（データ量の食い違い）による）。
+- 本 wiki の読み・計算として要約に書いたもの: 500 問・解決率 60% 前後の標準誤差 約 2.2 ポイント（LSP の +2.0・+1.4、継続 SFT の −0.4、要約の差はこの幅に収まる）。要旨の「同一の実験設定で」は他手法の報告値の引用なので言いにくいこと。到達点の多くは Verified で 7 割近い教師の蒸留によること。`git log`/`git show` の禁止では `git reflog` や `.git` の直接の読み取りが残ること。
+- **データギャップ**: SWE-World（Sun ほか 2026、模擬実行の検証器）、DeepSWE、MiMo-v2-Flash（Git ハッキングの観察）、daVinci-Dev、SWE-Mirror、SWE-Swiss、Condenser（Discard-All）、Language Server Protocol の仕様の原典は未取得。
+
+## [2026-10-28] ingest | SWE-MeM（Gao ほか, 香港中文大学・上海交通大学・清華大学・ByteDance, arXiv:2606.28434）
+
+- 取り込み: `raw/papers/SWE-MeM- Learning Adaptive Memory Management for Long-Horizon Coding Agents.pdf`（PDF, v1）
+- 作成: [[translations/2026-swe-mem]], [[summaries/2026-swe-mem]], `raw/assets/2026-swe-mem/`（図 4 点）
+- 更新: [[concepts/agent-memory]]（代表手法に「SWE-MeM: 記憶の管理を訓練で身につける」の節、設計論点の「いつ書くか」）, [[concepts/context-engineering]]（「規則で圧縮するか、モデルに選ばせるか」の小節を新設）, [[concepts/agent-training]]（落とし穴の表に「文脈を書き換えるエージェントを全履歴を前提に訓練する」、ステップ単位のマスク、到達点）, [[concepts/agent-environments]]（将来のコミットの削除）, [[concepts/coding-agents]]（モデルを訓練する節）, 逆リンク: [[summaries/2023-memgpt]], [[summaries/2024-openhands]], [[summaries/2025-complexity-trap]], [[summaries/2024-swe-gym]], [[summaries/2025-swe-rebench]], [[overview]], [[index]]
+- 底本: PDF を pdftotext で抽出し、ページ画像で式 1〜6・表 1〜4・Algorithm 1 を組み直した。図 1〜4 は PyMuPDF でベクタ図をキャプション位置を境界に切り出した。付録のプロンプト 4 つと記憶管理の例 4 つ（C.1）は原文のまま収録し、C.2 の事例 A〜C（地の文の箇条書き）は訳した。プロンプトの行の折り返しは PDF の行座標から繋ぎ直したので、文の境目が改行か空白かは判別できない箇所がある。参考文献は訳していない。
+- 原典内の食い違い（翻訳の訳注に 11 項目を記録）: 表 4 の平均の比 15.5% は「圧縮後 ÷ 圧縮前」で、削った割合に直すと約 84.5% になり、80% 超を欠陥とする選別の基準を平均が超える。B.2 の「τ = 0.05 は軌跡合成の低温度の設定に合わせた」（τ は残り予算の閾値で、合成時の温度はどこにも書かれていない）。付録 A.1 が参照する行番号が Algorithm 1 と合わない。図 4(b) の 30B の数値（道具なしの OpenHands 53.6、普通の SFT 58.2）は本文にない。序論の「より少ない対話ラウンド」は相対値の話で、絶対値では閾値で要約するエージェント（74.9）のほうが少ない、など。
+- 要約ページは yomiyasu で推敲した（太字が表示されない箇所の修正、間を作るだけの読点の除去、「効く」「きれいな比較」の言い換え。verify: meaning_risk=0）。
+- 本 wiki の読み・計算として要約に書いたもの: アブレーションの差（0.6〜1.4 ポイント）は 500 問の標準誤差 約 2.2 ポイントより小さいこと。他手法の値は基盤モデル・文脈の上限・ステップの上限が違う報告値の引用であること。道具を外す比較は訓練時と違う条件で動かす比較であること。推論時の手順だけ（GPT-5.1 が判断）で 58.4% なので、SFT はその判断をほぼ取り込んだと読めること。MemGPT の自己管理を訓練で重みに入れた形、SWE-Master の「小さいモデルでは要約が効かない」への答えという位置づけ。
+- **データギャップ**: SWE-Compressor（Context as a Tool）、Context Folding、ReSum、AgentDiet、SWE-Pruner、LLMLingua、SWE-bench Pro・Multilingual の原典は未取得。

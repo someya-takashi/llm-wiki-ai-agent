@@ -209,3 +209,5 @@ Gemini 2.5 Flash で、OpenHands の上でも SWE-bench Verified の 50 問で�
 - [[summaries/2025-swe-effi]] — Token Snowball と、失敗した試行が高くつくこと
 - [[summaries/2024-error-bars-evals]] — 対応のある差の検定
 - [[summaries/2024-openhands]] — LLM による履歴の要約を使う足場の 1 つ、OpenHands の原論文
+- [[summaries/2026-swe-mem]] — 圧縮の時機と区間をモデルに選ばせる記憶の道具を訓練した後続研究。本論文が限界に挙げた「固定のヒューリスティックで発動する」点への答え
+- [[summaries/2026-swe-master]] — 固定間隔の要約によるコンテキスト管理を SWE で試し、強いモデルでは入力トークンを減らしたが小さいモデルでは効かなかった報告

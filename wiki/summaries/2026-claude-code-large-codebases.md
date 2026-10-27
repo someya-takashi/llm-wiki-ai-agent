@@ -198,3 +198,4 @@ Claude Code はこの方式を採らない。エンジニアと同じように�
 - [[summaries/2026-agentic-harness-engineering]] — プロンプトの散文は転移せず、構造は転移するという測定
 - [[summaries/2026-externalization]] — スキルの体系と危険な合成
 - [[summaries/2025-effective-harnesses]] — ファイルを介した構造化された引き継ぎ
+- [[summaries/2026-swe-master]] — LSP をエージェント向けのツールにし、SWE-bench Verified で効果を測った研究（解決率を保ってトークンを約 2 割削減）

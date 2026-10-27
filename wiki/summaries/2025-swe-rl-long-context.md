@@ -159,3 +159,4 @@ LLM への強化学習（RL）は、DeepSeek-R1 のように数学や一発の�
 - [[summaries/2025-swe-smith]] — RL ではなく RFT で訓練した、同時期の SWE モデル（SWE-agent-LM-32B）
 - [[summaries/2025-swe-rebench]] — 本論文が訓練と評価に使ったデータセットと月次分割の原論文（同じ著者群）
 - [[summaries/2025-kimi-dev]] — 同じ Qwen2.5-72B から、Agentless の訓練を経てエージェントにした別の道（48.6%、ただし Claude 3.7 の軌跡で SFT）
+- [[summaries/2026-swe-master]] — SFT 済みのモデルの RL で、打ち切られた軌跡を報酬 0 にすると崩れたので強制提出に替えた。長い軌跡を捨てない方向で一致

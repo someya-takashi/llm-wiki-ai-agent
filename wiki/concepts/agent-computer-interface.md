@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [ACI, agent-computer interface, エージェント–コンピュータインターフェース, ツール設計, tool design, エージェント向けツール, ツール説明文, tool description, response_format, str_replace, error-proofing, Poka-yoke]
+aliases: [ACI, agent-computer interface, エージェント–コンピュータインターフェース, ツール設計, tool design, エージェント向けツール, ツール説明文, tool description, response_format, str_replace, error-proofing, Poka-yoke, LSP, Language Server Protocol, lsp_tool]
 tags: [agent-computer-interface, tool-use-and-function-calling, coding-agents, llm-agents]
 related:
   - "[[tool-use-and-function-calling]]"
@@ -23,7 +23,8 @@ summaries:
   - "[[summaries/2026-agentic-harness-engineering]]"
   - "[[summaries/2026-dive-into-claude-code]]"
   - "[[summaries/2025-complexity-trap]]"
-updated: 2026-10-26
+  - "[[summaries/2026-swe-master]]"
+updated: 2026-10-28
 ---
 
 # Agent-Computer Interface（エージェント–コンピュータインターフェース, ACI）
@@ -123,6 +124,18 @@ ACI の実装には、一見正反対の 2 つの路線がある。
 
 その後、一意一致の文字列置換はコーディングエージェントの事実上の標準になった（Claude Code の Edit、Kimi K2.5 の評価ハーネスの `str_replace` など）。ただし**どの方式でも編集は失敗し、失敗は連鎖する**。SWE-agent では 1 回の編集失敗のあと最終的に成功する確率が 90.5% から 57.2% に落ちた（→ [[coding-agents]]）。インターフェースの選択は失敗をなくすのでなく、失敗の起きにくさと回復のしやすさを決める。
 
+## 探索インターフェース: 文字列の検索から、意味で辿る LSP へ
+
+編集の次に効くのが、**コードの場所をどう探させるか**である。SWE-agent・OpenHands の世代のエージェントは、`grep`・`find` やファイルの行範囲の表示で、コードを文字列として探す。SWE-Master（[[summaries/2026-swe-master]], 2026-02）は、同じ名前の関数がたくさんあったり、呼び出しがファイルをまたいで何段も続いたりすると、文字列の検索は無関係な行を大量に返し、エージェントはコードを継ぎはぎに読んで試行錯誤のループに入ると指摘した。
+
+そこで、IDE の「定義へ移動」「すべての参照を検索」を支える **LSP**（Language Server Protocol, エディタと言語ごとの解析サーバーを JSON-RPC でつなぐ標準）を、エージェント向けのツール `lsp_tool` に作り直した。設計は上の原則に沿っている。
+
+- **引数を単純にする**（原則 2）。生の JSON-RPC のメソッドを見せず、ファイルパス・行番号・記号名の 3 つで呼べるようにする。呼び出し階層の 3 つのメソッドは `get_call_hierarchy` 1 つにまとめた。
+- **座標ではなく中身を返す**（原則 3）。LSP の素の応答は「何行目の何文字目」という位置だけだが、該当するソースコードを読み込んで返し、不要な情報を削る。
+- **道具の数は 10**。定義（`get_definition` など）、呼び出し階層、シグネチャ・ファイルの構造の見出し・使用箇所、ワークスペース全体の記号検索と参照。言語サーバーを入れ替えるだけで他の言語に移せる（評価は Python なので pyright）。
+
+効果は、強いモデルに持たせると SWE-bench Verified で解決率がやや上がり、ターンが減った（MiniMax-M2.1 で 68.4% → 70.4%、82.0 → 77.0 ターン）。LSP つきの教師の軌跡で継続 SFT した SWE-Master では、解決率をほぼ保ったまま（61.4% → 61.0%）入力トークンが 23.7%、ターンが 17.5% 減った。ただし後者には継続 SFT そのものの効果も混ざっていると著者ら自身が断っており、解決率の差はどれも 1 回の評価のばらつきの範囲にある。**解決率を上げる道具というより、同じ解決率に少ない手数で着く道具**と読むのが妥当である。実務の側でも、Claude Code を大規模コードベースに入れる記事が「文字列ではなくシンボルで辿らせる」として LSP の導入を勧めている（[[summaries/2026-claude-code-large-codebases]]）。
+
 ## 根拠: SWE-agent のアブレーション
 
 ACI が単なる言い換えでないことを示す、この領域で最も引用に値する数字である（SWE-bench Lite・GPT-4 Turbo・既定 18.0%）。
@@ -169,3 +182,4 @@ ACI が単なる言い換えでないことを示す、この領域で最も引�
 - [[summaries/2024-swe-agent]] — ACI の提唱とアブレーション
 - [[summaries/2025-writing-effective-tools]] — 評価駆動のツール改善と 5 原則
 - [[summaries/2025-swe-bench-sonnet]] — 汎用ツール 2 つと説明文の作り込み
+- [[summaries/2026-swe-master]] — LSP をエージェント向けのツールに作り直した設計（引数の単純化・座標でなくコードを返す）と、その効果
