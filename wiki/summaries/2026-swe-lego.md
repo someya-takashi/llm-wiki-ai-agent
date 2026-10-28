@@ -166,3 +166,4 @@ SWE エージェントの訓練は、強いモデルの軌跡の SFT（蒸留）
 - [[summaries/2025-r2e-gym]] — 生成型の検証器の比較相手にした R2E-Gym-Verifier-14B の原論文
 - [[summaries/2026-swe-master]] — 同時期の公開の事後学習。Git ハッキングを履歴の削除ではなく `git log`/`git show` の禁止で防ぎ、表 3 で SWE-Lego と比べる
 - [[summaries/2026-p2t]] — 本論文のエラーマスクを比較手法に使った後続。SWE-Gym の軌跡では +1.0 ポイント以下にとどまり、軌跡そのものを作り直す P2T が上回った
+- [[summaries/2026-swe-bench-pro-verified]] — 同じ Git ハッキングが後継の SWE-Bench Pro にも残っていた。参照の削除では足りず、リポジトリを作り直して塞いだ（GLM-5.2 で 78.80% → 57.32%）

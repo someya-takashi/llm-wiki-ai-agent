@@ -168,3 +168,4 @@ Agentless は解決率が最高（48%）だが、候補パッチとテストを�
 - [[summaries/2025-complexity-trap]] — Token Snowball への対処として、古い観測を消すだけでコストが半分前後になることを示した実測
 - [[summaries/2025-kimi-dev]] — 手続き型とエージェント型を、モデルとの相性ではなく訓練の段階として並べた研究
 - [[summaries/2024-openhands]] — 比較した足場の 1 つ、OpenHands の原論文
+- [[summaries/2025-swe-rl]] — 実行のフィードバックを避け、軽い Agentless Mini で RL した SWE-RL の原論文

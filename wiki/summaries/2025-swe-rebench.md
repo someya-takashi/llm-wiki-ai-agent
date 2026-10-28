@@ -180,3 +180,4 @@ SWE-bench（[[summaries/2023-swe-bench]]）以降、コーディングエージ�
 - [[summaries/2026-swe-prime]] — 本データセットの OpenHands の成功軌跡 32,161 本から 10% を選び直して SFT した研究
 - [[summaries/2025-r2e-gym]] — PR ではなくコミットから、半手動で環境を作る並行の方式
 - [[summaries/2026-swe-master]] ・ [[summaries/2026-swe-mem]] — SWE-rebench を訓練データの一部に使った 2026 年の後続研究
+- [[summaries/2025-swe-bench-pro]] ・ [[summaries/2026-deepswe]] — 汚染を避ける別の 2 つの方法（コピーレフトと非公開のリポジトリ／タスクの書き下ろし）

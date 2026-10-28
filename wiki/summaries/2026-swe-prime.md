@@ -162,3 +162,4 @@ translation: "[[translations/2026-swe-prime]]"
 - [[summaries/2026-swe-bench-verified-retired]] — 評価に使った Verified の問題点
 - [[summaries/2024-openhands]] — 選び直した軌跡を生んだ足場、OpenHands の原論文
 - [[summaries/2026-p2t]] — 成功軌跡を選ぶのではなく、正解パッチから作った前提のグラフで教師の手を書き換え、教師が解けない問題からも手本を作った別の方向
+- [[summaries/2025-swe-bench-pro]] — 評価に使った SWE-Bench Pro の原論文。のちに答えの読み出しの穴が見つかっている（→ [[summaries/2026-swe-bench-pro-verified]]）

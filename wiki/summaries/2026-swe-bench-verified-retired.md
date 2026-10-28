@@ -126,3 +126,5 @@ SWE-bench の問題は、多くのモデル提供者が訓練に使うオープ�
 - [[summaries/2026-swe-lego]] — Verified のもう 1 つの漏れ（古い Docker イメージから git log で正解が読めた問題、2〜5 ポイントの水増し）
 - [[summaries/2025-swe-rebench]] — 新しい問題だけで測り、Verified の点数の水増しの可能性を 2025 年の時点で示したリーダーボード
 - [[summaries/2026-swe-prime]] — 報告停止の半年後（2026-08）も Verified を主な評価に使い、選別の設定も Verified で選んだ例（Pro も併用）
+- [[summaries/2025-swe-bench-pro]] — 本記事が代わりに勧めた SWE-Bench Pro の原論文（コピーレフトと非公開のリポジトリ、人が書き足した要件）
+- [[summaries/2026-swe-bench-pro-verified]] ・ [[summaries/2026-deepswe]] — その Pro にも、`.git` の履歴から答えを読める穴とテストの判定の誤りが残っていたことを示した 2 本

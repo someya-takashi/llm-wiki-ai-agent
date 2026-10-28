@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [agent training, エージェント訓練, エージェントの訓練, agentic RL, multi-turn RL, 多ターン強化学習, RFT, rejection sampling fine-tuning, rejection fine-tuning, 棄却サンプリングファインチューニング, 棄却ファインチューニング, filtered behavior cloning, trajectory distillation, 軌跡の蒸留, self-improvement, 自己改善, verifier training, 検証器の訓練, ORM, outcome-supervised reward model, SWE agent training, DAPO, per-instance capping, forced submission, 強制提出, Memory-aware GRPO, trajectory splitting, 軌跡の分割, P2T, Patches-to-Trajectories, privileged information, 特権情報, trajectory curation, 軌跡のキュレーション]
+aliases: [SWE-RL, Llama3-SWE-RL, similarity reward, 類似度報酬, agent training, エージェント訓練, エージェントの訓練, agentic RL, multi-turn RL, 多ターン強化学習, RFT, rejection sampling fine-tuning, rejection fine-tuning, 棄却サンプリングファインチューニング, 棄却ファインチューニング, filtered behavior cloning, trajectory distillation, 軌跡の蒸留, self-improvement, 自己改善, verifier training, 検証器の訓練, ORM, outcome-supervised reward model, SWE agent training, DAPO, per-instance capping, forced submission, 強制提出, Memory-aware GRPO, trajectory splitting, 軌跡の分割, P2T, Patches-to-Trajectories, privileged information, 特権情報, trajectory curation, 軌跡のキュレーション]
 tags: [agent-training, reinforcement-learning-from-human-feedback, agent-environments, coding-agents, test-time-compute, llm-agents]
 related:
   - "[[reinforcement-learning-from-human-feedback]]"
@@ -36,6 +36,7 @@ summaries:
   - "[[summaries/2026-swe-master]]"
   - "[[summaries/2026-swe-mem]]"
   - "[[summaries/2026-p2t]]"
+  - "[[summaries/2025-swe-rl]]"
 updated: 2026-10-28
 ---
 
@@ -65,7 +66,7 @@ updated: 2026-10-28
 |---|---|---|---|
 | **(1) 教師の軌跡の蒸留**（SFT） | 強いモデルの軌跡 | 成功したものだけ残す（ことが多い） | SWE-Gym：GPT-4o・Claude 3.5 Sonnet の成功軌跡 491 本 → 32B が 7.0% → 20.6%。SWE-smith：Claude 3.7 Sonnet の 5,016 本 → 40.2%。SWE-Lego：公開モデル Qwen3-Coder-480B の 1.8 万本 → Qwen3-32B が 23.2% → 52.6% |
 | **(2) 棄却サンプリングファインチューニング**（RFT） | **自分の**軌跡 | 成功したものだけ残して SFT | 72B が 11.4% → 20.5%（[[summaries/2025-swe-rl-long-context]]）、Moatless 7B が 7.0% → 10.0%（[[summaries/2024-swe-gym]]） |
-| **(3) 多ターン RL** | 自分の軌跡（毎反復で引き直す） | 成功も失敗も使い、グループ内の差を advantage にする | 72B が 20.5% → 39.0%（DAPO の改変）、Kimi K2 の agentic rollout、DeepSeek-V4・Kimi K3 の専門家 RL |
+| **(3) 多ターン RL** | 自分の軌跡（毎反復で引き直す） | 成功も失敗も使い、グループ内の差を advantage にする | 72B が 20.5% → 39.0%（DAPO の改変）、Kimi K2 の agentic rollout、DeepSeek-V4・Kimi K3 の専門家 RL。単発の RL で正解パッチとの類似度を報酬にした SWE-RL（70B で 41.0%、候補 500 本から選択）も同じ列に入る |
 
 **(1) 蒸留**は最も安く、効き目も大きい。SWE-Gym は数百本の成功軌跡でオープンモデルの解決率を 3 倍にした。推論の領域でも、DeepSeek-R1 は「小さなモデルに RL を直接かけるより、大きなモデルが RL で見つけた推論を蒸留したほうが強い」（Qwen-32B で 72.6 対 47.0）と報告している（[[summaries/2025-deepseek-r1]]）。ただし**教師より上には行きにくく**、教師がプロプライエタリならデータの出所に縛られる。さらに、SWE-bench の SWE-Llama は「編集すべきファイルが文脈に全部入っている」設定で訓練したため、検索で文脈を作る設定に移すと 3.00% → 0.70% に落ちた（[[summaries/2023-swe-bench]]）。**訓練時と使用時で文脈の作り方が違うと、まねた振る舞いは崩れる**。
 
@@ -80,6 +81,8 @@ updated: 2026-10-28
 **(2) RFT**（rejection sampling fine-tuning, filtered behavior cloning とも）は、「自分に何回も解かせ、成功した軌跡だけを学習データにする」方法である。成功を判定できさえすれば教師モデルが要らない。考え方は古く、Toolformer の「損失を下げたツール呼び出しだけを訓練例に残す」フィルタ（[[summaries/2023-toolformer]]）や、R1 の第 3 段（RL チェックポイントから正解だけを 60 万件集める）、Kimi K2 の「LLM ジャッジがルーブリックで合格とした多ターン軌跡だけ残す」大規模なツール利用データ合成（[[summaries/2025-kimi-k2]]）も同じ形をしている。エージェントでは **RL の前の準備運動**として役に立つ。素のモデルの失敗の多くがツール呼び出しの書式違反なら、まず RFT で書式を覚えさせるだけで大きく伸びる。
 
 **(3) 多ターン RL**は成功した軌跡だけでなく**失敗した軌跡からも学ぶ**。同じタスクで複数（例: 10 本）の軌跡を引き、グループ内の平均より良かったものの確率を上げ、悪かったものの確率を下げる（GRPO・DAPO の考え方 → [[reinforcement-learning-from-human-feedback]]）。RFT では捨てていた失敗が負の信号になるので、RFT が頭打ちになったところからさらに伸びる。[[summaries/2025-swe-rl-long-context]] では、伸びの大半（20.5 → 35.7）が RL の第 1 段階で生まれた。
+
+**実行環境を作らずに RL する道もある。** ここまでの RL は、テストを実行して通るかを報酬にするので、リポジトリごとに動く環境が要る（→ [[agent-environments]]）。SWE-RL（[[summaries/2025-swe-rl]], Meta, NeurIPS 2025）はこれをやめ、モデルが書いた修正と PR の正解パッチの**文字列としての類似度**（Python の `difflib.SequenceMatcher` で 0〜1。書式の誤りは −1）を報酬にした。環境が要らないので、GitHub の PR から 27.3 万件の種データを集められる。1 回の入力に、直すファイルと関係するファイルの全文を与えて修正を 1 回出させる単発の RL で、Llama-3.3-70B-Instruct を GRPO で訓練し、Agentless Mini の流れで候補 500 本からテストで選ぶと SWE-bench Verified で 41.0%（同じ流れの SFT は 36.2%）になった。完全一致を 1 とする 0/1 の報酬では、修正の力が 29.0%（類似度の報酬では 34.8%）にとどまり、平均の報酬は最後までほぼ 0 だった。現実の修正は書き方が多様で完全一致はほとんど起きないので、部分点がないと学習の信号が出ない。代わりに、別の書き方の正しい修正は低い点になり、文字面が似ているだけの誤った修正が高い点になりうる。報酬が測っているのは正しさではなく正解への近さである。
 
 ## 1 回答えて終わる RL と何が違うか
 
@@ -184,7 +187,7 @@ SWE-Master の +3.6 ポイントは SFT での選別としては大きいが、�
 
 **手続き型で鍛えてからエージェントにする道**（[[summaries/2025-kimi-dev]], 2025-09）：Kimi-Dev は Qwen2.5-72B-Base に GitHub の PR から作った約 1,500 億トークンの中間訓練、DeepSeek-R1 の長い推論でのコールドスタート、コード編集の段だけの RL（報酬は実行結果のみ、解ける見込みのある 1,200 問から始めて 100 ステップごとに 500 問を戻すカリキュラム、終盤は成功例を混ぜる）を、すべて Agentless の形式で行った。その後 SWE-smith の軌跡 5,016 本の SFT だけで、エージェント型の足場で 48.6% になった（同じデータの SWE-agent-LM-32B は 40.2%）。同じ Qwen2.5-72B から、エージェント型のまま RFT と多ターン RL で 39.0% にした Golubev らとは別の道である。出発点（素・中間訓練後・SFT 後・RL 後）を比べた実験は、**エージェント用のデータが少ないときほど、どこから始めるかが効く**ことを示した。
 
-> 注: DeepSWE・SkyRL・Skywork-SWE の原典は wiki に未取得で、上の数字は [[summaries/2025-swe-rl-long-context]] と [[summaries/2026-swe-lego]] を通した二次情報である（SWE-smith は 2026-10-26、SWE-rebench と R2E-Gym は 2026-10-28 に取り込んだ → [[summaries/2025-swe-smith]]、[[summaries/2025-swe-rebench]]、[[summaries/2025-r2e-gym]]）。R2EGym-Agent-32B の 34.4% は原典の値と一致する。原典では SWE-Gym と同じ Qwen2.5-Coder で比べ、7B・14B・32B のすべてで SWE-Gym を 8〜14 ポイント上回った。Kimi K3 の評価表にある「DeepSWE」はベンチマーク名で、この表のモデルとは別物である。
+> 注: DeepSWE-32B（Agentica のモデル）・SkyRL・Skywork-SWE の原典は wiki に未取得で、上の数字は [[summaries/2025-swe-rl-long-context]] と [[summaries/2026-swe-lego]] を通した二次情報である（SWE-smith は 2026-10-26、SWE-rebench と R2E-Gym は 2026-10-28 に取り込んだ → [[summaries/2025-swe-smith]]、[[summaries/2025-swe-rebench]]、[[summaries/2025-r2e-gym]]）。R2EGym-Agent-32B の 34.4% は原典の値と一致する。原典では SWE-Gym と同じ Qwen2.5-Coder で比べ、7B・14B・32B のすべてで SWE-Gym を 8〜14 ポイント上回った。Kimi K3 の評価表にある「DeepSWE」はベンチマーク名で、この表のモデルとは別物である（ベンチマークの論文は 2026-10-28 に取り込んだ → [[summaries/2026-deepswe]]）。
 
 ## 設計論点
 
@@ -194,7 +197,7 @@ SWE-Master の +3.6 ポイントは SFT での選別としては大きいが、�
 - **何が律速か**。SWE-Gym は訓練軌跡を 491 本の 25%・50%・100% と増やしても飽和せず、タスク数やリポジトリの多様性ではなく**軌跡をサンプリングする計算量**が律速だと結論した。RL の側でも、ロールアウトの速さが訓練の試行回数を決める（→ [[agent-cost-efficiency]]）。
 - **環境の作り方がデータの偏りを決める**。SWE-Gym は依存関係を手で設定して 2,438 件にとどまり、並行研究（Nebius の 2 本の連続したブログ記事、Badertdinov ら・Golubev ら 2024。後者は [[summaries/2025-swe-rl-long-context]] と同じ著者群）は汎用のセットアップスクリプトで 6,415 件を集めたが、セットアップに失敗した（依存の難しい）タスクは捨てている。**自動化して数を取るか、手間をかけて偏りを避けるか**の選択である（→ [[agent-environments]]）。その並行研究を全自動化した SWE-rebench（[[summaries/2025-swe-rebench]]）は 21,336 件まで増やしたが、動く環境を作れたのはリポジトリの 31% だった。また、RL の報酬が「タスクの欠陥」でなく「エージェントの力不足」だけを反映するように、差分の取り方・テストの走らせ方・依存関係の凍結を SWE-bench の方法から直し、イシューの明確さやテストの正しさを LLM に予測させたラベルを各タスクに付けている。
 - **評価の汚染を分けて見る**。SWE-bench Verified だけで訓練の効果を語ると過大評価になりうる。2026-02 には OpenAI が、主要なフロンティアモデルがどれも Verified の正解パッチを記憶していたと報告している（[[summaries/2026-swe-bench-verified-retired]]）。[[summaries/2025-swe-rl-long-context]] では、第 2 段階の RL の +3.3 ポイントが、訓練データより後に集めた SWE-rebench の月次分割では再現しなかった（→ [[agent-evaluation]]）。
-- **報酬が 1 ビットだけであることの副作用**。成功／失敗しか返さない報酬では、「確信がなくても何かを提出する」振る舞いが育ちやすく、途中のどの行動が効いたかも学びにくい。SWE-Master では逆に、確信が持てずに提出しない振る舞いが RL の初期に増えた（上の表）。報酬を 1 ビットのまま、**ステップ単位で学習に使う行動を選ぶ**のが SWE-MeM の Memory-aware GRPO である。成功した軌跡でも質の悪い圧縮や遅すぎる圧縮は学習から外し、上限を超えて失敗した軌跡では「残りがわずかなのに圧縮しなかったステップ」だけを罰する。プロセス報酬や途中の検証は、この限界に対する今後の論点として残っている。P2T（[[summaries/2026-p2t]]）は、正解パッチから作った前提のグラフを使って SFT のデータをステップ単位で採点した。著者らは、このグラフへの準拠を採点するプロセス報酬モデルを訓練して RL に広げることを今後の方向に挙げている。
+- **報酬が 1 ビットだけであることの副作用**。成功／失敗しか返さない報酬では、「確信がなくても何かを提出する」振る舞いが育ちやすく、途中のどの行動が効いたかも学びにくい。SWE-Master では逆に、確信が持てずに提出しない振る舞いが RL の初期に増えた（上の表）。報酬を 1 ビットのまま、**ステップ単位で学習に使う行動を選ぶ**のが SWE-MeM の Memory-aware GRPO である。成功した軌跡でも質の悪い圧縮や遅すぎる圧縮は学習から外し、上限を超えて失敗した軌跡では「残りがわずかなのに圧縮しなかったステップ」だけを罰する。1 ビットの代わりに連続の報酬を使う道もある。SWE-RL（[[summaries/2025-swe-rl]]）は正解パッチとの類似度で部分点を与え、0/1 の完全一致より大きく伸びたが、測っているのは正しさではなく正解への近さである。プロセス報酬や途中の検証は、この限界に対する今後の論点として残っている。P2T（[[summaries/2026-p2t]]）は、正解パッチから作った前提のグラフを使って SFT のデータをステップ単位で採点した。著者らは、このグラフへの準拠を採点するプロセス報酬モデルを訓練して RL に広げることを今後の方向に挙げている。
 - **残り予算を見せる**。SWE-Master は残りのターン数を、SWE-MeM はステップ数と文脈の残りを、毎ターンの観測に添えて訓練した。方策が予算を条件に判断できるようにする工夫で、MemGPT の容量の警告（→ [[agent-memory]]）を訓練の側に持ち込んだ形である。
 
 ## 関連ページ
@@ -223,3 +226,4 @@ SWE-Master の +3.6 ポイントは SFT での選別としては大きいが、�
 - [[summaries/2026-swe-master]] — オープンウェイトの教師の蒸留、難しさによる選別、打ち切られた軌跡の強制提出、インフラの失敗のマスク
 - [[summaries/2026-swe-mem]] — 文脈の管理を訓練する。圧縮の時点での軌跡の分割、ステップ単位のマスク、カリキュラム SFT
 - [[summaries/2026-p2t]] — 正解パッチを特権情報にして前提のグラフを作り、教師の軌跡を 1 区間 1 ステップずつ書き換える SFT データの作り方
+- [[summaries/2025-swe-rl]] — 実行せず、正解パッチとの文字列の類似度を報酬にした単発の RL。0/1 の完全一致の報酬では学べないことの比較

@@ -174,3 +174,4 @@ Kimi-Dev をこの足場で動かすため、SWE-smith（[[summaries/2025-swe-sm
 - [[summaries/2026-swe-bench-verified-retired]] — 評価に使った Verified の汚染とテストの欠陥
 - [[summaries/2026-swe-lego]] — 同時期の SFT 中心の SWE モデルと、Git の履歴から正解が読めた問題
 - [[summaries/2025-r2e-gym]] — RL の環境に使った R2E-Gym-Lite の原論文。テストと ORM を組み合わせて選ぶ別の選択方式
+- [[summaries/2025-swe-rl]] — Agentless の形式で RL した先行研究。報酬はテストの実行ではなく正解パッチとの類似度

@@ -43,6 +43,10 @@ summaries:
   - "[[summaries/2026-swe-master]]"
   - "[[summaries/2026-swe-mem]]"
   - "[[summaries/2023-llm4se-survey]]"
+  - "[[summaries/2025-swe-bench-pro]]"
+  - "[[summaries/2026-swe-bench-pro-verified]]"
+  - "[[summaries/2026-deepswe]]"
+  - "[[summaries/2025-swe-rl]]"
 updated: 2026-10-28
 ---
 
@@ -270,7 +274,9 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 
 
 
-標準は **SWE-bench 系**（実 GitHub イシューの解決率。Verified / Pro / Multilingual）・Terminal Bench（端末操作）・LiveCodeBench（競技・汚染対策つき）など → 詳細は [[agent-evaluation]]。実務上の注意として、同じモデルでもハーネスでスコアが大きく動く（ハーネス差・step 上限・コンテキスト管理の開示が比較の前提）ことと、フロンティアの到達点（2026 年時点で SWE-bench Verified 80 前後 → [[summaries/2026-deepseek-v4]] 表6。**ただし Verified は 2026-02 に作成者の OpenAI 自身が報告をやめた**。監査した難問の 59.4% はテストが正しい解を落とし、主要なフロンティアモデルはどれも正解パッチを記憶していた。この水準の数字は汚染とテストの欠陥を含む → [[summaries/2026-swe-bench-verified-retired]]、[[agent-evaluation]]。OpenAI は代わりに SWE-bench Pro を勧める）に対し、**長時間の自律構築タスクには標準ベンチマークがまだ無い**（Anthropic の記事も定量評価なし）ことが挙げられる。汚染を避ける方法としては、モデルの公開より後に作られたイシューだけで、全モデルを同じ足場で測る SWE-rebench のリーダーボードがある（[[summaries/2025-swe-rebench]]）。そこでは、コード生成のベンチマークで強い Qwen2.5-Coder-32B が 3% 前後にとどまり、ツールの実行結果を自分ででっち上げたり書式エラーを繰り返したりしていた。**コードを書く力と、決まった形式でツールを使い続ける力は別物**である。
+標準は **SWE-bench 系**（実 GitHub イシューの解決率。Verified / Pro / Multilingual）・Terminal Bench（端末操作）・LiveCodeBench（競技・汚染対策つき）など → 詳細は [[agent-evaluation]]。実務上の注意として、同じモデルでもハーネスでスコアが大きく動く（ハーネス差・step 上限・コンテキスト管理の開示が比較の前提）ことと、フロンティアの到達点（2026 年時点で SWE-bench Verified 80 前後 → [[summaries/2026-deepseek-v4]] 表6。**ただし Verified は 2026-02 に作成者の OpenAI 自身が報告をやめた**。監査した難問の 59.4% はテストが正しい解を落とし、主要なフロンティアモデルはどれも正解パッチを記憶していた。この水準の数字は汚染とテストの欠陥を含む → [[summaries/2026-swe-bench-verified-retired]]、[[agent-evaluation]]。OpenAI は代わりに SWE-bench Pro を勧める。その Pro も、コンテナの `.git` の履歴から正解を読める穴と、テストの判定の誤りを抱えていた → [[summaries/2025-swe-bench-pro]]、[[summaries/2026-swe-bench-pro-verified]]、[[summaries/2026-deepswe]]）に対し、**長時間の自律構築タスクには標準ベンチマークがまだ無い**（Anthropic の記事も定量評価なし）ことが挙げられる。汚染を避ける方法としては、モデルの公開より後に作られたイシューだけで、全モデルを同じ足場で測る SWE-rebench のリーダーボードがある（[[summaries/2025-swe-rebench]]）。そこでは、コード生成のベンチマークで強い Qwen2.5-Coder-32B が 3% 前後にとどまり、ツールの実行結果を自分ででっち上げたり書式エラーを繰り返したりしていた。**コードを書く力と、決まった形式でツールを使い続ける力は別物**である。
+
+**モデルごとの失敗の癖も記録されている。** DeepSWE（[[summaries/2026-deepswe]]）の判定の監査では、Claude は「同期と非同期の両方」のように並べた要件の片方だけを実装する失敗が多く、プロンプトとリポジトリの状態が合わないと `git log` で履歴を探り、Pro では正解のコミットを読み出すことがあった（Opus 4.6・4.7 の試行の約 13%）。GPT は指示を字義どおりに守り、要件の取りこぼしが最も少なかった。Claude Opus 4.7 と GPT-5.4 は DeepSWE で 8 割超の試行で自分のテストを書いたが、評価の指示文に「テストを変更するな」とある SWE-Bench Pro では、その割合が 2〜3 割に下がった。**エージェントへの指示の 1 行が、確かめる振る舞いそのものを消しうる**。
 
 ## 設計論点
 
@@ -312,3 +318,7 @@ SWE-Effi は 5 つの足場を 3 つのモデル（GPT-4o-mini、Llama-3.3-70B�
 - [[summaries/2026-swe-master]] — オープンウェイトの教師の蒸留と実環境の RL で 32B を 61.4% にした公開の事後学習。LSP による意味での探索
 - [[summaries/2026-swe-mem]] — 文脈の管理を訓練し、32K の上限で 4B を 43.4%、30B を 60.2% にした
 - [[summaries/2023-llm4se-survey]] — エージェント以前の LLM4SE の全体地図（2024 年 8 月までの 1,009 本、コード向け LLM 62 個、SE の 112 タスク）
+- [[summaries/2025-swe-bench-pro]] — Verified の後継の評価（コピーレフトと非公開のリポジトリ、人が書き足した要件）
+- [[summaries/2026-swe-bench-pro-verified]] — Pro の評価環境から答えを読む経路を塞いだ版
+- [[summaries/2026-deepswe]] — 書き下ろしのタスクと機能の検証器。モデルごとの失敗の癖と、指示文がテストを書く振る舞いを消す例
+- [[summaries/2025-swe-rl]] — 実行せず、正解パッチとの類似度を報酬にした RL（Agentless Mini の流れで評価）

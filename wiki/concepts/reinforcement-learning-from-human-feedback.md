@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [RLHF, RLVR, GRPO, PPO, PPO-ptx, DPO, direct preference optimization, post-training, 事後訓練, verifiable rewards, 検証可能報酬, reward model, 報酬モデル, alignment, アラインメント, alignment tax, アラインメント税, InstructGPT, HHH, Bradley-Terry, 暗黙の報酬]
+aliases: [RLHF, RLVR, SWE-RL, GRPO, PPO, PPO-ptx, DPO, direct preference optimization, post-training, 事後訓練, verifiable rewards, 検証可能報酬, reward model, 報酬モデル, alignment, アラインメント, alignment tax, アラインメント税, InstructGPT, HHH, Bradley-Terry, 暗黙の報酬]
 tags: [reinforcement-learning-from-human-feedback, llm-agents, post-training]
 related:
   - "[[llm-red-teaming]]"
@@ -32,7 +32,8 @@ summaries:
   - "[[summaries/2022-anthropic-hh]]"
   - "[[summaries/2025-swe-rl-long-context]]"
   - "[[summaries/2024-swe-gym]]"
-updated: 2026-10-25
+  - "[[summaries/2025-swe-rl]]"
+updated: 2026-10-28
 ---
 
 # Reinforcement Learning from Human Feedback（RLHF と事後訓練の強化学習）
@@ -218,6 +219,12 @@ R1 が V3-Base の上に作られた一方で、**V3 の事後訓練は R1 か�
 
 アルゴリズム面の追加も実務的で、**予算制御**（タスク種別ごとの最大トークン予算＋超過ペナルティ。RL が応答を長くする傾向への直接対処）、**PTX loss**（高品質データの忘却防止）、**温度減衰**（探索→活用）がある。またツール利用のような**エージェント的タスクの RL**（agentic rollout）には、環境待ちで GPU が遊ぶ・trajectory が極端に長いという固有の困難があり、環境の専用サービス化・大量並行ロールアウト・partial rollout（長い trajectory を一時停止して次反復で再開）で対処している。これはエージェント RL のインフラ実務の初期の公開記録である。
 
+## 2025 年 正解を実行せずに比べる: SWE-RL
+
+R1 の RLVR は、答え合わせやテストの実行で正誤が決まる問題に限られていた。実際のソフトウェアの修正では、リポジトリごとに依存関係を入れてテストを動かす環境を作るのが高い。SWE-RL（[[summaries/2025-swe-rl]], Meta, NeurIPS 2025）は、**実行をやめ、モデルの修正と正解パッチの文字列の類似度（0〜1）を報酬にした**。書式を誤れば −1 である。報酬はルールで計算できるので、ニューラル報酬モデルの穴を突かれる心配はない。ただし正誤を判定してはいないので、厳密には「検証可能な報酬」ではなく、**正解への近さを測る規則の報酬**である。
+
+これで GitHub の PR がそのまま RL のデータになり、Llama-3.3-70B-Instruct を GRPO で訓練して SWE-bench Verified で 41.0%（候補 500 本からテストで選んだ値）になった。完全一致を 1 とする 0/1 の報酬では学習がほとんど進まず、**稀にしか出ない 0/1 の報酬を連続の部分点に替える**ことが効いた。訓練は課題の修正だけだったが、数学（MATH）やコードの推論（CRUXEval）でも元のモデルを下回らず、同じ流れの SFT は平均で元のモデルを下回った。R1 の「aha moment」に似た考え直しの振る舞いも、課題の外で現れたと報告している。代わりに、別の書き方の正しい修正に低い点を付けるので、正解の書き方をまねる方向に偏る。
+
 ## 2025 年 1 回の回答から、数十ターンのやり取りへ: SWE エージェントの多ターン RL
 
 R1 や DeepSeekMath の RL は、問題に 1 回答えると採点が返る。Golubev ら（[[summaries/2025-swe-rl-long-context]], 2025）は、これを**環境が途中でフィードバックを返さない、多ターン相互作用の退化した場合**と位置づけ、SWE エージェント（コマンドを打ち、テストのログを読み、また次の手を打つ）に RL を広げた。報酬は最終パッチがテストに通るかの 1 ビットだけで、1 本の軌跡は最大 80 ターン・131k トークンになる。
@@ -293,5 +300,6 @@ DeepSeek-V4 の「スペシャリスト RL → OPD で統合」を、**推論努
 - [[summaries/2024-deepseek-v3]] — GRPO の本番適用・ルール／モデルベース RM の分業・R1 からの逆向きの蒸留・自己報酬
 - [[summaries/2024-deepseekmath]] / [[summaries/2025-deepseek-r1]] — GRPO・RLVR の根拠原典
 - [[summaries/2026-kimi-k3]] — SFT → per-domain×per-effort RL → MOPD の 3 段、Reasoning Effort RL、Agentic GRM の必須プロトコルの根拠原典
+- [[summaries/2025-swe-rl]] — 実行せず、正解パッチとの類似度を報酬にした単発の RL（0/1 の報酬との比較・課題の外への汎化）
 - [[summaries/2025-swe-rl-long-context]] — DAPO による多ターンの SWE エージェント RL（RFT → 2 段階の文脈拡張）
 - [[summaries/2024-swe-gym]] — 棄却サンプリングファインチューニングと ORM 検証器のベースライン
