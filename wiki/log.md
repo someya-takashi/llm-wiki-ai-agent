@@ -1227,3 +1227,9 @@ type: log
 - 要約ページは yomiyasu で推敲した（間を作るだけの読点の除去、表示されない太字の修正。verify の meaning_risk は Pro Verified と DeepSWE が 0、SWE-RL が 4、SWE-Bench Pro が 14。SWE-RL の 4 件は、原典のパスを実際のファイル名（細いスペース入り）に直した 2 か所と、元からある否定の構文を含む行の読点の除去で、意味は変わっていない。SWE-Bench Pro の 14 件は次に書く意図した内容の修正による）。推敲のあと、翻訳担当の照合で SWE-Bench Pro の 6.3 節の割合が v1 の値だと分かったので、要約の失敗の分析と図 3 の読みを v2 の表 4 と図 3 に合わせて直した（推敲とは別の、意図した内容の修正）。
 - 本 wiki の読み・計算として要約に書いたもの: Pro Verified の直さなかった 629 問でも 32 問と 35 問の結果が入れ替わっており、直した 102 問で通るようになった割合（約 21%）はその 4 倍で、修正の効果はばらつきより大きいこと。DeepSeek-V4 Pro が DeepSWE で 7.5%、Pro Verified で 49.93% と食い違うこと。SWE-RL の 41.0% は候補 500 本からテストで選んだ値で、エージェント型の Pass@1 とは比べられないこと。
 - **データギャップ**: DeepSWE-32B（Agentica の RL のモデル）、SWE-bench Multilingual・SWE-bench-Live・Multi-SWE-bench、SWE-Bench ProMax、SWE-Marathon、FrontierSWE・APEX-SWE・Terminal-Bench の原典、Scale AI の Pro のカンニングの報告（38 件中 33 件が `.git` 経由）、AgentCompass の監査の原典は未取得。
+
+## [2026-10-28] query | SWE-bench 以降のコード修正能力の評価の流れ（新入社員向け解説）の更新
+
+- 更新: [[questions/swe-bench-evaluation-history]]（2026-10-26 に作成した解説を、その後に取り込んだ 13 本で最新化）
+- 追加した内容: SWE-bench 以前から汚染が問題だったこと（[[summaries/2023-llm4se-survey]]）、OpenHands（[[summaries/2024-openhands]]）、練習場づくり・お手本をまねる SFT・自分で挑戦する RL の 3 つの流れに整理した訓練の研究（[[summaries/2025-r2e-gym]]・[[summaries/2025-swe-rebench]]・[[summaries/2026-swe-master]]・[[summaries/2026-swe-prime]]・[[summaries/2026-p2t]]・[[summaries/2025-swe-rl]]・[[summaries/2025-kimi-dev]]・[[summaries/2026-swe-mem]]）、汚染を時間で避ける評価（SWE-rebench）を測定の疑いの 5 つ目に、新しい節「2026 年: Verified のあと」（[[summaries/2025-swe-bench-pro]]・[[summaries/2026-swe-bench-pro-verified]]・[[summaries/2026-deepswe]]）。年表を 12 行から 17 行に、残る課題（評価環境の守りを追加）とチェックリスト（新しい問題での再現を追加）を更新。
+- 参照したページ: 上記の要約、[[concepts/agent-evaluation]]、[[concepts/agent-training]]、[[concepts/agent-environments]]
