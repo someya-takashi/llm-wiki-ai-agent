@@ -1204,3 +1204,14 @@ type: log
 - 要約ページは yomiyasu で推敲した（間を作るだけの読点の除去、表示されない太字の修正。verify: meaning_risk=0）。
 - 本 wiki の読み・確認として要約に書いたもの: SWE-bench は付録 B の分類図の「コード生成」の欄に [612] として載るだけで本文では論じておらず、SWE-agent・Agentless・OpenHands は参考文献にもない（参考文献の一覧を検索して確認）。対象が 2024 年 8 月までなのにエージェントがほぼ入っていないので、「エージェント以前の LLM4SE の地図」として位置づけた。表 VI の BLEU 77〜80% と完全一致 16〜22% の差を、SWE-bench が実行で採点する理由と結びつけた。
 - **データギャップ**: CodeBERT・CodeT5・Codex（HumanEval）・StarCoder・Code Llama の原論文、AlphaRepair、CodeXGLUE、EvalGPTFix、RepairAgent、AgentCoder、同時期の LLM4SE サーベイ（Hou ほか、Fan ほか）は未取得。
+
+## [2026-10-28] ingest | From Patches to Trajectories: Privileged Process Supervision for Software-Engineering Agents（P2T, Ma, Chen ほか, Microsoft Research Asia ほか, arXiv:2605.21996 v1）
+
+- 取り込み: `raw/papers/From Patches to Trajectories_ Privileged Process Supervision for Software-Engineering Agents.md`（ar5iv → Obsidian Web Clipper）
+- 作成: [[translations/2026-p2t]], [[summaries/2026-p2t]], `raw/assets/2026-p2t/`（図 7 点）
+- 更新: [[concepts/agent-training]]（「量だけでなく」の流れに正解パッチを特権情報にして軌跡を作り直す段落、落とし穴の表に「結果だけで選ぶと遠回りも手本になる」の行と解けない問題への対処、設計論点にプロセス報酬の方向）, [[concepts/agent-cost-efficiency]]（抑え方の表に短い軌跡の SFT）, [[concepts/context-engineering]]（圧縮の手前で長くならないように訓練する段落、AgentDiet・ACON との対比）, 逆リンク: [[summaries/2024-swe-gym]], [[summaries/2026-swe-lego]], [[summaries/2026-swe-prime]], [[summaries/2026-swe-master]], [[overview]], [[index]]
+- クリップの状態: クリップは図 1〜7 のうち図 5（drawio の PNG）しか画像を含まず、表 1 の列が崩れ、プロンプトの箱は太字の平文になっていた。arXiv の HTML 版 v1 を底本にし、図 1〜7 は PDF v1 からキャプション位置を境界に切り出した。表 1・Algorithm 1・エンティティ抽出の正規表現（DOTTED_MODULE の `{1,}` は HTML・PDF とも欠落していたので意味から補った）・付録 I のパッチは PDF と照合して組み直した。本文と付録 A〜L をすべて訳し、プロンプト 5 つ・表 2〜4 のノードの主張・図 7 の対話ログは原文のまま収録した。参考文献は訳していない。翻訳は 2 つの範囲（本文〜付録 C、付録 D〜L）に分けて並行で作り、結合時に付録の見出しをそろえた。
+- 原典内の食い違い（翻訳の訳注に記録）: 5.3 節の「−9.3%（66.3 → 57 ステップ）」は計算で −14.0%、図 2(a) は −14.1%。表 1 の 32B・GLM-5 の Lite のコストの行が 32B・Qwen3 の Verified のコストの行と同じ値。SWE-Lego のマスクが「コストを決して下げない」と表 1 の −0.01。GLM-5 を「より弱い教師」と呼ぶが他の数値は GLM-5 のほうがよい。コミットホライズン（5 と 4）、ウィンドウの重なり（本文は重ねる、付録 E の証明は重ならない前提）、下限 η_t の定義が 3 通り。結論の「surprisal trust region」は手法に出てこない。付録 I の例で、下限を上回るシードを「はるか下」と書く、非劣解集合の記述、ステップ番号のずれ、図 7 の右列が説明と合わない、など。
+- 要約ページは yomiyasu で推敲した（間を作るだけの読点の除去。verify の時点で meaning_risk=1 だが、推敲後に表 1 と照らして SWE-Lego のコストの記述を意図して直した数値で、推敲による意味の変化ではない）。
+- 本 wiki の読み・計算として要約に書いたもの: 本数をそろえた比較の差（+0.8〜+2.8）は 500 問の 1 回の評価の標準誤差 約 2 ポイントの範囲にあり、+10.8 の大半は教師が解けない問題を手本に変えたことによる、という読み。P2T の全体と棄却サンプリングの軌跡の本数、最後のテストに通った割合が書かれていないこと。比較手法の「SWE-Lego」はエラーマスクだけで、SWE-Lego・SWE-Master の到達点（52.6%・57.8%）とは規模が違うこと。SWE-Prime の「選ぶ」、SWE-Lego の「外す」に対する「作り直す」という位置づけ。
+- **データギャップ**: AgentDiet（trajectory reduction）、ACON、SWE-bench+、Skywork-SWE、Let's Verify Step by Step（PRM）、Vapnik の LUPI の原典は未取得。

@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [コスト効率, cost efficiency, エージェントのコスト, トークン経済, token economics, 予算, budget, futility detection, 不毛さの検知, Token Snowball, トークンの雪だるま, expensive failures, 高くつく失敗, EuTB, EuCB, SWE-Effi, observation masking, 観測のマスキング, trajectory elongation, 軌跡の伸長]
+aliases: [コスト効率, cost efficiency, エージェントのコスト, トークン経済, token economics, 予算, budget, futility detection, 不毛さの検知, Token Snowball, トークンの雪だるま, expensive failures, 高くつく失敗, EuTB, EuCB, SWE-Effi, observation masking, 観測のマスキング, trajectory elongation, 軌跡の伸長, P2T, 短い軌跡の SFT]
 tags: [agent-cost-efficiency, agent-evaluation, context-engineering, test-time-compute, llm-agents]
 related:
   - "[[agent-evaluation]]"
@@ -34,7 +34,8 @@ summaries:
   - "[[summaries/2025-swe-smith]]"
   - "[[summaries/2026-swe-lego]]"
   - "[[summaries/2025-complexity-trap]]"
-updated: 2026-10-26
+  - "[[summaries/2026-p2t]]"
+updated: 2026-10-28
 ---
 
 # Agent Cost Efficiency（エージェントのコスト効率）
@@ -144,6 +145,7 @@ updated: 2026-10-26
 | 思考の予算を訓練で仕込む（K2 の予算制御、K2.5 の Toggle で出力 −25〜30%、K3 の Reasoning Effort RL） | 出力・思考トークン | [[summaries/2025-kimi-k2]]、[[summaries/2026-kimi-k2.5]]、[[summaries/2026-kimi-k3]] → [[test-time-compute]] |
 | 足場とモデルの組み合わせを選び直す（弱いモデルには手続き型） | 往復の回数 | [[summaries/2025-swe-effi]] → [[coding-agents]] |
 | ハーネスの部品を、効いているか確かめて剥がす | 不要な評価・往復 | [[summaries/2026-harness-design]] → [[harness-engineering]] |
+| 短く根拠のある軌跡を SFT の手本にし、調べ方そのものを短くする（生徒の推論コスト −約 15%、評価時のステップ数 −10.3%） | 往復の回数、見直しの手 | [[summaries/2026-p2t]] → [[agent-training]] |
 
 ## 訓練のコスト: RL のロールアウト
 
@@ -175,3 +177,4 @@ updated: 2026-10-26
 - [[summaries/2025-swe-smith]] — 1 件あたりのコストが上限に依存すること、訓練データ作りの費用（5 万件で 1,360 ドル）
 - [[summaries/2026-swe-lego]] — ターン（逐次）と並列の本数のレイテンシの違い
 - [[summaries/2025-complexity-trap]] — 観測のマスキングと LLM による要約のコスト比較、要約の呼び出し代と軌跡の伸長
+- [[summaries/2026-p2t]] — 訓練データの軌跡を短くして、生徒の推論コストを下げる（推論時の圧縮と併用できる）

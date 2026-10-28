@@ -1,6 +1,6 @@
 ---
 type: concept
-aliases: [コンテキストエンジニアリング, context management, コンテキスト管理, prompt engineering, attention budget, 注意予算, context rot, just-in-time, progressive disclosure, 段階的開示, right altitude, structured note-taking, observation masking, 観測のマスキング, LLM-Summary, trajectory elongation, 軌跡の伸長, agentic search, codebase map, コードベースの地図, selective compression, 区間を選ぶ圧縮, Context Folding, SWE-Compressor, summary-based context manager]
+aliases: [コンテキストエンジニアリング, context management, コンテキスト管理, prompt engineering, attention budget, 注意予算, context rot, just-in-time, progressive disclosure, 段階的開示, right altitude, structured note-taking, observation masking, 観測のマスキング, LLM-Summary, trajectory elongation, 軌跡の伸長, agentic search, codebase map, コードベースの地図, selective compression, 区間を選ぶ圧縮, Context Folding, SWE-Compressor, summary-based context manager, P2T]
 tags: [context-engineering, llm-agents, agent-memory]
 related:
   - "[[agent-memory]]"
@@ -41,6 +41,7 @@ summaries:
   - "[[summaries/2025-complexity-trap]]"
   - "[[summaries/2026-swe-master]]"
   - "[[summaries/2026-swe-mem]]"
+  - "[[summaries/2026-p2t]]"
 updated: 2026-10-28
 ---
 
@@ -159,6 +160,8 @@ The Complexity Trap の方式はどれも、「N ターン前より古い」「2
 - **圧縮の判断を訓練すると、小さいモデルでも効いた**。SWE-MeM（[[summaries/2026-swe-mem]], 2026-06）は、圧縮する区間・要約・残りの作業を引数にした道具をエージェントに持たせ、**いつ・どこを・どう圧縮するかをモデル自身に訓練で学ばせた**。文脈の上限を 32K に絞ったまま、Qwen3-4B を SWE-bench Verified で 43.4%、Qwen3-Coder-30B-A3B を 60.2% にした。閾値で全体を要約する方式（総トークンが素のエージェントの約 2 倍）やサブタスクを畳む Context Folding（ステップ数が約 2 倍）と違い、総トークンは素のエージェントより少なかった（94.7%）。ステップ数は 23.5% 増えたが、The Complexity Trap の「要約すると軌跡が伸びる」の範囲に収まる。
 
 読み方として、要約の効き目は「要約するかどうか」より**「どの区間を、いつ」を誰が決めるか**に左右される。規則で決めるなら、まず観測のマスキング（上記）が安く確実である。区間の選択を任せるなら、その判断をモデルが学んでいる必要がある。SWE-MeM のアブレーションでは、区間の選択を全体の要約に替えると 0.8 ポイント、能動的な発動を閾値に替えると 1.0 ポイント下がった。差は小さく、1 回の評価では確かとは言えないが、方向は一貫している。
+
+**圧縮の手前で、そもそも長くならないように訓練する道もある。** P2T（[[summaries/2026-p2t]], 2026-05）は履歴を圧縮するのではなく、SFT の手本にする軌跡から遠回りと見直しを除き、短く調べる癖を生徒に学ばせた。生徒が評価で出す軌跡はステップ数が 10.3%、同じ範囲のファイルの見直しが 19.5% 減った。著者らは、推論時に不要な履歴を削る AgentDiet や観測と履歴の圧縮を学習する ACON を「方策を変えずに、方策が読むものを短くする」方法と位置づけ、P2T はそれらと併用できるとしている。
 
 長時間タスクでは「全履歴の持ち回り」から「**フェーズごとに要約して本質だけ残す**」へ移行する。[[summaries/2025-multi-agent-research-system]]（2025）の本番運用パターンでは、完了した作業フェーズを要約して外部メモリへ保存し、コンテキスト限界が近づいたら**クリーンなコンテキストを持つ新しいサブエージェントを生成して引き継ぐ**（handoff）。保存済みの計画は失わずメモリから取り戻す。MemGPT の recursive summary を、マルチエージェントの分業に持ち上げた形と読める。
 
@@ -329,3 +332,4 @@ few-shot 例示はコンテキスト積載の古典で、CoT（[[summaries/2022-
 - [[summaries/2024-agentless]] — 階層的な位置の特定（木構造 → スケルトン → 該当コード）で、文脈を絞るほど精度も費用も良くなった実測
 - [[summaries/2026-swe-master]] — 固定間隔の要約によるコンテキスト管理。強いモデルでは入力トークンを 4 割前後減らし、32B では効かなかった
 - [[summaries/2026-swe-mem]] — 圧縮する区間と時機をモデルに選ばせる記憶の道具を訓練し、32K の上限で総トークンも減らした
+- [[summaries/2026-p2t]] — 履歴を圧縮するのではなく、短い軌跡を手本に SFT して生徒の調べ方を短くする（推論時の圧縮と併用できる）

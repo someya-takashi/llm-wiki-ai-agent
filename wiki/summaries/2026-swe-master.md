@@ -255,3 +255,4 @@ SWE-bench Verified は Python だけなので、言語サーバーには pyright
 - [[summaries/2025-complexity-trap]] — 観測のマスキングと要約の比較。要約でターン数が増える現象
 - [[summaries/2026-claude-code-large-codebases]] — 実務での LSP 導入の勧め
 - [[summaries/2026-swe-bench-verified-retired]] — Verified の汚染
+- [[summaries/2026-p2t]] — 教師が解けない問題を除く選別に対し、正解パッチを特権情報にしてその問題からも成功軌跡を作った方向
